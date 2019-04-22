@@ -19,7 +19,7 @@ router.post("/login", passport.authenticate("local", {
     }), function(req, res) {
 });
 
-//INDEX
+//INDEX (display user by id)
 router.get("/home", isLoggedIn, function(req, res){
     //display unicorns belonging to logged in user
     User.findById(req.user.id).populate("unicorns").exec(function(err, foundUser){
