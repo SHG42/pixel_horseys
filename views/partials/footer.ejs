@@ -1,0 +1,125 @@
+<!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  
+    <!--<script src="../routes/choosemodal.js"></script>-->
+    <script>
+        //loop and if statement to find img id that matches data-id attribute of clicked button, then select src from img and pass it to modal
+        $('#chooseModal').on('show.bs.modal', function (event) {
+          var button = $(event.relatedTarget); // Button that triggered the modal
+          var modalTitle = button.data('title'); // Extract info from data-* attributes
+          var modalIdMatch = button.data('id'); // Access the data-id attribute which matches the img id attr value
+                //console.log(modalIdMatch) // Test; modalIdMatch is grabbing the correct value
+                
+          // loop through img ids and use comparison to find id that matches the data-id from the target button
+            // Get img ids
+              //RETURN OBJECT WITH ID AND SRC
+              var ids = $('.founders').map(function() {
+                          return ({
+                            "picId": this.id,
+                            "picSrc": this.src
+                          });
+                        }).get();
+                //console.log(ids);
+                
+            //find imgIDs that matches modalIdMatch
+              //if imgID === modalIdMatch then store in variable to use to update modal
+              for( var i = 0; i < ids.length; i++) {
+                
+                if (ids[i].picId == modalIdMatch){
+                        //console.log("hoo" + " " + ids[i].picId);
+                        //var useId = ids[i].picId;
+                        var getSrc = ids[i].picSrc;
+                        //console.log(getSrc);
+                      }    
+                      
+                  // Update the modal's content. 
+                    var modal = $(this);
+                    modal.find('.uni-title').text(modalTitle).css("color", "white");
+                    modal.find('#modal-image').attr("src", getSrc);
+                    modal.find('#chosenPic').attr("value", getSrc);
+                    modal.find('#chooseThis').attr("value", modalTitle);
+                    console.log(modalTitle);
+                }
+        }); 
+    </script>
+    <script>
+        $('#chooseModal').on('show.bs.modal', function (event){
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var modalTitle = button.data('title'); // Extract info from data-* attributes
+            
+            var regions = [
+                {
+                  regName: "Arctic",
+                  regDes:  "A region of frigid desolation... but there is also wild, crystalline beauty for those brave enough to seek it. The soaring glaciers harbor dark, silent forests brimming with unknown wonders. Beneath the midnight sun, legends may rise... or fall. The unicorns of this realm are determined and hardy creatures, experts in survival.",
+                  regBg: "../resources/map/arctic_onclick.png"
+                }, 
+                
+                {
+                 regName: "Desert",
+                 regDes: "Unicorns here forge a life between blistering sunlight and icy-cold nights, but they are fiercely loyal to this scorching realm. The towering sand dunes offer boundless danger, but also limitless adventure. What mysteries lie in the heart of the Desert? Unicorns of this realm are shrewd and clever.",
+                 regBg:  "../resources/map/desert_onclick.png"
+                },
+                
+                {
+                  regName: "Swamp",
+                  regDes: "Hazy shapes wind their way through the warm, shallow waters here. The thick canopy and dangling branches shield a labyrinth of channels, lagoons, and ponds. On islands of sturdy cypress trees, and on clusters of floating flat-bottomed boats, herds of unicorns make their homes. Unicorns of this realm are relaxed and adventurous.",
+                  regBg: "../resources/map/swamp_onclick.png"
+                }, 
+                
+                {
+                  regName: "Forest",
+                  regDes: "Massive trees, ancient and gnarled, stand amid thick fog and lancing shafts of sunlight. The unwary soon find themselves hopelessly lost, but those who know this realm find their way with ease. The Forest bristles with life, not all of it friendly. Unicorns of this realm are studious and slow to trust.",
+                  regBg:  "../resources/map/forest_onclick.png"
+                }, 
+                
+                {
+                  regName: "Savannah",
+                  regDes: "A sea of tall grass graces the Savannah, the endless golden waves dotted with twisted trees and rock outcrops. The sun shines brightly here, sometimes unbearably so, and sudden lightning storms can give the uncautious an unpleasant surprise. Unicorns of this realm are quick-witted and sharp-eyed.",
+                  regBg:  "../resources/map/savannah_onclick.png"
+                },
+                
+                {
+                  regName: "Mountains",
+                  regDes: "Many believe that these towering peaks are a sacred realm, due to their proximity to Sunflame Mountain. Sacred or not, the herds that live amidst the peaks must contend with perilous slopes, howling winds, and the beasts that lurk in the mist. Unicorns here are daring and observant.",
+                  regBg:  "../resources/map/mountains_onclick.png"
+                }
+              ]
+
+            
+            for( var i = 0; i < regions.length; i++) {
+                
+                if (regions[i].regName == modalTitle){
+                        //console.log("hoo" + " " + regions[i].regName);
+                        var useReg = regions[i].regName;
+                        var getDes = regions[i].regDes;
+                        var getBg = regions[i].regBg;
+                        //console.log(getDes + " " + getBg);
+                      }    
+                      
+                  // Update the modal's content. 
+                    var modal = $(this);
+                    modal.find('.reg-title').text("The" + " " + modalTitle);
+                    modal.find('.modal-content').css("background-image", "url('" + getBg + "')");
+                    modal.find('#modal-text').text(getDes);
+                    modal.find('#chooseThis').attr("value", useReg);
+                    console.log(useReg);
+                }
+        });
+      
+    </script>
+    <script>
+        $('#nameModal').on('show.bs.modal', function (event) {
+          var button = $(event.relatedTarget) // Button that triggered the modal
+          var nameThis = button.data('clickedid') // Extract info from data-* attributes
+          // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+          // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+          console.log(nameThis);
+          var modal = $(this)
+          modal.find('#thisId').attr("value", nameThis);
+        })
+    </script>
+  </body>
+</html>

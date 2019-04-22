@@ -1,0 +1,212 @@
+LANDING: intro to site, explains what it is and what it does, button to register account and start demo
+
+REGISTER: form, lore blurb re: starting your journey from this point
+
+FIRST LOGIN: form, lore blurb re: how your journey will begin
+
+CHOICE PAGES: choose region and starter
+
+LOGIN: form, lore blurb re: coming back to continue journey (will only be seen by users returning to demo after completing demo tutorial)
+
+YOUR HOMEPAGE: start with exciting animation, exciting lore blurb, cool logo, bring user to their lair page, assign random starter, load region BG and starter from database
+, give them 3 options:
+        
+        1. EQUIP: let users test equip system, put item on starter pet
+                >> NEED: vector resource for the equippable item, item equip system and interface
+        2. EXPLORE: let users explore a small map and acquire an item (option to go to equip and swap out starter item)
+                >> NEED: interactive map game (see Sylestia fest map), vector or pixel resources 
+        3. CUSTOMIZATION: let users change one gene pattern on their starter
+                >> NEED: art resources for color and pattern change, interface for changing and saving changes to pet art
+                >> 3 starter genes with color selectors
+                
+        NEED for homepage: background img resources for each region, vector resources for themed environment elements  
+        ADD dropdowns on equip and custom pages to load specific unicorns
+        ADD show page for unicorn, with buttons to go to equip and custom
+        
+        Pages with dynamic content: lair page, equip/custom/inventory pages, content of map (use loops?)
+        
+        >> backdrop toggles affect div containing unicorn image
+        
+        >> ADD INDEX PAGE with all registered users so players can visit each others pages
+        
+FIND OUT:
+X how to generate incremented ID numbers per pet and companions (NOT mongodb id strings) (TEST auto-increment plugin)
+how to increment level (use auto-increment plugin if it works for id; how to increment at reaching level marker?)
+how to keep track of hunger and energy and display changes
+how to generate images and image changes (equipping, customizing, etc)
+how to layer and store equipped items on image
+how to change and store colors and markings
+how to do FR style bio box (form that loads on same page [asynchronously?])
+how to change backgrounds from db on show page
+how to load homepage bg based on user region
+how to display "none" for parents of gen 1s, how to display parents for bred unicorns (if statement?)
+how to let users vist each others lairs (use middleware to check ownership and display or not display appropriate buttons)
+how to have url on home pages reflect user id and/or unicorn id (NOT objectId) based on which user/unicorn you're viewing (like FR and gryffs)        
+        
+Project structure:
+
+/middleware
+/models
+/node_modules
+/public
+        /stylesheets
+/routes
+/views
+        /partials
+                header.ejs
+                footer.ejs
+        /subdirs for pages        
+app.js
+
+
+>What models do we need?
+        >> unicorns, users, items, companions
+
+>What routes do we need?
+        >> each page of the demo needs a route?
+
+>What views do we need?
+        >> turn html pages into ejs pages
+
+> Data Associations:
+        >> Unicorn : Owner -> One : One
+        >> Owner : Unicorn -> One : Many
+        
+
+        
+
+# RESTful routes
+        Route name      path/url        http verb       description                             Mongoose Method
+        ========================================================================================================================
+        * INDEX:        /dogs           GET             displays list of all dogs               Dog.find()
+        
+        * NEW:          /dogs/new       GET             displays form to add new                None (just renders a form)
+                                                        dog data to DB                          >does not access or add to db, just renders
+                                                                                                the form to add content via create
+        
+        * CREATE:       /dogs           POST            add new dog data to DB from             Dog.create()
+                                                        form submission then redirects 
+                                                        somewhere
+                                                        > Dog.create(data, callback(){...});
+        
+        * SHOW:         /dogs/:id       GET             shows info about one dog                Dog.findById()
+                                                        (eg. after user clicks), shows 
+                                                        more info than index
+                                                        >we need the id to display the 
+                                                        correct dog's data from the DB
+        
+        * EDIT:         /dogs/:id/edit  GET             shows edit form for one                 Dog.findById()
+                                                        specific dog                            > to bring up the edit form correctly
+        
+        * UPDATE:       /dogs/:id       PUT             updates data for specific dog           Dog.findByIdAndUpdate()
+                                                        with data from EDIT form then 
+                                                        redirects somewhere
+        
+        * DESTROY:      /dogs/:id       DELETE          removes all data on specified           Dog.findByIdAndRemove()
+                                                        dog from DB then redirects somewhere
+
+
+========================        
+
+
+
+
+Regions DB info Feb 21st:
+{ "_id" : ObjectId("5c538ca0d536aa14e0ef4fdf"), 
+"location" : "Arctic", 
+"modalBG" : "resources/map/arctic_onclick.png", 
+"homeBG" : "resources/home_bgs/arcticenvironment2.png", 
+"defaultBG" : "resources/home_bgs/arcticenvironment2.png", "__v" : 0 }
+
+{ "_id" : ObjectId("5c538cd2ea99da14f82a826a"), 
+"location" : "Desert", 
+"modalBG" : "resources/map/desert_onclick.png", 
+"homeBG" : "resources/home_bgs/desertenvironment1.png", 
+"defaultBG" : "resources/home_bgs/desertenvironment1.png", "__v" : 0 }
+
+{ "_id" : ObjectId("5c538d1e6344b015131e61b0"), 
+"location" : "Forest", 
+"modalBG" : "resources/map/forest_onclick.png", 
+"homeBG" : "resources/home_bgs/forestenvironment1.png", 
+"defaultBG" : "resources/home_bgs/forestenvironment1.png", "__v" : 0 }
+
+{ "_id" : ObjectId("5c538d4499147d1529fc2a07"), 
+"location" : "Mountains", 
+"modalBG" : "resources/map/mountains_onclick.png", 
+"homeBG" : "resources/home_bgs/mountainenvironment1.png", 
+"defaultBG" : "resources/home_bgs/mountainenvironment1.png", "__v" : 0 }
+
+{ "_id" : ObjectId("5c538d65018bcf153dbfefb0"), 
+"location" : "Savannah", 
+"modalBG" : "resources/map/savannah_onclick.png", 
+"homeBG" : "resources/home_bgs/savannahenvironment1.png", 
+"defaultBG" : "resources/home_bgs/savannahenvironment1.png", "__v" : 0 }
+
+{ "_id" : ObjectId("5c538d836bf9521552efe231"), 
+"location" : "Swamp", 
+"modalBG" : "resources/map/swamp_onclick.png", 
+"homeBG" : "resources/home_bgs/swampenvironment1.png", 
+"defaultBG" : "resources/home_bgs/swampenvironment1.png", "__v" : 0 }
+
+REGIONS DB info April
+{ "_id" : ObjectId("5ca511de20cf580d3e271b43"), "location" : "Arctic", "modalBG" : "resources/map/arctic_onclick.png", "homeBG" : "resources/home_bgs/arcticenvironment2.png", "defaultBG" : "resources/home_bgs/arcticenvironment2.png", "regid" : 1, "__v" : 0 }
+{ "_id" : ObjectId("5ca51216acb2180d66a2511c"), "location" : "Desert", "modalBG" : "resources/map/desert_onclick.png", "homeBG" : "resources/home_bgs/desertenvironment1.png", "defaultBG" : "resources/home_bgs/desertenvironment1.png", "regid" : 2, "__v" : 0 }
+{ "_id" : ObjectId("5ca512478488840d8e58c7f7"), "location" : "Forest", "modalBG" : "resources/map/forest_onclick.png", "homeBG" : "resources/home_bgs/forestenvironment1.png", "defaultBG" : "resources/home_bgs/forestenvironment1.png", "regid" : 3, "__v" : 0 }
+{ "_id" : ObjectId("5ca5127dced5070db710dff7"), "location" : "Mountains", "modalBG" : "resources/map/mountains_onclick.png", "homeBG" : "resources/home_bgs/mountainenvironment1.png", "defaultBG" : "resources/home_bgs/mountainenvironment1.png", "regid" : 4, "__v" : 0 }
+{ "_id" : ObjectId("5ca512af9537c40de19d526e"), "location" : "Savannah", "modalBG" : "resources/map/savannah_onclick.png", "homeBG" : "resources/home_bgs/savannahenvironment1.png", "defaultBG" : "resources/home_bgs/savannahenvironment1.png", "regid" : 5, "__v" : 0 }
+{ "_id" : ObjectId("5ca512dc936abb0e0c26c2d9"), "location" : "Swamp", "modalBG" : "resources/map/swamp_onclick.png", "homeBG" : "resources/home_bgs/swampenvironment1.png", "defaultBG" : "resources/home_bgs/swampenvironment1.png", "regid" : 6, "__v" : 0 }
+
+Unicorns DB info Feb 21st:
+{ "_id" : ObjectId("5c5226b6345dfa119f525830"), "uniName" : "Flaxen Sorrel Unicorn", "uniPic" : "resources/unicons/flaxensorrel.png", "__v" : 0 }
+{ "_id" : ObjectId("5c5226fd35af8211e0fc2283"), "uniName" : "Chocolate Palomino Unicorn", "uniPic" : "resources/unicons/chocopalo.png", "__v" : 0 }
+{ "_id" : ObjectId("5c52256c0bd30f1135151257"), "uniName" : "Spectral Unicorn", "uniPic" : "resources/unicons/greenblack.png", "__v" : 0, "lore" : "Oh lore? LORE?" }
+{ "_id" : ObjectId("5c5225a7666bb1114e4f68b1"), "uniName" : "Starlit Unicorn", "uniPic" : "resources/unicons/starry.png", "__v" : 0, "lore" : "OH WORM?" }
+{ "_id" : ObjectId("5c5225c542b6b7116869d68b"), "uniName" : "Heraldic Unicorn", "uniPic" : "resources/unicons/heraldic.png", "__v" : 0, "lore" : "HEWWO?????" }
+{ "_id" : ObjectId("5c5226e7aec49411ca241854"), "uniName" : "Silver Unicorn", "uniPic" : "resources/unicons/traditional.png", "__v" : 0, "lore" : "YOOOOOO" }
+{ "_id" : ObjectId("5c5226d2d7fd6811b4c09398"), "uniName" : "Deerlike Unicorn", "uniPic" : "resources/unicons/deericorn.png", "__v" : 0, "lore" : "uwu~" }
+{ "_id" : ObjectId("5c522698fd77351189d5fa45"), "uniName" : "Pastel Unicorn", "uniPic" : "resources/unicons/pastel.png", "__v" : 0, "lore" : "~*~uwu~*~" }
+
+
+var regionDescriptions = {
+  "Arctic": "A region of frigid desolation... but there is also wild, crystalline beauty for those brave enough to seek it. The soaring glaciers harbor dark, silent forests brimming with unknown wonders. Beneath the midnight sun, legends may rise... or fall. The unicorns of this realm are determined and hardy creatures, experts in survival.",
+  "Desert": "Unicorns here forge a life between blistering sunlight and icy-cold nights, but they are fiercely loyal to this scorching realm. The towering sand dunes offer boundless danger, but also limitless adventure. What mysteries lie in the heart of the Desert? Unicorns of this realm are shrewd and clever.",
+  "Swamp": "Hazy shapes wind their way through the warm, shallow waters here. The thick canopy and dangling branches shield a labyrinth of channels, lagoons, and ponds. On islands of sturdy cypress trees, and on clusters of floating flat-bottomed boats, herds of unicorns make their homes. Unicorns of this realm are relaxed and adventurous.",
+  "Forest": "Massive trees, ancient and gnarled, stand amid thick fog and lancing shafts of sunlight. The unwary soon find themselves hopelessly lost, but those who know this realm find their way with ease. The Forest bristles with life, not all of it friendly. Unicorns of this realm are studious and slow to trust.",
+  "Savannah": "A sea of tall grass graces the Savannah, the endless golden waves dotted with twisted trees and rock outcrops. The sun shines brightly here, sometimes unbearably so, and sudden lightning storms can give the uncautious an unpleasant surprise. Unicorns of this realm are quick-witted and sharp-eyed.",
+  "Mountains": "Many believe that these towering peaks are a sacred realm, due to their proximity to Sunflame Mountain. Sacred or not, the herds that live amidst the peaks must contend with perilous slopes, howling winds, and the beasts that lurk in the mist. Unicorns here are daring and observant."
+}
+
+var regionBgs = {
+  "Arctic": "/sunflame_mountain/public/resources/map/arctic_onclick.png",
+  "Desert": "/sunflame_mountain/public/resources/map/desert_onclick.png",
+  "Swamp": "/sunflame_mountain/public/resources/map/swamp_onclick.png",
+  "Forest": "/sunflame_mountain/public/resources/map/forest_onclick.png",
+  "Savannah": "/sunflame_mountain/public/resources/map/savannah_onclick.png",
+  "Mountains": "/sunflame_mountain/public/resources/map/mountains_onclick.png"
+}
+
+var Arctic = "A region of frigid desolation... but there is also wild, crystalline beauty for those brave enough to seek it. The soaring glaciers harbor dark, silent forests brimming with unknown wonders. Beneath the midnight sun, legends may rise... or fall. The unicorns of this realm are determined and hardy creatures, experts in survival.";
+var arcticBg = "/sunflame_mountain/public/resources/map/arctic_onclick.png";
+
+var Desert = "Unicorns here forge a life between blistering sunlight and icy-cold nights, but they are fiercely loyal to this scorching realm. The towering sand dunes offer boundless danger, but also limitless adventure. What mysteries lie in the heart of the Desert? Unicorns of this realm are shrewd and clever."
+var desertBg = "/sunflame_mountain/public/resources/map/desert_onclick.png";
+
+var Swamp = "Hazy shapes wind their way through the warm, shallow waters here. The thick canopy and dangling branches shield a labyrinth of channels, lagoons, and ponds. On islands of sturdy cypress trees, and on clusters of floating flat-bottomed boats, herds of unicorns make their homes. Unicorns of this realm are relaxed and adventurous.";
+var swampBg = "/sunflame_mountain/public/resources/map/swamp_onclick.png";
+
+var Forest = "Massive trees, ancient and gnarled, stand amid thick fog and lancing shafts of sunlight. The unwary soon find themselves hopelessly lost, but those who know this realm find their way with ease. The Forest bristles with life, not all of it friendly. Unicorns of this realm are studious and slow to trust.";
+var forestBg = "/sunflame_mountain/public/resources/map/forest_onclick.png";
+
+var Savannah = "A sea of tall grass graces the Savannah, the endless golden waves dotted with twisted trees and rock outcrops. The sun shines brightly here, sometimes unbearably so, and sudden lightning storms can give the uncautious an unpleasant surprise. Unicorns of this realm are quick-witted and sharp-eyed.";
+var savannahBg = "/sunflame_mountain/public/resources/map/savannah_onclick.png";
+
+var Mountains = "Many believe that these towering peaks are a sacred realm, due to their proximity to Sunflame Mountain. Sacred or not, the herds that live amidst the peaks must contend with perilous slopes, howling winds, and the beasts that lurk in the mist. Unicorns here are daring and observant.";
+var mountainsBg = "/sunflame_mountain/public/resources/map/mountains_onclick.png";
+
+
+{ "_id" : ObjectId("5c9d2f294a89fa087afbcef9"), "unicorns" : [ ObjectId("5ca7dbd4307124165e4e2432"), ObjectId("5cabae560a994b0d2d21b1b4") ], "username" : "admin", "email" : "ayalaatreides@gmail.com", "join" : ISODate("2019-03-28T20:31:37.626Z"), "salt" : "0cecee306126dcc4c8d3c7f2ec28902eb7bfdb2c820fc6d855124284666cb499", "hash" : "d6852f52858941a9b458e50a1a0c7a4ef54c3c85804635c2b9bf2c5aa7c15a257ac44d0bb7f584a3881a862a5890de4ac5eaf25d1323d8249729ea43c0abfc5bb695a994f1edd0901a03450ee62f5145eb29cdb7158e20bd62d8de5c320ecfbd5eef811c0106c2905447cd17d7491df1b5e5b8e3ea98a7f0b32639a62ed6da0621e69dc47357e66e2f191852130a17c8f74862b05e233a0a0c08a6a67230244c0080584744bb6149270a5d070b69dbe342acdb1c1829267c5eba5397bcf65904f9992392df7b7a5b8a4d00a019bf27442018612311ebc149bfb6b96af53607c36e833b3b1c8d4d332cb1ed6e0224e89edf2eaa1a6d7c920b384d0c9fcaa3d29ffd4f3810db49e5f31882fce5cb683103aca0d1d1030a508988b7215f7e67fb0e33d5c3fc6d02130091a4dea9a5b81155b79e50d034186219f38eae591be2c534387fec9ac9671bd9a0d47483f7cbc063e370a3b7a8905ed2ad01071d6ff9c0a5f7b244b6d88b2be03e0dd95ccad2e1da377ab8f6965112a30db01b1287ef3a37ab522560db8e6c9aedd947e4343b337ba6320b4be688e98b46ead7574b97ec31bb46b3d5acec6b5bd18f6e7aa3fb1349e009034f1e6838c23923e4d6b5304bcffbe7a45a5b8d9aa7221ee4b20e7f462b15c12651baef3146cb8d6983284d78caec4174af7b157d0f0b034b4df1d528c5bfce8c284cbd086fdd30e9c9981c97dd", "userid" : 1, "__v" : 2, "region" : "Desert" }
+
+params: { id: '5cad2a7124a5e20c859157fc' },
+unicorns: [    5cad2a7124a5e20c859157fc
+user: 
+   { unicorns: [ 5cad2a7124a5e20c859157fc,

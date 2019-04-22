@@ -1,0 +1,343 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'IM FELL English SC', sans-serif;
+    color: black;
+    font-style: normal;
+    font-size: 2rem;
+    background-color: black;
+}
+
+
+button, a {
+    font-family: sans-serif;
+}
+
+.introtron-container {
+    background-image: url("../resources/indexBG.png");
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: absolute;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    margin-bottom: 0;
+}
+
+.introtron {
+    background-color: transparent;
+}
+
+.textboxes {
+    background-color: rgb(192,192,192);
+    background-color: rgba(192,192,192,0.8);
+    font-family: sans-serif;
+}
+
+.gridCard {
+    background-color: black;
+}
+
+.uniCard {
+    border-color: antiquewhite;
+    background-color: rgb(192,192,192);
+    background-color:rgba(192,192,192,0.8);
+}
+
+.card-text {
+    font-size: 1.5rem;
+}
+
+.founders {
+    background-size: contain;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+#greenblack {
+    background-image: url("../resources/cardBGs/troncard.png");
+}
+#pastel {
+    background-image: url("../resources/cardBGs/softforest.png");
+}
+#starry {
+    background-image: url("../resources/cardBGs/galaxy.png");
+}
+#heraldic {
+    background-image: url("../resources/cardBGs/castleinterior.png");
+}
+#flaxensorrel {
+    background-image: url("../resources/cardBGs/foggyforest.png");   
+}
+#deericorn {
+    background-image: url("../resources/cardBGs/sunsetforest.png"); 
+}
+#traditional {
+    background-image: url("../resources/cardBGs/prettynight.png");
+}
+#chocopalo {
+    background-image: url("../resources/cardBGs/nightbeach.png");
+}
+
+.regionMap {
+    background-image: url("../resources/testmap.jpg");
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: relative;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+.regionCard .card-title {
+    color: antiquewhite;
+}
+
+#chooseModal {
+    background-color: black;
+}
+
+.modal-title {
+    text-decoration: underline;
+    color: black;
+}
+
+.choosemodal-content {
+    background-color: black;
+    border-color: antiquewhite;
+    text-align: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: relative;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+.founder-fullsize {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    position: relative;
+    background-size: contain;
+    background-position: 50% 50%;
+}
+
+.close {
+    color: antiquewhite;
+}
+
+
+#mainNavbar {
+    font-size: 1.5rem;
+}
+
+#sitelogo {
+    width: 9%;
+}
+
+
+.unicornHome {
+    /*background-image: url("../resources/home_bgs/mountainenvironment1.png");*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: relative;
+    background-size: 100% 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    
+}
+
+
+.unicornPage {
+    background-color: black;
+}
+
+.unicornHeader, .lore {
+    background-color: rgb(192,192,192);
+    background-color: rgba(192,192,192,0.8);
+}
+
+.stats {
+    font-size: 1.5rem;
+    text-decoration: underline;
+}
+
+.unicornSpace {
+    /*background-image: url("../resources/home_bgs/mountainenvironment1.png");*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: relative;
+    background-size: 100% 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+
+.menu-img {
+    width: 20%;
+}
+
+
+.equipbox {
+    background-image: url("../resources/equipscreen.jpg");
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: relative;
+    background-size: 100% 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+legend {
+    background-color: rgb(192,192,192);
+    background-color: rgba(192,192,192,0.8);
+    border: 3px solid rgb(19, 18, 18);
+    border-radius: 5px;
+    width: auto;
+    padding: 3px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+fieldset li {
+    background-color: rgb(192,192,192);
+    background-color: rgba(192,192,192,0.8);
+    border-radius: 5px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+fieldset a {
+    color: black;
+}
+
+.equiplist {
+    background-color: rgb(192,192,192);
+    background-color: rgba(192,192,192,0.8);
+    margin: auto;
+    overflow-y: scroll;
+    height: 500px;
+}
+
+.inventorybox {
+    background-image: url("../resources/inventorybackground.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    position: relative;
+    width: 100%;
+}
+
+.inventorylist {
+    background-color: rgb(192,192,192);
+    background-color: rgba(192,192,192,0.8);
+    margin: auto;
+    overflow-y: scroll;
+    height: 400px;
+}
+
+.itemicon {
+    background-color: rgb(65, 54, 54);
+    background-color: rgba(65, 54, 54, 0.9);
+    border: 1px solid black;
+    margin: 2px;
+}
+
+.equiplist .itemicon {
+    width: 15%;
+}
+
+.customizebox {
+    background-image: url("../resources/tronBG.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    position: relative;
+    width: 100%;
+}
+
+.customizegenerator {
+    background-color: black;
+    height: 500px;
+}
+
+
+/* ADDED CSS FROM GITHUB */
+.w-100 {width: 100% !important;}
+.w-80 {width: 80% !important;}
+.w-75 {width: 75% !important;}
+.w-60 {width: 60% !important;}
+.w-50 {width: 50% !important;}
+.w-40 {width: 40% !important;}
+.w-25 {width: 25% !important;}
+.w-20 {width: 20% !important;}
+
+@media (min-width:576px) {
+    .w-sm-100 {width: 100% !important;}
+    .w-sm-80 {width: 80% !important;}
+    .w-sm-75 {width: 75% !important;}
+    .w-sm-60 {width: 60% !important;}
+    .w-sm-50 {width: 50% !important;}
+    .w-sm-40 {width: 40% !important;}
+    .w-sm-25 {width: 25% !important;}
+    .w-sm-20 {width: 20% !important;}
+}
+
+@media (min-width:768px) {
+    .w-md-100 {width: 100% !important;}
+    .w-md-80 {width: 80% !important;}
+    .w-md-75 {width: 75% !important;}
+    .w-md-60 {width: 60% !important;}
+    .w-md-50 {width: 50% !important;}
+    .w-md-40 {width: 40% !important;}
+    .w-md-25 {width: 25% !important;}
+    .w-md-20 {width: 20% !important;}
+}
+
+@media (min-width:992px) {
+    .w-lg-100 {width: 100% !important;}
+    .w-lg-80 {width: 80% !important;}
+    .w-lg-75 {width: 75% !important;}
+    .w-lg-60 {width: 60% !important;}
+    .w-lg-50 {width: 50% !important;}
+    .w-lg-40 {width: 40% !important;}
+    .w-lg-25 {width: 25% !important;}
+    .w-lg-20 {width: 20% !important;}
+}
+
+@media (min-width:1200px) {
+    .w-xl-100 {width: 100% !important;}
+    .w-xl-80 {width: 80% !important;}
+    .w-xl-75 {width: 75% !important;}
+    .w-xl-60 {width: 60% !important;}
+    .w-xl-50 {width: 50% !important;}
+    .w-xl-40 {width: 40% !important;}
+    .w-xl-25 {width: 25% !important;}
+    .w-xl-20 {width: 20% !important;}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

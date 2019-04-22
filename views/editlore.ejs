@@ -1,0 +1,18 @@
+<% include ./partials/header %>
+<% include ./partials/navbar %>
+
+<div class="writelore jumbotron jumbotron-fluid text-center my-0">
+    <div class="container">
+        <img src="<%= unicorn.uniPic %>" class="img-fluid">
+        <h2>Edit <%= unicorn.uniName %>'s Lore</h2>
+        <form action="/home/unicorn/<%= unicorn._id %>?_method=PUT" method="POST" name="lore">
+            <fieldset>
+                <textarea name="unicorn[lore]"><%= unicorn.lore %></textarea>
+            </fieldset>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+
+<% include ./partials/footer %>

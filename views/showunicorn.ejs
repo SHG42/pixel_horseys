@@ -1,0 +1,65 @@
+<% include ./partials/header %>
+<% include ./partials/navbar %>
+
+<div class="unicornPage jumbotron jumbotron-fluid text-center my-0">
+    <div class="container">
+        <div class="unicornHeader p-2 d-flex flex-column flex-lg-row justify-content-around">
+            <div class="flex-column">
+                <p class="mx-2"><%= unicorn.name %></p>
+                <span class="stats">Level: <%= unicorn.lvl %></span>
+            </div>
+            <div class="stats mx-2">
+                <div class="flex-column">
+                    <span>Energy: <%= unicorn.energy %></span><br>
+                    <span>Hunger: <%= unicorn.hunger %></span>
+                </div>
+                <div class="flex-column">
+                    <span>Parents: <%= unicorn.parent1 %>, <%= unicorn.parent2 %></span><br>
+                    <span>RTB: <%= unicorn.breedable %></span>
+                </div>
+            </div>
+            <span class="backdrop-options mx-2">
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Default Backdrops
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#">Arctic</a>
+                    <a class="dropdown-item" href="#">Mountains</a>
+                    <a class="dropdown-item" href="#">Forest</a>
+                    <a class="dropdown-item" href="#">Swamp</a>
+                    <a class="dropdown-item" href="#">Savannah</a>
+                    <a class="dropdown-item" href="#">Desert</a>
+                  </div>
+                </div>
+                <div class="dropdown d-inline">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Your Backdrops
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#">Backdrops</a>
+                    <a class="dropdown-item" href="#">Backdrops</a>
+                    <a class="dropdown-item" href="#">Backdrops</a>
+                  </div>
+                </div>
+            </span>
+        </div>
+        <div class="unicornSpace my-2">
+            <img src="<%= unicorn.uniPic %>" class="img-fluid">
+        </div>
+        <div class="lore">
+            <fieldset class="lorebox">
+                <h2 class=""><%= unicorn.name %>'s Lore</h2>
+                <div>
+                    <%= unicorn.lore %>
+                </div>
+                <form action="/editlore" method="POST" name="editlore">
+                    <a href="/home/unicorn/<%= unicorn._id %>/edit" class="btn btn-primary">Edit</a>
+                </form>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+
+<% include ./partials/footer %>
