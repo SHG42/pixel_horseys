@@ -143,9 +143,8 @@ button, a {
     width: 9%;
 }
 
-
-.unicornHome {
-    /*background-image: url("../resources/home_bgs/mountainenvironment1.png");*/
+.homepage {
+    background-image: url("../resources/testmap.jpg");
     top: 0;
     left: 0;
     width: 100%;
@@ -153,7 +152,26 @@ button, a {
     background-size: 100% 100%;
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    
+}
+
+.homepage-menu .nav-item {
+    background-color: rgb(192,192,192);
+    background-color: rgba(192,192,192,0.8);
+    text-decoration: underline;
+    border: 1px solid black;
+    border-radius: 3px;
+    margin: 1rem;
+    color: black;
+}
+
+.unicornHome {
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: relative;
+    background-size: 100% 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
 }
 
 
@@ -172,7 +190,6 @@ button, a {
 }
 
 .unicornSpace {
-    /*background-image: url("../resources/home_bgs/mountainenvironment1.png");*/
     top: 0;
     left: 0;
     width: 100%;

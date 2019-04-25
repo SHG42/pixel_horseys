@@ -103,7 +103,7 @@ router.put("/chooseregion", isLoggedIn, function(req, res) {
            res.redirect("/chooseregion");
        } else {
            console.log(req.user + " " + region);
-           res.redirect("/home");
+           res.redirect("/index");
        }
    });
 });

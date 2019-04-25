@@ -14,16 +14,20 @@ router.get("/login", function(req, res){
 });
 
 router.post("/login", passport.authenticate("local", {
-        successRedirect: "/home",
+        successRedirect: "/index",
         failureRedirect: "/login"
     }), function(req, res) {
 });
 
-//INDEX (display user by id)
+//INDEX, SITE HOMEPAGE
+router.get("/index", isLoggedIn, function(req, res) {
+   res.render("index", {currentUser: req.user}); 
+});
+
+//INDEX, USER HOMEPAGE (display user by id)
 router.get("/home", isLoggedIn, function(req, res){
-    //display unicorns belonging to logged in user
+    //display unicorns belonging to user with matching id
     User.findById(req.user.id).populate("unicorns").exec(function(err, foundUser){
-        //the id is stored in the request object, inside the params object
        if(err) {
            console.log(err);
        } else {
@@ -37,7 +41,7 @@ router.get("/home", isLoggedIn, function(req, res){
                   console.log(err);
               } else {
                   //render show template with that users data
-                  res.render("index", {currentUser: foundUser, yourUnicorns: yourUnicorns, yourRegion: foundRegion});
+                  res.render("home", {currentUser: foundUser, yourUnicorns: yourUnicorns, yourRegion: foundRegion});
               }
            });
        }

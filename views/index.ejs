@@ -1,60 +1,17 @@
 <% include ./partials/header %>
 <% include ./partials/navbar %>
 
-<div class="unicornHome text-center d-flex flex-column h-100" style="background-image: url(../<%= yourRegion.homeBG %>)">
-    <div class="row">
-        <div class="col-12">
-            <nav class="homepage-menu container-fluid">
-                <div class="nav justify-content-around">
-                    <a class="nav-item nav-link active" href="#"><img src="../resources/vintagecompass.png" alt="Go to Exploration Map" class="menu-img img-fluid">Explore <span class="sr-only">(current)</span></a>
-                    <a class="nav-item nav-link" href="/home/inventory.html"><img src="../resources/inventoryicon.png" alt="Go to Inventory" class="menu-img img-fluid">Inventory</a>
-                    <a class="nav-item nav-link" href="/home/equip.html"><img src="../resources/equipicon.png" alt="Equip Items" class="menu-img img-fluid">Equip</a>
-                    <a class="nav-item nav-link" href="/home/customize.html"><img src="../resources/customizeicon.png" alt="Customize Your Unicorns" class="menu-img img-fluid">Customize</a>
-                </div>
-            </nav>
-            <div class="container-fluid">
-                <div class="row justify-content-around">
-                    <% yourUnicorns.forEach(function(unicorn){ %>
-                        <div class="petcard col-md-6 col-lg-2">
-                            <img class="uniSlot card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
-                            <div class="card mb-3">
-                                <div class="petcard-body">
-                                    <h5 class="card-title"><%= unicorn.name %></h5>
-                                    <p class="card-text">Unicorn Stats go here</p>
-                                    <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
-                                    <a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>    
-                </div>
-            </div>
+<div class="homepage container-fluid text-center d-flex flex-column justify-content-center h-100">
+    <nav class="homepage-menu container-fluid">
+        <div class="nav row justify-content-around">
+            <a class="nav-item nav-link active" href="/home"><img src="../resources/unicorn.png" alt="Go to Your Homepage" class="menu-img img-fluid">Your Herd <span class="sr-only">(current)</span></a>
+            <a class="nav-item nav-link" href="/directory"><img src="../resources/visiticon.png" alt="Directory" class="menu-img img-fluid">Visit</a>
+            <a class="nav-item nav-link" href="#"><img src="../resources/vintagecompass.png" alt="Go to Exploration Map" class="menu-img img-fluid">Explore</a>
+            <a class="nav-item nav-link" href="/inventory.html"><img src="../resources/inventoryicon.png" alt="Go to Inventory" class="menu-img img-fluid">Inventory</a>
+            <a class="nav-item nav-link" href="/equip.html"><img src="../resources/equipicon.png" alt="Equip Items" class="menu-img img-fluid">Equip</a>
+            <a class="nav-item nav-link" href="/customize.html"><img src="../resources/customizeicon.png" alt="Customize Your Unicorns" class="menu-img img-fluid">Customize</a>
         </div>
-    </div>
+    </nav>
 </div>
-
-<div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="nameModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Name or Rename Your Unicorn</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/home?_method=PUT" method="POST" name="addName">
-            <input type="text" name="newName">
-            <input id="thisId" name="namedId" value="" type="hidden">
-            <button type="submit" class="btn btn-primary">Save changes</button>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 
 <% include ./partials/footer %>
