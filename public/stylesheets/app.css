@@ -147,11 +147,11 @@ button, a {
     background-image: url("../resources/testmap.jpg");
     top: 0;
     left: 0;
-    width: 100%;
     position: relative;
     background-size: 100% 100%;
     background-position: 50% 50%;
     background-repeat: no-repeat;
+    margin-bottom: 0;
 }
 
 .homepage-menu .nav-item {
