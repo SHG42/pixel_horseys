@@ -1,28 +1,22 @@
 <% include ./partials/header %>
 <% include ./partials/navbar %>
 
-<div class="unicornHome text-center d-flex flex-column justify-content-center h-100" style="background-image: url(../<%= yourRegion.homeBG %>)">
-    <div class="row">
-        <div class="col-12">
-            <div class="container-fluid">
-                <div class="row justify-content-around">
-                    <% yourUnicorns.forEach(function(unicorn){ %>
-                        <div class="petcard col-md-6 col-lg-2">
-                            <img class="uniSlot card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
-                            <div class="card mb-3">
-                                <div class="petcard-body">
-                                    <h5 class="card-title"><%= unicorn.name %></h5>
-                                    <p class="card-text">Unicorn Stats go here</p>
-                                    <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
-                                    <a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>    
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="unicornHome h-100" style="background-image: url(../<%= yourRegion.homeBG %>)">
+    <div class="">
+      <% yourUnicorns.forEach(function(unicorn){ %>
+          <div class="">
+              <img class="uniSlot card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
+              <div class="card mb-3">
+                  <div class="petcard-body">
+                      <h5 class="card-title"><%= unicorn.name %></h5>
+                      <p class="card-text">Unicorn Stats go here</p>
+                      <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
+                      <a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+                  </div>
+              </div>
+          </div>
+      <% }); %>    
+  </div>
 </div>
 
 <div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="nameModalTitle" aria-hidden="true">

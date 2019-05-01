@@ -29,7 +29,7 @@ YOUR HOMEPAGE: start with exciting animation, exciting lore blurb, cool logo, br
         
         >> ADD INDEX PAGE with all registered users so players can visit each others pages
         
-        >> ADD CHECK TO MAKE SURE NEW USER DOESN'T ALREADY HAVE A FOUNDER AND REGION TO PREVENT RE-CHOOSING
+        >> ADD CHECK TO MAKE SURE NEW USER DOESN'T ALREADY HAVE A FOUNDER AND REGION TO PREVENT RE-CHOOSING, PUT FOUNDER FIELD BACK IN USER MODEL
         
         >> USE NAV-TABS FOR INVENTORY MENU, SEE BOOTSTRAP DOC
         
