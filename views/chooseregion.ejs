@@ -55,7 +55,7 @@
 
 <div class="modal fade" id="chooseModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-    <div class="modal-content"> 
+    <div class="choosemodal-content modal-content"> 
       <div class="modal-header">
         <h2 class="modal-title uni-title reg-title" id="modalLabel">Oops, you're not supposed to see this.</h2>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -64,7 +64,7 @@
       </div>
       <div class="modal-body">
         <img src="" id="modal-image" class="choosemodal-image img-fluid"> 
-        <p id="modal-text" class="text-center"></p> 
+        <p class="text-center regiontext" id="modal-text"></p> 
       </div>
       <div class="modal-footer">
         <form action="/chooseregion?_method=PUT" method="POST">

@@ -1,20 +1,30 @@
 <% include ./partials/header %>
-<% include ./partials/navbar %>
-
-<div class="indexpage h-100">
-    <div class="">
-        <div class="">
-            <a class="" href="/home"><img src="../resources/herdicon.png" alt="Go to Your Homepage" class="menu-img img-fluid"><span class="sr-only">(current)</span></a>
-            <a class="" href="/directory"><img src="../resources/visiticon.png" alt="Directory" class="menu-img img-fluid"></a>
-            <a class="" href="#"><img src="../resources/exploreicon.png" alt="Go to Exploration Map" class="menu-img img-fluid"></a>
+<div class="pagecontent d-flex flex-column">
+    <% include ./partials/navbar %>   
+    <div class="indexmenu">
+        <div class="row m-4">
+            <div class="">
+                <a class="" href="/home"><img src="../resources/herdicon.png" alt="Go to Your Homepage" class="menu-img img-fluid"><span class="sr-only">(current)</span></a>
+            </div>
+            <div class="">
+                <a class="" href="/directory"><img src="../resources/visiticon.png" alt="Directory" class="menu-img img-fluid"></a>
+            </div>
+            <div class="">
+                <a class="" href="/map"><img src="../resources/exploreicon.png" alt="Go to Exploration Map" class="menu-img img-fluid"></a>
+            </div>
         </div>
-        <div class="">
-            <a class="" href="/inventory.html"><img src="../resources/inventoryicon.png" alt="Go to Inventory" class="menu-img img-fluid"></a>
-            <a class="" href="/equip.html"><img src="../resources/equipicon.png" alt="Equip Items" class="menu-img img-fluid"></a>
-            <a class="" href="/customize.html"><img src="../resources/customizeicon.png" alt="Customize Your Unicorns" class="menu-img img-fluid"></a>
+        <div class="row m-4">
+            <div class="">
+                <a class="" href="/inventory.html"><img src="../resources/inventoryicon.png" alt="Go to Inventory" class="menu-img img-fluid"></a>
+            </div>
+            <div class="">
+                <a class="" href="/equip.html"><img src="../resources/equipicon.png" alt="Equip Items" class="menu-img img-fluid"></a>
+            </div>
+            <div class="">
+                <a class="" href="/customize.html"><img src="../resources/customizeicon.png" alt="Customize Your Unicorns" class="menu-img img-fluid"></a>
+            </div>
         </div>
     </div>
 </div>
-           
 
 <% include ./partials/footer %>

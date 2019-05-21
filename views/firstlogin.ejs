@@ -1,26 +1,25 @@
 <% include ./partials/header %>
 
-<div class="introtron-container container-fluid">
-    <div class="introtron jumbotron jumbotron-fluid text-center">
-        <div class="container">
-            <h1 class="">Your Journey Begins Here</h1>
-            <img src="../resources/welcome_sunflameMtnLogo.png" class="img-fluid w-75 m-3" alt="Responsive image">
-            <p class="sr-only">Welcome to Sunflame Mountain</p>
-            <p class="textboxes lead border border-dark p-1">Sunflame Mountain: the soaring, jagged peak upon which the celestial spirits make contact with the world of the living. From this peak, the unicorn spirit stretched forth its spiraling horn and gave life to the first unicorns. It's here, at the foot of Sunflame Mountain, in its shadow, that you now find yourself. At a new beginning in this world, what kind of herd will you build? What adventures will you find? What is your role in this story? The choice is yours. Join the story and begin your journey.</p>
-           <!-- form goes here   -->
-            <form action="/firstlogin" method="POST">
-                <div class="form-group">
-                  <label for="username">Username</label>
-                  <input type="text" class="form-control" id="userName" name="username">
-                </div>
-                <div class="form-group">
-                  <label for="password">Password</label>
-                  <input type="password" class="form-control" id="userpassword" name="password">
-                </div>
-                <button type="submit" class="btn btn-primary">Begin</button>
-             </form>
-        </div>
+<div class="introbox container-fluid">
+    <div class="my-5">
+        <h1 class="">Your Journey Begins Here</h1>
+        <img src="../resources/welcome_sunflameMtnLogo.png" class="bigwelcomelogo img-fluid mx-auto" alt="Responsive image">
+        <p class="sr-only">Welcome to Sunflame Mountain</p>
+        <p class="textboxes lead border border-dark p-1">Sunflame Mountain: the soaring, jagged peak upon which the celestial spirits make contact with the world of the living. From this peak, the unicorn spirit stretched forth its spiraling horn and gave life to the first unicorns. It's here, at the foot of Sunflame Mountain, in its shadow, that you now find yourself. At a new beginning in this world, what kind of herd will you build? What adventures will you find? What is your role in this story? The choice is yours. Join the story and begin your journey.</p>
+       <!-- form goes here   -->
+        <form action="/firstlogin" method="POST" class="entryform m-4">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="userName" name="username">
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="userpassword" name="password">
+            </div>
+            <button type="submit" class="btn btn-primary">Begin</button>
+        </form>
     </div>
 </div>
-
+            
+       
 <% include ./partials/footer %>
