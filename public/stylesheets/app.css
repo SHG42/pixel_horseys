@@ -155,12 +155,24 @@ h1, .modal-title {
 
 
 /*GAME PAGE RULES*/
-.indexmenu {
-    background-image: url("../resources/testmap.jpg");
-    position: relative;
+.indexpage, .homepage {
+    /* background-image: url("../resources/home_bgs/desertenvironment1.png"); */
+    text-align: center;
+    width: 100%;
+    position: absolute;
     background-size: 100% 100%;
     background-position: 50% 50%;
+    background-repeat: no-repeat;
+    min-height: 100vh;
 }
+
+
+/*MEDIA QUERIES*/
+
+
+
+
+
 
 
 

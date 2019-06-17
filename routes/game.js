@@ -1,4 +1,5 @@
 //SEE: ROUTE DECLARATION REFACTORING LATER, LECTURE 345 YELPCAMP: REFACTORING ROUTES
+//Use this for routes pertaining to repeatable gameplay features
 
 var express = require("express");
 var router = express.Router({mergeParams: true});

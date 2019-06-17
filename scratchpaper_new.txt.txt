@@ -1,0 +1,34 @@
+<div class="uniSlot">
+  <img class="uniSlot-img card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
+  <div class="card m-3 p2">
+	  <div class="petcard-body">
+		  <h5 class="card-title"><%= unicorn.name %></h5>
+		  <p class="card-text">Unicorn Stats go here</p>
+		  <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
+		  <a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+	  </div>
+  </div>
+</div>
+
+
+style="background-image: url(../<%= yourRegion.homeBG %>)"
+
+db.unicorns.updateMany({uniName: "Flaxen Sorrel Unicorn"}, {$set: {uniPic: "http://pixel-horseys-ygjlr.run.goorm.io/resources/unicons/flaxensorrel.png"}})
+
+
+<div class="unicorngroup d-flex justify-content-around flex-column flex-sm-row m-4">
+	<% yourUnicorns.forEach(function(unicorn){ %>
+	<div class="uniSlot">
+		<img class="uniSlot-img card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
+		<div class="card m-3 p2">
+			<div class="petcard-body">
+				<h5 class="card-title"><%= unicorn.name %></h5>
+				<p class="card-text">Unicorn Stats go here</p>
+				<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
+				<a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+			</div>
+		</div>
+	</div>
+	<% }); %>  
+</div>
+

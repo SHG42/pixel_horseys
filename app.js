@@ -81,7 +81,7 @@ app.use(indexRoutes);
 //     });
 // }
 
-app.listen(process.env.PORT, process.env.IP, function(){
-    console.log("Welcome to unicorn hell");
+app.listen(3000, () => {
+	console.log("Welcome to unicorn hell");
 });
 

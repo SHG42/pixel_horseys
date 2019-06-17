@@ -21,7 +21,24 @@ router.post("/login", passport.authenticate("local", {
 
 //INDEX, SITE HOMEPAGE
 router.get("/index", isLoggedIn, function(req, res) {
-   res.render("index", {currentUser: req.user}); 
+	console.log(req.user);
+	User.findById(req.user.id, function(err, foundUser){
+		if(err) {
+           console.log(err);
+       } else {
+           console.log(foundUser);
+           //find region data
+           var thisRegion = foundUser.region;
+           Region.findOne({location: thisRegion}, function(err, foundRegion){
+              if(err) {
+                  console.log(err);
+              } else {
+                  //render show template with that users data
+                  res.render("index", {currentUser: foundUser, yourRegion: foundRegion});
+              }
+           });
+       }
+	});
 });
 
 //INDEX, USER HOMEPAGE (display user by id)

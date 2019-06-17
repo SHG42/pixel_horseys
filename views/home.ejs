@@ -1,23 +1,26 @@
 <% include ./partials/header %>
-<% include ./partials/navbar %>
-
-<div class="unicornHome h-100" style="background-image: url(../<%= yourRegion.homeBG %>)">
-    <div class="">
-      <% yourUnicorns.forEach(function(unicorn){ %>
-          <div class="">
-              <img class="uniSlot card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
-              <div class="card mb-3">
-                  <div class="petcard-body">
-                      <h5 class="card-title"><%= unicorn.name %></h5>
-                      <p class="card-text">Unicorn Stats go here</p>
-                      <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
-                      <a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
-                  </div>
-              </div>
-          </div>
-      <% }); %>    
-  </div>
+<div class="homepage container-fluid" style="background-image: url(../<%= yourRegion.homeBG %>)">
+	<% include ./partials/navbar %>
+    <div class="my-5">
+        <div class="unicorngroup d-flex justify-content-around flex-column flex-sm-row m-4">
+        	<% yourUnicorns.forEach(function(unicorn){ %>
+			<div class="uniSlot">
+			  	<img class="uniSlot-img card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
+			  	<div class="card m-3 p2">
+				  	<div class="petcard-body">
+					  	<h5 class="card-title"><%= unicorn.name %></h5>
+					  	<p class="card-text">Unicorn Stats go here</p>
+					  	<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
+					  	<a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+				  	</div>
+			  	</div>
+			</div>
+			<% }); %>  
+        </div>
+    </div>
 </div>
+
+
 
 <div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="nameModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
