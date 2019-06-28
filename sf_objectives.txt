@@ -32,18 +32,18 @@ YOUR HOMEPAGE: start with exciting animation, exciting lore blurb, cool logo, br
         >> ADD CHECK TO MAKE SURE NEW USER DOESN'T ALREADY HAVE A FOUNDER AND REGION TO PREVENT RE-CHOOSING, PUT FOUNDER FIELD BACK IN USER MODEL
         
         >> USE NAV-TABS FOR INVENTORY MENU, SEE BOOTSTRAP DOC
-			>>ADD ICONS TO NAV TABS and navbar links
+			>>ADD ICONS TO NAV TABS (x) and navbar links
         
 FIND OUT:
-X how to generate incremented ID numbers per pet and companions (NOT mongodb id strings) (TEST auto-increment plugin)
+(X) how to generate incremented ID numbers per pet and companions (NOT mongodb id strings) (TEST auto-increment plugin)
 how to increment level (use auto-increment plugin if it works for id; how to increment at reaching level marker?)
 how to keep track of hunger and energy and display changes
 how to generate images and image changes (equipping, customizing, etc)
-how to layer and store equipped items on image
-how to change and store colors and markings
+	how to layer and store equipped items on image
+	how to change and store colors and markings
 how to do FR style bio box (form that loads on same page [asynchronously?])
 how to change backgrounds from db on show page
-X how to load homepage bg based on user region
+(X) how to load homepage bg based on user region
 how to display "none" for parents of gen 1s, how to display parents for bred unicorns (if statement?)
 how to let users vist each others lairs (use middleware to check ownership and display or not display appropriate buttons)
 how to have url on home pages reflect user id and/or unicorn id (NOT objectId) based on which user/unicorn you're viewing (like FR and gryffs)        

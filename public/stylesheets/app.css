@@ -173,6 +173,11 @@ hr {
     min-height: 100vh;
 }
 
+.petcard-body {
+	border: 3px double black;
+	padding: 0.5rem;
+}
+
 
 .unicornhere {
 	background-color: rgb(192,192,192);
