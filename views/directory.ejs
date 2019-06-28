@@ -1,0 +1,25 @@
+<% include ./partials/header %>
+
+<div class="directorypage">
+	<% include ./partials/navbar %>
+	<div class="directory-list">
+		<ul class="userlist">
+			<h2 class="directoryheader">
+				Directory of Registered Players
+			</h2>
+			<% registeredUsers.forEach(function(user){ %>
+				<li>
+					<%= user.username %>
+				</li>			
+			<% }); %>
+		</ul>
+	</div>
+</div>
+
+
+
+
+
+
+
+<% include ./partials/footer %>

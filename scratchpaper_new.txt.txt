@@ -10,11 +10,13 @@
   </div>
 </div>
 
+///////////////////////////////////////////
 
 style="background-image: url(../<%= yourRegion.homeBG %>)"
 
 db.unicorns.updateMany({uniName: "Flaxen Sorrel Unicorn"}, {$set: {uniPic: "http://pixel-horseys-ygjlr.run.goorm.io/resources/unicons/flaxensorrel.png"}})
 
+//////////////////////////////////////
 
 <div class="unicorngroup d-flex justify-content-around flex-column flex-sm-row m-4">
 	<% yourUnicorns.forEach(function(unicorn){ %>
@@ -32,3 +34,127 @@ db.unicorns.updateMany({uniName: "Flaxen Sorrel Unicorn"}, {$set: {uniPic: "http
 	<% }); %>  
 </div>
 
+//////////////////////////////
+
+<div class="homepage container-fluid" style="background-image: url(../<%= yourRegion.homeBG %>)">
+	<% include ./partials/navbar %>
+    <div class="my-5">
+        <div class="unicorngroup d-flex justify-content-around flex-column flex-sm-row m-4">
+        	<% yourUnicorns.forEach(function(unicorn){ %>
+			<div class="uniSlot">
+			  	<img class="uniSlot-img card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
+			  	<div class="card m-3 p2">
+				  	<div class="petcard-body">
+					  	<h5 class="card-title"><%= unicorn.name %></h5>
+					  	<p class="card-text">Unicorn Stats go here</p>
+					  	<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
+					  	<a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+				  	</div>
+			  	</div>
+			</div>
+			<% }); %>  
+        </div>
+    </div>
+</div>
+
+//////////////////////////////////////////////
+
+<div class="unicornPage jumbotron jumbotron-fluid text-center my-0">
+    <div class="container">
+        <div class="unicornHeader p-2 d-flex flex-column flex-lg-row justify-content-around">
+            <div class="flex-column">
+                <p class="mx-2"><%= unicorn.name %></p>
+                <span class="stats">Level: <%= unicorn.lvl %></span>
+            </div>
+            <div class="stats mx-2">
+                <div class="flex-column">
+                    <span>Energy: <%= unicorn.energy %></span><br>
+                    <span>Hunger: <%= unicorn.hunger %></span>
+                </div>
+                <div class="flex-column">
+                    <span>Parents: <%= unicorn.parent1 %>, <%= unicorn.parent2 %></span><br>
+                    <span>RTB: <%= unicorn.breedable %></span>
+                </div>
+            </div>
+            <span class="backdrop-options mx-2">
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Default Backdrops
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#">Arctic</a>
+                    <a class="dropdown-item" href="#">Mountains</a>
+                    <a class="dropdown-item" href="#">Forest</a>
+                    <a class="dropdown-item" href="#">Swamp</a>
+                    <a class="dropdown-item" href="#">Savannah</a>
+                    <a class="dropdown-item" href="#">Desert</a>
+                  </div>
+                </div>
+                <div class="dropdown d-inline">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Your Backdrops
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#">Backdrops</a>
+                    <a class="dropdown-item" href="#">Backdrops</a>
+                    <a class="dropdown-item" href="#">Backdrops</a>
+                  </div>
+                </div>
+            </span>
+        </div>
+        <div class="unicornSpace my-2">
+            <img src="<%= unicorn.uniPic %>" class="img-fluid">
+        </div>
+        <div class="lore">
+            <fieldset class="lorebox">
+                <h2 class=""><%= unicorn.name %>'s Lore</h2>
+                <div>
+                    <%= unicorn.lore %>
+                </div>
+                <form action="/editlore" method="POST" name="editlore">
+                    <a href="/home/unicorn/<%= unicorn._id %>/edit" class="btn btn-primary">Edit</a>
+                </form>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+//////////////////////////////////////////////////////
+
+<div class="genepicker dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown button
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                    <input type="color" name="colorpicker" id="" class="customcolorpicker">
+                </div>
+                <div class="genepicker dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown button
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                    <input type="color" name="colorpicker" id="" class="customcolorpicker">
+                </div>
+                <div class="genepicker dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown button
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                    <input type="color" name="colorpicker" id="" class="customcolorpicker">
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-primary">Test</button>
+                    <button class="submit btn btn-success">Confirm</button>
+                </div>

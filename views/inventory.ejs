@@ -1,32 +1,72 @@
 <% include ./partials/header %>
-<% include ./partials/navbar %>
 
-<div class="inventorybox jumbotron jumbotron-fluid text-center my-0">
-    <div class="container">
-        <form action="" name="inventoryroom" class="inventoryroom">
-            <fieldset>
-                <legend>Your Inventory:</legend>
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Wearable</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Gear</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Companions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Environment</a>
-                    </li>
-                </ul>
-                <div class="inventorylist">
-                    <a href="" class="item"><img src="../resources/inventory_icons/horsehelmet_icon.png" alt="" id="" class="itemicon"></a>
-                    
-                </div>
-            </fieldset>
-        </form>
+<div class="inventorypage">
+	<% include ./partials/navbar %>
+    <div class="inventorybox">
+        <ul class="yourinventory nav nav-tabs nav-fill justify-content-center bg-dark my-2" id="myTab" role="tablist">
+			  <li class="nav-item">
+				<a class="nav-link active" id="wearable-tab" data-toggle="tab" href="#wearable" role="tab" aria-controls="wearable" aria-selected="true">Wearable</a>
+			  </li>
+			  <li class="nav-item">
+				<a class="nav-link" id="companions-tab" data-toggle="tab" href="#companions" role="tab" aria-controls="companions" aria-selected="false">Companions</a>
+			  </li>
+			  <li class="nav-item">
+				<a class="nav-link" id="accessories-tab" data-toggle="tab" href="#accessories" role="tab" aria-controls="accessories" aria-selected="false">Accessories</a>
+			  </li>
+			  <li class="nav-item">
+				<a class="nav-link" id="scenery-tab" data-toggle="tab" href="#scenery" role="tab" aria-controls="scenery" aria-selected="false">Scenery</a>
+			  </li>
+		</ul>
+
+		<div class="tab-content inventory-tabs">
+		  	<div class="tab-pane fade show active" id="wearable" role="tabpanel" aria-labelledby="wearable-tab">
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+			</div>
+		  	<div class="tab-pane fade" id="companions" role="tabpanel" aria-labelledby="companions-tab">
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+			</div>
+		  	<div class="tab-pane fade" id="accessories" role="tabpanel" aria-labelledby="accessories-tab">
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+			</div>
+		  	<div class="tab-pane fade" id="scenery" role="tabpanel" aria-labelledby="scenery-tab">
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+				<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+			</div>
+		</div>
+
     </div>
 </div>
+
+<script>
+  $(function () {
+    $('#myTab li:last-child a').tab('show')
+  })
+</script>
 
 <% include ./partials/footer %>

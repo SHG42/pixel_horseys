@@ -59,6 +59,10 @@ router.post("/choosefounder", isLoggedIn, function(req, res) {
         uniName: founder,
         uniPic: founderPic,
         owner: ownerId,
+		lvl: 0,
+	   	energy: 100,
+	   	parent1: "none",
+	   	parent2: "none"
    };
    
    console.log(founder + " " + founderPic + " " + ownerId);

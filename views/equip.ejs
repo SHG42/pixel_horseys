@@ -1,34 +1,82 @@
 <% include ./partials/header %>
-<% include ./partials/navbar %>
 
-<div class="equipbox container-fluid text-center d-flex h-100 flex-column">
-    <div class="row flex-grow-1 my-3">
-        <div class="col-12 col-xl-6">
+<div class="equippage container-fluid">
+	<% include ./partials/navbar %>
+    <div class="equipscreen d-flex flex-column flex-lg-row row">
+        <div class="equipmenu col-12 col-lg-6">
             <form action="" name="equiproom" class="equiproom">
-                <fieldset>
-                    <legend>Your Equips:</legend>
-                    <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Wearable</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Gear</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Companions</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Environment</a>
-                        </li>
-                    </ul>
-                    <div class="equiplist">
-                        <a href="" class="item"><img src="../resources/inventory_icons/horsehelmet_icon.png" alt="" id="" class="itemicon"></a>
-                    </div>
-                </fieldset>
+                <ul class="yourinventory nav nav-tabs nav-fill justify-content-center bg-dark my-2 border border-light" id="myTab" role="tablist">
+					  <li class="nav-item">
+						<a class="nav-link active" id="wearable-tab" data-toggle="tab" href="#wearable" role="tab" aria-controls="wearable" aria-selected="true">Wearable</a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link" id="companions-tab" data-toggle="tab" href="#companions" role="tab" aria-controls="companions" aria-selected="false">Companions</a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link" id="accessories-tab" data-toggle="tab" href="#accessories" role="tab" aria-controls="accessories" aria-selected="false">Accessories</a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link" id="scenery-tab" data-toggle="tab" href="#scenery" role="tab" aria-controls="scenery" aria-selected="false">Scenery</a>
+					  </li>
+				</ul>
+
+				<div class="tab-content equip-tabs">
+					<div class="tab-pane fade show active" id="wearable" role="tabpanel" aria-labelledby="wearable-tab">
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+					</div>
+					<div class="tab-pane fade" id="companions" role="tabpanel" aria-labelledby="companions-tab">
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+					</div>
+					<div class="tab-pane fade" id="accessories" role="tabpanel" aria-labelledby="accessories-tab">
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+					</div>
+					<div class="tab-pane fade" id="scenery" role="tabpanel" aria-labelledby="scenery-tab">
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+						<a><img src="../resources/inventory_icons/horsehelmet_icon.png"></a>
+					</div>
+				</div>
             </form>
         </div>
-        <div class="col-12 col-xl-6">
-            <img src="../resources/unicons/starry.png" alt="" class="img-fluid">
+        <div class="getfashionable col-12 col-lg-6 my-2">
+			<div class="btn-group">
+			  <button type="button" class="btn btn-dark dropdown-toggle border border-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Select Unicorn
+			  </button>
+			  <div class="dropdown-menu">
+				<a class="dropdown-item" href="#">Action</a>
+				<a class="dropdown-item" href="#">Another action</a>
+				<a class="dropdown-item" href="#">Something else here</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="#">Separated link</a>
+			  </div>
+			</div>
+            <img src="../resources/unicons/starry.png" alt="" class="equipme img-fluid">
         </div>
     </div>
 </div>

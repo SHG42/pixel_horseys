@@ -1,51 +1,67 @@
 <% include ./partials/header %>
-<% include ./partials/navbar %>
 
-<div class="customizebox container-fluid text-center d-flex h-100 flex-column">
-    <div class="row flex-grow-1 my-3">
-        <div class="col-12 col-xl-6">
+<div class="customizepage container-fluid">
+	<% include ./partials/navbar %>
+    <div class="customizescreen d-flex flex-column flex-lg-row row">
+        <div class="customizer-menu col-12 col-lg-6 my-2">
             <form action="" name="customizegenerator" class="customizegenerator">
-                <div class="genepicker dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown button
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                    <input type="color" name="colorpicker" id="" class="customcolorpicker">
-                </div>
-                <div class="genepicker dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown button
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                    <input type="color" name="colorpicker" id="" class="customcolorpicker">
-                </div>
-                <div class="genepicker dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown button
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                    <input type="color" name="colorpicker" id="" class="customcolorpicker">
-                </div>
-                <div class="buttons">
-                    <button class="btn btn-primary">Test</button>
-                    <button class="submit btn btn-success">Confirm</button>
-                </div>
+                <ul class="picker-menu nav nav-tabs nav-fill d-flex flex-lg-column justify-content-center my-2 border border-light" id="myTab" role="tablist">
+					<li class="picker nav-item">
+						<div class="genepicker dropdown">
+						  	<button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Gene 1
+						  	</button>
+						  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item" href="#">Action</a>
+								<a class="dropdown-item" href="#">Another action</a>
+								<a class="dropdown-item" href="#">Something else here</a>
+						  	</div>
+						</div>
+						<input type="color" name="colorpicker" id="color-1" class="color-picker">
+					</li>
+					<li class="picker nav-item">
+						<div class="genepicker dropdown">
+						  	<button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Gene 2
+						  	</button>
+						  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item" href="#">Action</a>
+								<a class="dropdown-item" href="#">Another action</a>
+								<a class="dropdown-item" href="#">Something else here</a>
+						  	</div>
+						</div>
+						<input type="color" name="colorpicker" id="color-2" class="color-picker">
+					</li>
+					<li class="picker nav-item">
+						<div class="genepicker dropdown">
+						  	<button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Gene 3
+						  	</button>
+						  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item" href="#">Action</a>
+								<a class="dropdown-item" href="#">Another action</a>
+								<a class="dropdown-item" href="#">Something else here</a>
+						  	</div>
+						</div>
+						<input type="color" name="colorpicker" id="color-3" class="color-picker">
+					</li>
+				</ul>
             </form>
         </div>
-        <div class="col-12 col-xl-6">
-            <img src="../resources/unicons/starry.png" alt="" class="img-fluid">
+        <div class="getpretty col-12 col-lg-6 my-2">
+			<div class="btn-group">
+				<button type="button" class="btn btn-dark dropdown-toggle border border-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Select Unicorn
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<a class="dropdown-item" href="#">Something else here</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#">Separated link</a>
+				</div>
+			</div>
+            <img src="../resources/unicons/starry.png" alt="" class="changeme img-fluid">
         </div>
     </div>
 </div>

@@ -1,10 +1,10 @@
 <% include ./partials/header %>
 <div class="homepage container-fluid" style="background-image: url(../<%= yourRegion.homeBG %>)">
 	<% include ./partials/navbar %>
-    <div class="my-5">
-        <div class="unicorngroup d-flex justify-content-around flex-column flex-sm-row m-4">
+    <div class="my-5 container">
+        <div class="unicorngroup row d-flex justify-content-around m-4">
         	<% yourUnicorns.forEach(function(unicorn){ %>
-			<div class="uniSlot">
+			<div class="uniSlot col-12 col-sm-6 col-lg-3">
 			  	<img class="uniSlot-img card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
 			  	<div class="card m-3 p2">
 				  	<div class="petcard-body">

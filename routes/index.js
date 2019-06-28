@@ -82,62 +82,6 @@ router.put("/home", isLoggedIn, function(req, res){
    //res.send("name");
 });
 
-//SHOW
-router.get("/home/unicorn/:id", isLoggedIn, function(req, res){
-    //FIND UNICORN BY ID AND DISPLAY DATA
-    Unicorn.findById(req.params.id, function(err, foundUnicorn){
-        if(err) {
-            console.log(err);
-        } else {
-            //render show page with unicorn and info
-            res.render("showunicorn", {currentUser: req.user, unicorn: foundUnicorn}); 
-        }
-    });
-});
-
-//EDIT show lore form
-router.get("/home/unicorn/:id/edit", isLoggedIn, function(req, res) {
-    Unicorn.findById(req.params.id, function(err, foundUnicorn){
-       if(err) {
-            res.redirect("/home");
-       } else {
-            res.render("editlore", {currentUser: req.user, unicorn: foundUnicorn});
-       }
-    });
-});
-
-//UPDATE send lore form and update unicorn data
-router.put("/home/unicorn/:id", isLoggedIn, function(req, res){
-    req.body.unicorn.lore = req.sanitize(req.body.unicorn.lore);
-    var newLore = req.body.unicorn.lore;
-    Unicorn.findByIdAndUpdate(req.params.id, {lore: newLore}, function(err, foundUnicorn){
-       if(err) {
-           console.log(err);
-           res.send("error");
-       } else {
-           res.redirect("/home/unicorn/" + req.params.id);
-       }
-    });
-});
-
-
-
-
-////////////////////////
-//TEMP ROUTES, TESTING ONLY
-
-router.get("/inventory", function(req, res){
-  res.render("inventory");
-});
-
-router.get("/equip", function(req, res){
-  res.render("equip"); 
-});
-
-router.get("/customize", function(req, res){
-  res.render("customize"); 
-});
-/////////////////////////////////
 
 //MIDDLEWARE FOR CHECKING LOGIN STATUS
 function isLoggedIn(req, res, next){
