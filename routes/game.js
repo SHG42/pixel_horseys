@@ -10,9 +10,10 @@ var Unicorn = require("../models/unicorn"),
 
 
 //SHOW unicorn bio page
-router.get("/home/unicorn/:id", isLoggedIn, function(req, res){
+//ADD AUTH MIDDLEWARE
+router.get("/home/:userid/unicorn/:uniid", isLoggedIn, function(req, res){
     //FIND UNICORN BY ID AND DISPLAY DATA
-    Unicorn.findById(req.params.id, function(err, foundUnicorn){
+    Unicorn.findOne({uniid: req.params.uniid}, function(err, foundUnicorn){
         if(err) {
             console.log(err);
         } else {
@@ -23,8 +24,9 @@ router.get("/home/unicorn/:id", isLoggedIn, function(req, res){
 });
 
 //EDIT show lore form
-router.get("/home/unicorn/:id/edit", isLoggedIn, function(req, res) {
-    Unicorn.findById(req.params.id, function(err, foundUnicorn){
+//ADD AUTH MIDDLEWARE
+router.get("/home/:userid/unicorn/:uniid/edit", isLoggedIn, function(req, res) {
+    Unicorn.findOne({uniid: req.params.uniid}, function(err, foundUnicorn){
        if(err) {
             res.redirect("/home");
        } else {
@@ -34,27 +36,36 @@ router.get("/home/unicorn/:id/edit", isLoggedIn, function(req, res) {
 });
 
 //UPDATE send lore form and update unicorn data
-router.put("/home/unicorn/:id", isLoggedIn, function(req, res){
-    req.body.unicorn.lore = req.sanitize(req.body.unicorn.lore);
-    var newLore = req.body.unicorn.lore;
-    Unicorn.findByIdAndUpdate(req.params.id, {lore: newLore}, function(err, foundUnicorn){
-       if(err) {
-           console.log(err);
-           res.send("error");
-       } else {
-           res.redirect("/home/unicorn/" + req.params.id);
-       }
-    });
+//ADD AUTH MIDDLEWARE
+router.put("/home/:userid/unicorn/:uniid", isLoggedIn, function(req, res){
+    User.findOne({userid: req.params.userid}, function(err, foundOwner){
+		if(err) {
+			console.log(err);
+		} else {
+			req.body.unicorn.lore = req.sanitize(req.body.unicorn.lore);
+			var newLore = req.body.unicorn.lore;
+			Unicorn.findOneAndUpdate({uniid: req.params.uniid}, {$set: {lore: newLore}}, function(err, foundUnicorn){
+			   if(err) {
+				   console.log(err);
+				   res.send("error");
+			   } else {
+				   //console.log(foundUnicorn);
+				   res.redirect("/home/" + foundOwner.userid + "/unicorn/" + req.params.uniid);
+			   }
+			});
+		}
+	});
 });
 
 //SHOW inventory
-router.get("/inventory", isLoggedIn, function(req, res){
+//AUTH NOTE: ONLY LET USER VIEW THEIR OWN
+router.get("/home/:userid/inventory", isLoggedIn, function(req, res){
 	console.log(req.user);
-	User.findById(req.user.id, function(err, foundUser){
+	User.findOne({userid: req.params.userid}, function(err, foundOwner){
 		if(err) {
             console.log(err);
        } else {
-            console.log(foundUser);
+            //console.log(foundUser);
 		    //render show template with that users data
 		    res.render("inventory", {currentUser: foundUser});
        }
@@ -62,21 +73,23 @@ router.get("/inventory", isLoggedIn, function(req, res){
 });
 
 //SHOW equip
-router.get("/equip", isLoggedIn, function(req, res){
-	console.log(req.user);
-	User.findById(req.user.id, function(err, foundUser){
+//AUTH NOTE: ONLY LET USER VIEW THEIR OWN
+router.get("/home/:userid/equip", isLoggedIn, function(req, res){
+	//console.log(req.user);
+	User.findOne({userid: req.params.userid}, function(err, foundOwner){
 		if (err) {
 			console.log(err);
 		} else {
-			console.log(foundUser);
+			//console.log(foundUser);
 			res.render("equip", {currentUser: foundUser});
 		}
 	});
 });
 
 //SHOW customize
-router.get("/customize", isLoggedIn, function(req, res){
-	User.findById(req.user.id, function(err, foundUser){
+//AUTH NOTE: ONLY LET USER VIEW THEIR OWN
+router.get("/home/:userid/customize", isLoggedIn, function(req, res){
+	User.findOne({userid: req.params.userid}, function(err, foundOwner){
 		if(err) {
 			console.log(err);
 		} else {
@@ -86,8 +99,8 @@ router.get("/customize", isLoggedIn, function(req, res){
 });
 
 //SHOW directory
-router.get("/directory", isLoggedIn, function(req, res){
-	User.findById(req.user.id, function(err, foundUser){
+router.get("/home/:userid/directory", isLoggedIn, function(req, res){
+	User.findOne({userid: req.params.userid}, function(err, foundOwner){
 		if(err) {
 			console.log(err);
 		} else {

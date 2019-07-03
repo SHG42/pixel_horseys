@@ -4,24 +4,24 @@
     <div class="my-5">
         <div class="menugroup d-flex justify-content-around flex-column flex-md-row m-4">
             <div class="">
-					<a class="indexmenu-item" href="/home"><img src="../resources/herdicon.png" alt="Your Homepage" class="menu-img img-fluid"><span class="sr-only">(current)</span></a>
+					<a class="indexmenu-item" href="/home/<%= currentUser.userid %>"><img src="../resources/herdicon.png" alt="Your Homepage" class="menu-img img-fluid"><span class="sr-only">(current)</span></a>
 				</div>
 				<div class="">
-					<a class="indexmenu-item" href="/directory"><img src="../resources/visiticon.png" alt="Directory" class="menu-img img-fluid"></a>
+					<a class="indexmenu-item" href="/home/<%= currentUser.userid %>/directory"><img src="../resources/visiticon.png" alt="Directory" class="menu-img img-fluid"></a>
 				</div>
 				<div class="">
-					<a class="indexmenu-item" href="/map"><img src="../resources/exploreicon.png" alt="Exploration Map" class="menu-img img-fluid"></a>
+					<a class="indexmenu-item" href="/home/<%= currentUser.userid %>/map"><img src="../resources/exploreicon.png" alt="Exploration Map" class="menu-img img-fluid"></a>
 				</div>
         </div>
 		<div class="menugroup d-flex justify-content-around flex-column flex-md-row m-4">
             <div class="">
-					<a class="indexmenu-item" href="/inventory"><img src="../resources/inventoryicon.png" alt="Your Inventory" class="menu-img img-fluid"></a>
+					<a class="indexmenu-item" href="/home/<%= currentUser.userid %>/inventory"><img src="../resources/inventoryicon.png" alt="Your Inventory" class="menu-img img-fluid"></a>
 				</div>
 				<div class="">
-					<a class="indexmenu-item" href="/equip"><img src="../resources/equipicon.png" alt="Equip Items" class="menu-img img-fluid"></a>
+					<a class="indexmenu-item" href="/home/<%= currentUser.userid %>/equip"><img src="../resources/equipicon.png" alt="Equip Items" class="menu-img img-fluid"></a>
 				</div>
 				<div class="">
-					<a class="indexmenu-item" href="/customize"><img src="../resources/customizeicon.png" alt="Customize Your Unicorns" class="menu-img img-fluid"></a>
+					<a class="indexmenu-item" href="/home/<%= currentUser.userid %>/customize"><img src="../resources/customizeicon.png" alt="Customize Your Unicorns" class="menu-img img-fluid"></a>
 				</div>
         </div>
     </div>

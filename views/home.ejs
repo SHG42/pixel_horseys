@@ -10,8 +10,14 @@
 				  	<div class="petcard-body">
 					  	<h5 class="card-title"><%= unicorn.name %></h5>
 					  	<p class="card-text">Unicorn Stats go here</p>
-					  	<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
-					  	<a href="/home/unicorn/<%= unicorn._id %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+						<!-- only show these buttons to owner of page -->
+						<%  %>
+							<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
+							<a href="/home/<%= currentUser.userid %>/unicorn/<%= unicorn.uniid %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+						<%  %>
+						<!-- show bio button without edit icon to visitors -->
+							<a href="/home/<%= currentUser.userid %>/unicorn/<%= unicorn.uniid %>" class="btn btn-outline-dark btn-sm">View Bio</a>
+						<%  %>
 				  	</div>
 			  	</div>
 			</div>
@@ -32,7 +38,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form action="/home?_method=PUT" method="POST" name="addName">
+        <form action="/home/<%= currentUser.userid %>?_method=PUT" method="POST" name="addName">
             <input type="text" name="newName">
             <input id="thisId" name="namedId" value="" type="hidden">
             <button type="submit" class="btn btn-primary">Save changes</button>
