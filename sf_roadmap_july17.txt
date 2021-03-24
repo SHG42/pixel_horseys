@@ -1,0 +1,48 @@
+FUNCTIONALITY TO BE ADDED:
+
+>> load user's inventory from DB
+>> Explore map, item drops
+>> Gene templates and color pickers
+>> Equip page
+
+
+VISUAL/RESOURCE CHANGES:
+
+>> Change png logos for svg vectors or icon fonts
+>> Restyle header navbar: default to collapse (hamburger), or relocate (X)
+>> Make pre-headers above logo on reg/landing/login pages stand out more (X)
+>> Add Login/Reg headers above forms / under logo (X)
+
+RESOURCES NEEDED:
+>> Inventory
+	>>> Two items per category, one provided and one user finds in map
+		A)  Wearable
+			1)	Helmet
+			2)	Cloak
+		B)	Companion
+			1)	Mythical animal
+			2)	Mythical humanoid
+		C)	Accessory
+			1)	Treasure chest
+			2)	Magic item
+		D)	Scenery
+			1)	Tree
+			2)	Magic rock
+		E)	Backdrop
+			1)	Peaceful magic forest
+			2)	Dramatic (castle, volcano, storm, etc)
+
+>> Customize
+	>>> three gene templates per slot
+		A) Body Genes:
+			1)  Swirls 
+			2) 	Jagged Runic Stripes
+			3)	Pinto
+		B) Mane and Tail Genes
+			1) 	Bicolor stripes
+			2)	Vertical Gradient
+			3)	Jagged layers ("flames")
+		C) Tertiary Genes
+			1)	Runes
+			2)	Points
+			3)	Socks/Stripe

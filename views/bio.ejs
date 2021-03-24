@@ -1,0 +1,73 @@
+<% include ./partials/header %>
+
+<div class="unicornpage container-fluid">
+	<% include ./partials/navbar.ejs %>
+	<div class="biobox">
+		<div class="unicornhere">
+			<img class="img-fluid" src="<%=cloudinary.url(`${unicorn.imgs.img.public_id}.png`, {secure: "true", cloud_name: cloudname, version: unicorn.imgs.img.version})%>">
+		</div>
+		<div class="unicornbio textboxes">
+			<div class="unicornlore">
+				<fieldset class="lorebox">
+					<h3 class="font-italic d-inline"><%= unicorn.name %>'s Lore</h3><a class="d-inline float-end mx-3" data-bs-toggle="modal" data-bs-target="#helpModal" data-bs-origin="bio"><i class="fas fa-question-circle" aria-hidden="true" title="Help: Bio Editor"></i><span class="sr-only">Bio Editor Instructions</span></a>
+					<hr>
+					<% if(loggedInUser && currentPageOwner._id.equals(loggedInUser._id)){ %>
+					<form action="/home/<%= loggedInUser.userid %>/unicorn/<%= unicorn.uniid %>?_method=PUT" method="POST" name="loreform" id="loreform" aria-label="lore-form">
+						<div class="w-100" id="lore"><%- unicorn.lore %></div>
+						<button type="submit" class="btn btn-primary d-none" id="sendlore">Submit</button>
+						<button type="button" class="btn btn-danger d-none" id="cancel">Cancel</button>
+					</form>
+					<% } else { %>
+					<div class="w-100" id="viewlore">
+						<%- unicorn.lore %>
+					</div>
+					<% } %>
+					<hr>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+</div>
+<% include ./partials/helpModal %>
+
+<script type="text/javascript">
+	var uni = <%- JSON.stringify(unicorn) %>;
+	
+	var sendlore = document.getElementById("sendlore");
+	var cancel = document.getElementById("cancel");
+	var lore = document.querySelector("#lore");
+	
+	tinymce.init({
+		selector: 'div#lore',
+		mobile: {
+			menubar: true
+		},
+		inline: true,
+		width: lore.clientWidth,
+		menubar: false,
+		convert_urls: false,
+		plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+		toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+		toolbar_sticky: true,
+		autosave_ask_before_unload: true,
+		autosave_interval: '30s',
+		autosave_prefix: '{path}{query}-{id}-',
+		autosave_restore_when_empty: false,
+		autosave_retention: '2m',
+		quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+		toolbar_mode: 'wrap',
+		contextmenu: 'link image imagetools table',
+	});
+	
+	lore.addEventListener("click", showEditor);
+	cancel.addEventListener("click", hide);
+	function showEditor(){
+		sendlore.setAttribute("class", "d-inline");
+		cancel.setAttribute("class", "d-inline");
+	}	
+	function hide(){
+		sendlore.setAttribute("class", "d-none");
+		cancel.setAttribute("class", "d-none");
+	}
+</script>
+<% include ./partials/footer %>

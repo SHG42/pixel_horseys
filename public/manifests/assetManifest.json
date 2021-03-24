@@ -1,0 +1,39 @@
+{
+    "images": {
+        "location": [
+            "cutscene1",
+            "cutscene2",
+            "house"
+        ],
+        "tilesets": [
+            "arcade-slopes-16",
+            "bridge_bg",
+            "bridge_fg",
+            "cave_bg",
+            "cottage_bg",
+            "cottage_fg",
+            "tree_bg",
+            "tree_fg"
+        ],
+        "utility": [
+            "forest_ranger",
+            "forward",
+            "point",
+            "portal-h",
+            "portal-v",
+            "sunflame_icon"
+        ]
+    },
+    "spritesheets": [
+        "compiled-hero",
+        "objects",
+        "portal",
+        "sorceress"
+    ],
+    "tilemaps": [
+        "bridge",
+        "cave",
+        "cottage",
+        "tree"
+    ]
+}

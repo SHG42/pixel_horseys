@@ -1,87 +1,56 @@
-var express                 = require("express"),
+var 
+	dotenv 				  	= require('dotenv').config(),
+	express                 = require("express"),
     app                     = express(),
-    bodyParser              = require("body-parser"),
-    methodOverride          = require("method-override"),
-    mongoose                = require("mongoose"),
-    expressSanitizer        = require("express-sanitizer"),
-    passport                = require("passport"),
-    LocalStrategy           = require("passport-local"),
-    passportLocalMongoose   = require("passport-local-mongoose"),
-    User                    = require("./models/user"),
-    Unicorn                 = require("./models/unicorn"),
-    Region                  = require("./models/region");
-    
-    //ROUTE REQUIRES
-    var newPlayerRoutes = require("./routes/newplayer"),
-        gameRoutes      = require("./routes/game"),
-        indexRoutes     = require("./routes/index");
+	common					= require('./common');	
+// //ROUTE REQUIRES
+var newPlayerRoutes = require("./routes/newplayer"),
+	homeRoutes      = require("./routes/homepages"),
+	indexRoutes     = require("./routes/index");
 
+common.mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 
-mongoose.connect("mongodb://localhost:27017/sunflame_mountain", { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true });
+app.use(common.bodyParser.json());
+app.use(common.bodyParser.urlencoded({extended: true}));
+app.use(common.expressSanitizer());
+app.use(express.static("public"));
+app.use(common.methodOverride("_method"));
+app.set("view engine", "ejs");
 
 app.use(require("express-session")({
-    secret: "honk if u love pixel pets",
+    secret: process.env.EXPRESS_SECRET,
     resave: false,
     saveUninitialized: false
 }));
 
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(expressSanitizer());
-app.use(express.static("public"));
-app.use(methodOverride("_method"));
-app.set("view engine", "ejs");
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(function (req, res, next) {
+    // console.log(req.method + " " + req.url);
+    res.locals.req = req;
+    res.locals.res = res;
 
-//FIGURE OUT how to use this instead of passing currentUser to each route
-// app.use(function(req, res, next){
-//   res.locals.currentUser = req.user;
-//   next();
-// });
+    if (typeof (process.env.CLOUDINARY_URL) === 'undefined') {
+      throw new Error('Missing CLOUDINARY_URL environment variable');
+    } else {
+		// Expose cloudinary package to view
+		res.locals.cloudinary = common.cloudinary;
+		res.locals.cloudname = process.env.CLOUDNAME;
+      next();
+    }
+  });
 
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+app.use(common.passport.initialize());
+app.use(common.passport.session());
+common.passport.use(new common.LocalStrategy(common.User.authenticate()));
+common.passport.serializeUser(common.User.serializeUser());
+common.passport.deserializeUser(common.User.deserializeUser());
+
+// common.Seed.seedDB();
+common.Helpers.dbReset();
 
 app.use(newPlayerRoutes);
-app.use(gameRoutes);
+app.use(homeRoutes);
 app.use(indexRoutes);
 
-//dbReset();
-
-//RESET FUNCTION
-// function dbReset(){
-//     User.deleteMany({}, function(err){
-//       if(err) {
-//           console.log(err);
-//       } else {
-//           console.log("removed users");
-//           User.counterReset('userid', function(err) {
-//                 if(err) {
-//                     console.log(err);
-//                 } else{
-//                     console.log("user id reset");
-//                      Unicorn.deleteMany({}, function(err){
-//                           if(err){
-//                               console.log(err);
-//                           } else{
-//                               console.log("removed unicorns");
-//                               Unicorn.counterReset('uniid', function(err) {
-//                                     if(err) {
-//                                         console.log(err);
-//                                     } else {
-//                                         console.log("unicorn id reset");
-//                                     }
-//                                 });
-//                           }
-//                       });
-//                 }
-//             });
-//       }
-//     });
-// }
-
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
 	console.log("Welcome to unicorn hell");
 });
-

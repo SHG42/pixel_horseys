@@ -2,71 +2,131 @@
 
 <div class="inventorypage">
 	<% include ./partials/navbar %>
-    <div class="inventorybox">
-        <ul class="yourinventory nav nav-tabs nav-fill justify-content-center bg-dark my-2" id="myTab" role="tablist">
-			  <li class="nav-item">
-				<a class="nav-link active" id="wearable-tab" data-toggle="tab" href="#wearable" role="tab" aria-controls="wearable" aria-selected="true"><i class="fas fa-hat-wizard"></i> Wearable</a>
-			  </li>
-			  <li class="nav-item">
-				<a class="nav-link" id="companions-tab" data-toggle="tab" href="#companions" role="tab" aria-controls="companions" aria-selected="false"><i class="fas fa-dog"></i> Companions</a>
-			  </li>
-			  <li class="nav-item">
-				<a class="nav-link" id="accessories-tab" data-toggle="tab" href="#accessories" role="tab" aria-controls="accessories" aria-selected="false"><i class="far fa-gem"></i> Accessories</a>
-			  </li>
-			  <li class="nav-item">
-				<a class="nav-link" id="scenery-tab" data-toggle="tab" href="#scenery" role="tab" aria-controls="scenery" aria-selected="false"><i class="fas fa-tree"></i> Scenery</a>
-			  </li>
+   	<div class="inventorybox">
+		<ul class="yourinventory nav nav-tabs nav-fill justify-content-center bg-dark bg-gradient border border-2 border-light rounded-1 my-2" id="myTab" role="tablist">
+			<li class="nav-item">
+				<button class="nav-link btn btn-dark" id="decorative-tab" data-bs-toggle="tab" data-bs-target="#decorative" role="tab" aria-controls="decorative" aria-selected="true"><i class="fas fa-hat-wizard"></i> Decorative</button>
+			</li>	
+			<li class="nav-item">
+				<button class="nav-link btn btn-dark" id="companions-tab" data-bs-toggle="tab" data-bs-target="#companions" role="tab" aria-controls="companions" aria-selected="false"><i class="fas fa-dog"></i> Companions</button>
+			</li>
+			<li class="nav-item">
+				<button class="nav-link btn btn-dark" id="environment-tab" data-bs-toggle="tab" data-bs-target="#environment" role="tab" aria-controls="environment" aria-selected="false"><i class="fas fa-tree"></i> Environment</button>
+			</li>
+			<li class="nav-item">
+				<button class="nav-link btn btn-dark" id="backdrops-tab" data-bs-toggle="tab" data-bs-target="#backdrops" role="tab" aria-controls="backdrops" aria-selected="false"><i class="far fa-image"></i> Backdrops</button>
+			</li>
+			<li class="nav-item">
+				<button class="nav-link btn btn-dark" id="gems-tab" data-bs-toggle="tab" data-bs-target="#gems" role="tab" aria-controls="gems" aria-selected="false"><i class="far fa-gem"></i> Flat Gems</button>
+			</li>
+			<li class="nav-item">
+				<button class="nav-link btn btn-dark" id="tech-tab" data-bs-toggle="tab" data-bs-target="#tech" role="tab" aria-controls="tech" aria-selected="false"><i class="fas fa-power-off"></i> Tech Pieces</button>
+			</li>
+			<li class="nav-item">
+				<button class="nav-link btn btn-dark" id="tiles-tab" data-bs-toggle="tab" data-bs-target="#tiles" role="tab" aria-controls="tiles" aria-selected="false"><i class="fas fa-shapes"></i> Buildable Tiles</button>
+			</li>
 		</ul>
 
 		<div class="tab-content inventory-tabs">
-		  	<div class="tab-pane fade show active" id="wearable" role="tabpanel" aria-labelledby="wearable-tab">
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
+			<div class="tab-pane fade" id="decorative" role="tabpanel" aria-labelledby="decorative-tab">
+				<% Inventory.forEach((item)=>{ %>
+				<% if(item.category === "decorative"){ %>
+				<div class="d-inline-block">
+					<a><img class="equippable img-thumbnail lozad" data-src="../../assets/inventory/decorative/<%= item.img %>" data-bs-name="<%= item.name %>" data-bs-publicname="<%= item.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal"></a>
+					<p><%= item.publicName %></p>
+				</div>
+				<% } %>
+				<% }) %>
 			</div>
-		  	<div class="tab-pane fade" id="companions" role="tabpanel" aria-labelledby="companions-tab">
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
+			<div class="tab-pane fade" id="companions" role="tabpanel" aria-labelledby="companions-tab">
+				<% Inventory.forEach((item)=>{ %>
+				<% if(item.category === "companions"){ %>
+				<div class="d-inline-block">
+					<a><img class="equippable img-thumbnail lozad" data-src="../../assets/inventory/companions/<%= item.img %>" data-bs-name="<%= item.name %>" data-bs-publicname="<%= item.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal"></a>
+					<p><%= item.publicName %></p>
+				</div>
+				<% } %>
+				<% }) %>
 			</div>
-		  	<div class="tab-pane fade" id="accessories" role="tabpanel" aria-labelledby="accessories-tab">
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
+			<div class="tab-pane fade" id="environment" role="tabpanel" aria-labelledby="environment-tab">
+				<% Inventory.forEach((item)=>{ %>
+				<% if(item.category === "environment"){ %>
+				<div class="d-inline-block">
+					<a><img class="equippable img-thumbnail lozad" data-src="../../assets/inventory/environment/<%= item.img %>" data-bs-name="<%= item.name %>" data-bs-publicname="<%= item.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal"></a>
+					<p><%= item.publicName %></p>
+				</div>
+				<% } %>
+				<% }) %>
 			</div>
-		  	<div class="tab-pane fade" id="scenery" role="tabpanel" aria-labelledby="scenery-tab">
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
-				<a><img src=""></a>
+			<div class="tab-pane fade" id="backdrops" role="tabpanel" aria-labelledby="backdrops-tab">
+				<% Inventory.forEach((item)=>{ %>
+				<% if(item.category === "backdrops"){ %>
+				<div class="d-inline-block">
+					<a><img class="equippable img-thumbnail lozad" data-src="../../assets/inventory/backdrops/<%= item.img %>" data-bs-name="<%= item.name %>" data-bs-publicname="<%= item.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal"></a>
+					<p><%= item.publicName %></p>
+				</div>
+				<% } %>
+				<% }) %>
+			</div>
+			<div class="tab-pane fade" id="gems" role="tabpanel" aria-labelledby="gems-tab">
+				<% Inventory.forEach((item)=>{ %>
+				<% if(item.category === "gems"){ %>
+				<div class="d-inline-block">
+					<a><img class="equippable img-thumbnail lozad" data-src="../../assets/inventory/gems/<%= item.img %>" data-bs-name="<%= item.name %>" data-bs-publicname="<%= item.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal"></a>
+					<p><%= item.publicName %></p>
+				</div>
+				<% } %>
+				<% }) %>
+			</div>
+			<div class="tab-pane fade" id="tech" role="tabpanel" aria-labelledby="tech-tab">
+				<% Inventory.forEach((item)=>{ %>
+				<% if(item.category === "tech"){ %>
+				<div class="d-inline-block">
+					<a><img class="equippable img-thumbnail lozad" data-src="../../assets/inventory/tech/<%= item.img %>" data-bs-name="<%= item.name %>" data-bs-publicname="<%= item.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal"></a>
+					<p><%= item.publicName %></p>
+				</div>
+				<% } %>
+				<% }) %>
+			</div>
+			<div class="tab-pane fade" id="tiles" role="tabpanel" aria-labelledby="tiles-tab">
+				<% Inventory.forEach((item)=>{ %>
+				<% if(item.category === "tiles"){ %>
+				<div class="d-inline-block">
+					<a><img class="equippable img-thumbnail lozad" data-src="../../assets/inventory/tiles/<%= item.img %>" data-bs-name="<%= item.name %>" data-bs-publicname="<%= item.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal"></a>
+					<p><%= item.publicName %></p>
+				</div>
+				<% } %>
+				<% }) %>
 			</div>
 		</div>
-
-    </div>
+	</div>
 </div>
-
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <img src="" id="modal-image" class="imagemodal-image img-fluid d-block mx-auto"> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
-  $(function () {
-    $('#myTab li:last-child a').tab('show')
-  })
+	var items = <%- JSON.stringify(Inventory) %>;
+	
+	const el = document.querySelector('img');
+	const observer = window.lozad('.lozad', {
+   		 loaded: function(el) {
+			el.classList.add('loaded');
+		}
+	});
+	observer.observe();
 </script>
-
+<script src="../../scripts/imagemodal.js"></script>
 <% include ./partials/footer %>

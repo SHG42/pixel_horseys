@@ -1,55 +1,75 @@
 <% include ./partials/header %>
-<div class="homepage container-fluid" style="background-image: url(../<%= yourRegion.homeBG %>)">
+<div class="homepage container-fluid" style="background-image: url(/../<%= currentPageOwner.region.homeBG %>)">
 	<% include ./partials/navbar %>
     <div class="my-5 container">
         <div class="unicorngroup row d-flex justify-content-around m-4">
-        	<% yourUnicorns.forEach(function(unicorn){ %>
+			<!-- uniSlot-img card-img-top -->
+        	<% currentPageOwner.unicorns.forEach((unicorn)=>{ %>
 			<div class="uniSlot col-12 col-sm-6 col-lg-3">
-			  	<img class="uniSlot-img card-img-top" src="<%= unicorn.uniPic %>" alt="Card image cap">
-			  	<div class="card m-3 p2">
-				  	<div class="petcard-body">
-					  	<h5 class="card-title"><%= unicorn.name %></h5>
-					  	<p class="card-text">Unicorn Stats go here</p>
-						<!-- only show these buttons to owner of page -->
-						<%  %>
-							<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#nameModal" data-clickedid="<%= unicorn._id %>"><i class="fas fa-pencil-alt"></i> Name</button>
-							<a href="/home/<%= currentUser.userid %>/unicorn/<%= unicorn.uniid %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
-						<%  %>
-						<!-- show bio button without edit icon to visitors -->
-							<a href="/home/<%= currentUser.userid %>/unicorn/<%= unicorn.uniid %>" class="btn btn-outline-dark btn-sm">View Bio</a>
-						<%  %>
-				  	</div>
-			  	</div>
+				<img class="uniSlot-img img-fluid" src="<%=cloudinary.url(`${unicorn.imgs.img.public_id}.png`, {secure: "true", cloud_name: cloudname, version: unicorn.imgs.img.version})%>">
+			  	<div class="card petcard">
+					<div class="petcard-body card-body p1">
+						<h5 class="card-title"><%= unicorn.name %></h5>
+						<div class="card-footer">
+							<!-- only show these buttons to owner of unicorns on page -->
+							<% if(loggedInUser && currentPageOwner._id.equals(loggedInUser._id)){ %>
+								<button class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#nameModal" data-bs-unicornid="<%= unicorn._id %>" data-bs-uniname="<%= unicorn.name %>"><i class="fas fa-pencil-alt"></i> Change Name</button>
+								<a href="/home/<%= currentPageOwner.userid %>/unicorn/<%= unicorn.uniid %>" class="btn btn-outline-dark btn-sm"><i class="fas fa-pencil-alt"></i> Bio</a>
+							<% } else { %>
+							<!-- show bio button without edit icon to visitors -->
+								<a href="/home/<%= currentPageOwner.userid %>/unicorn/<%= unicorn.uniid %>" class="btn btn-outline-dark btn-sm">View Bio</a>
+							<% } %>
+						</div>
+					</div>
+				</div>
 			</div>
 			<% }); %>  
         </div>
     </div>
 </div>
 
-
-
+<% if(loggedInUser && currentPageOwner._id.equals(loggedInUser._id)){ %>
 <div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="nameModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">Name or Rename Your Unicorn</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form action="/home/<%= currentUser.userid %>?_method=PUT" method="POST" name="addName">
-            <input type="text" name="newName">
-            <input id="thisId" name="namedId" value="" type="hidden">
+        <form action="/home/<%= currentPageOwner.userid %>?_method=PUT" method="POST" name="addName">
+            <input type="text" name="newName" id="namefield">
+            <input id="thisId" name="unicornid" value="" type="hidden">
             <button type="submit" class="btn btn-primary">Save changes</button>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
-
-
+<% } %>
+<script>
+	console.log("loggedInUser is: ");
+	var loggedIn = <%- JSON.stringify(loggedInUser) %>;
+	console.log(loggedIn);
+	console.log("currentPageOwner is: ");
+	var pageOwner = <%- JSON.stringify(currentPageOwner) %>;
+	console.log(pageOwner);
+	
+	var nameModal = document.getElementById('nameModal');
+	nameModal.addEventListener('show.bs.modal', function (event) {
+		// Button that triggered the modal
+		var button = event.relatedTarget;
+		var dataName = button.dataset.bsUniname;
+		var dataId = button.dataset.bsUnicornid;
+		
+		var modal = this;
+		modal.querySelector('#namefield').setAttribute("placeholder", dataName);//placeholder
+		modal.querySelector('#thisId').setAttribute("value", dataId);
+	});
+</script>
 <% include ./partials/footer %>

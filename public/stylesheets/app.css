@@ -1,4 +1,8 @@
 /*GENERAL RULES*/
+.tox {
+    white-space: nowrap!important;
+}
+
 html, body {
     height: 100%;
     margin: 0;
@@ -8,13 +12,13 @@ html, body {
     display: flex;
 }
 
-h1, .modal-title {
+h1, .headertext, .modal-title {
     font-family: 'IM FELL English SC', sans-serif;
-} 
+}
 /*add any other elements that get this font to this rule*/
 
 .bigwelcomelogo, .biglogo {
-    width: 75%;
+    width: 50%;
     margin: 1rem;
 }
 
@@ -22,19 +26,51 @@ h1, .modal-title {
     width: 10%;
 }
 
+.textlogo {
+	color: antiquewhite;
+}
+
 .navbar {
     font-size: 1.5rem;
 }
 
-
+.navbar-nav li a {
+	text-decoration: underline;
+	font-weight: bold;
+}
 
 .textboxes {
+	border: 2px solid black;
     background-color: rgb(192,192,192);
     background-color: rgba(192,192,192,0.8);
     font-family: sans-serif;
     text-align: center;
     padding: 1.5rem;
-    margin: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+	margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	
+}
+
+.headertext {
+	border: 3px solid black;
+	border-radius: 2px;
+	background-color: rgba(192,192,192,0.5);
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	width: 65%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.formgroup {
+	border: 3px solid black;
+	border-radius: 2px;
+	background-color: rgba(192,192,192,0.5);
+	padding: 1rem;
+	margin: 0.5rem auto 0.5rem auto;
 }
 
 hr {
@@ -43,9 +79,14 @@ hr {
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
 }
 
+#container {
+	min-width: 500px;
+	width: 100%;
+}
+
 /*NEW PLAYER PAGE RULES*/
 .introbox {
-    background-image: url("../resources/indexBG.png");
+    background-image: url("/../assets/background_imgs/site_layout_backgrounds/aurora.png");
     text-align: center;
     width: 100%;
     position: absolute;
@@ -61,8 +102,8 @@ hr {
     font-weight: bold;
 }
 
-.gridCard {
-    background-color: black;
+.founders {
+	max-width: 500px;
 }
 
 .uniCard {
@@ -71,15 +112,8 @@ hr {
     background-color:rgba(192,192,192,0.8);
 }
 
-
-.founders {
-    background-size: contain;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-}
-
 .regionMap {
-    background-image: url("../resources/testmap.jpg");
+    background-image: url("../../assets/background_imgs/site_layout_backgrounds/map.jpg");
     top: 0;
     left: 0;
     width: 100%;
@@ -98,32 +132,7 @@ hr {
     background-color: rgba(192,192,192,0.7);
 }
 
-#greenblack {
-    background-image: url("../resources/cardBGs/troncard.png");
-}
-#pastel {
-    background-image: url("../resources/cardBGs/softforest.png");
-}
-#starry {
-    background-image: url("../resources/cardBGs/galaxy.png");
-}
-#heraldic {
-    background-image: url("../resources/cardBGs/castleinterior.png");
-}
-#flaxensorrel {
-    background-image: url("../resources/cardBGs/foggyforest.png");   
-}
-#deericorn {
-    background-image: url("../resources/cardBGs/sunsetforest.png"); 
-}
-#traditional {
-    background-image: url("../resources/cardBGs/prettynight.png");
-}
-#chocopalo {
-    background-image: url("../resources/cardBGs/nightbeach.png");
-}
-
-#chooseModal {
+#regionModal {
     background-color: black;
 }
 
@@ -132,7 +141,7 @@ hr {
     color: black;
 }
 
-.choosemodal-content {
+.regionmodal-content {
     background-color: black;
     border-color: antiquewhite;
     text-align: center;
@@ -146,15 +155,6 @@ hr {
     background-repeat: no-repeat;
 }
 
-.founder-fullsize {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    position: relative;
-    background-size: contain;
-    background-position: 50% 50%;
-}
-
 .close {
     color: antiquewhite;
 }
@@ -162,8 +162,7 @@ hr {
 
 
 /*GAME PAGE RULES*/
-.indexpage, .homepage, .unicornpage {
-    /* background-image: url("../resources/home_bgs/desertenvironment1.png"); */
+.indexpage, .homepage, .unicornpage, .inventorypage, .equippage, .explorepage, .buildpage {
     text-align: center;
     width: 100%;
     position: absolute;
@@ -173,7 +172,17 @@ hr {
     min-height: 100vh;
 }
 
-.petcard-body {
+#helpModal p:first-child {
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+.uniSlot-img {
+	height: 150px;
+	width: auto;
+	object-fit: contain
+}
+.petcard {
 	border: 3px double black;
 	padding: 0.5rem;
 }
@@ -184,16 +193,6 @@ hr {
     background-color: rgba(192,192,192,0.7);
 	border: 2px solid black;
 }
-
-.backdrop-options {
-	border-top: 2px solid black;
-}
-
-.stats {
-	text-decoration: underline;
-	padding: 0.5rem;
-}
-
 .unicornlore {
 	background-color: oldlace;
 	border: 2px solid navajowhite;
@@ -201,92 +200,82 @@ hr {
 	padding: 2rem;
 	margin: 1rem;
 }
-
-.lore-edit {
-	height: 500px;
+#lore, #viewlore {
+  	overflow-wrap: break-word;
+	word-wrap: break-word;
+	hyphens: auto;
+}
+#loreform {
+	border: 5px double black;
 }
 
-.inventorybox {
-	background-image: url("../resources/inventorybackground.png");
-	text-align: center;
-    width: 100%;
-    position: absolute;
-    background-size: 100% 100%;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-}
 
-.yourinventory .nav-item .nav-link {
+.inventorypage, .equippage {
+	background-image: url("../../assets/background_imgs/site_layout_backgrounds/equip_inventory_background_scaledup.png");
+}
+.yourinventory .nav-item .nav-link, .yourequip .nav-item .nav-link {
 	color: antiquewhite;
 	border-radius: 0;
+	border: 2px solid navajowhite;
+	margin-left: auto;
+	margin-right: auto;
 }
-
-.yourinventory .nav-item .active {
+.yourinventory .nav-item, .yourequip .nav-item {
+	padding: 0.5rem;
+	display: inline;
+}
+.yourinventory .nav-item .active, .yourequip .nav-item .active {
 	background-color: darkcyan;
 	font-weight: bold;
 }
-
-
-.tab-pane a img {
+.inventorybox .tab-pane div {
 	background-color: burlywood;
 	border: 1px solid wheat;
-	padding: 0.5rem;
-	margin: 0.5rem;
+	padding: 0.2rem;
+	margin: 0.2rem;
+	text-transform: capitalize;
 }
-
+.tab-pane img {
+	background-color: burlywood;
+	padding: 0.2rem;
+	margin: 0.2rem;
+	max-width: 100px;
+	overflow-x: hidden;
+	max-height: 50px;
+}
 .tab-content {
 	margin: auto;
     overflow-y: scroll;
-    height: 400px;
+    max-height: 500px;
 	background-color: rgb(237, 235, 227);
 	background-color: rgba(237, 235, 227, 0.7);
 }
-
-.equipscreen {
-	background-image: url("../resources/equipscreen.jpg");
-	text-align: center;
-    width: 100%;
-    position: absolute;
-    background-size: 100% 100%;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    min-height: 100vh;
+#modal-image {
+	max-width: 100%;
 }
-
 .equip-tabs {
 	background-color: cornsilk;
 	border: 1px solid navajowhite; 
 }
 
-.customizescreen {
-	background-image: url("../resources/tronBG.png");
-	text-align: center;
-    width: 100%;
-    position: absolute;
-    background-size: 100% 100%;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    min-height: 100vh;
+.buildpage {
+	background-image: url("../../assets/background_imgs/site_layout_backgrounds/tron.png");
 }
-
 .picker-menu {
 	background: linear-gradient(217deg, rgba(255,0,0,.8), rgba(255,0,0,0) 70.71%),
             	linear-gradient(127deg, rgba(0,255,0,.8), rgba(0,255,0,0) 70.71%),
             	linear-gradient(336deg, rgba(0,0,255,.8), rgba(0,0,255,0) 70.71%);
 }
-
-.picker {
-	padding: 2rem;
+.colorSelector {
+	border: 2px solid navajowhite;
+	margin: 0.3rem;
 }
-
-.genepicker .btn {
-	border: 1px solid antiquewhite;
+.colorSelector:focus {
+  	border: 4px solid limegreen;
 }
-
 
 .directory-list {
-	background-image: url("../resources/bookBG.jpg");
+	background-image: url("../../assets/background_imgs/site_layout_backgrounds/bookBG.jpg");
 	text-align: center;
     width: 100%;
     position: absolute;
@@ -295,7 +284,6 @@ hr {
     background-repeat: no-repeat;
     min-height: 100vh;
 }
-
 .userlist {
 	background-color: rgb(237, 235, 227);
 	background-color: rgba(237, 235, 227, 0.7);
@@ -306,11 +294,24 @@ hr {
 	border: 5px double black;
 	height: 100vh;
 }
-
 .directoryheader {
 	text-align: center;
 	border: 5px double black;
 	padding: 0.5rem;
+}
+
+.select-label {
+	color: antiquewhite;
+	border-radius: 0;
+}
+
+
+#gamedoor img, .fairytale-textbox {
+	/* width: 85%; */
+	border: 10px ridge rgba(192,192,192,0.8);
+}
+.fairytale-textbox {
+	background-color: aliceblue;
 }
 
 

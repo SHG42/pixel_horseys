@@ -1,122 +1,83 @@
+var common = require("../common");
 var express = require("express");
-var router = express.Router({mergeParams: true});
-var passport = require("passport");
-var User = require("../models/user");
-var Unicorn = require("../models/unicorn"),
-    Region  = require("../models/region");
+var router 	= express.Router({mergeParams: true});
+
+var mstorage = common.multer.memoryStorage();
+var upload = common.multer({ storage: mstorage });
+//req.user will contain credentials of loggedin user
+//pass currentUser through to all routes where user data needs to be available
 
 //STARTER ROUTES
 //NEW route, displays new user form
-router.get("/register", function(req, res){
-   res.render("register"); 
-});
-
-//CREATE route, creates new user in db
-router.post("/register", function(req, res){
+router.route("/register")
+.get(function(req, res){
+	res.render("register"); 
+})
+.post(function(req, res){
     //get data from reg form and store in user data
-    var newUser = new User({username: req.body.username, email: req.body.email});
-    User.register(newUser, req.body.password, function(err, createdUser){
+    var newUser = new common.User({username: req.body.username, email: req.body.email});
+    common.User.register(newUser, req.body.password, function(err, createdUser){
        if(err) {
            console.log(err);
            return res.render("register");
        } 
-       passport.authenticate("local")(req, res, function(){
+       common.passport.authenticate("local")(req, res, function(){
            res.redirect("/firstlogin");
        });
     });
 });
 
-router.get("/firstlogin", function(req, res){
+router.route("/firstlogin")
+.get(function(req, res){
   res.render("firstlogin"); 
-});
-
-//handle login logic
-router.post("/firstlogin", passport.authenticate("local", {
-        successRedirect: "/choosefounder",
+})
+.post(common.passport.authenticate("local", {
+        successRedirect: "/founder",
         failureRedirect: "/firstlogin"
     }), function(req, res) {
 });
 
-router.get("/choosefounder", isLoggedIn, function(req, res) {
-    //req.user will contain credentials of loggedin user
-    console.log(req.user);
-    res.render("choosefounder", {currentUser: req.user}); 
-    //pass currentUser through to all routes where user data needs to be available
+router.route("/founder")
+.get(isLoggedIn, function(req, res) {
+	common.Breed.find({}, function(err, foundAllBreeds){
+		if (err) return console.error('Uhoh, there was an error (/founder Breed.find GET)', err)
+		common.Gene.find({}, function(err, foundAllGenes){
+			if (err) return console.error('Uhoh, there was an error (/founder Gene.find GET)', err)
+			res.render("founder", {currentUser: req.user, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
+		});
+	});
+})
+.post([isLoggedIn, upload.any()], function(req, res) {
+	res.redirect("/region");
 });
 
-// POST unicorn choice to database
-    // USE CREATE TO ADD NEW INSTANCE OF FOUNDER UNICORN TO DATABASE UPON FORM SUBMISSION
-    // USE JQUERY TO SEND ID OF CHOSEN UNICORN TO NAME ATTRIBUTE IN FORM AND RETRIEVE VIA REQ.BODY, SEE USER REG FOR EXAMPLE
-//CREATE route, creates new founder unicorn in db    
-router.post("/choosefounder", isLoggedIn, function(req, res) {
-   //get unicorn data from modal form 
-   //res.send("testing");
-   var founder = req.body.selectedName;
-   var founderPic = req.body.selectedPic;
-   var ownerId = req.user._id;
-   
-   var newFounder = {
-        uniName: founder,
-        uniPic: founderPic,
-        owner: ownerId,
-		lvl: 0,
-	   	energy: 100,
-	   	parent1: "none",
-	   	parent2: "none"
-   };
-   
-   console.log(founder + " " + founderPic + " " + ownerId);
-   
-   //lookup user by id
-    User.findById(req.user.id, function(err, foundUser){
-        if(err) {
-            console.log(err);
-            res.redirect("/choosefounder");
-        } else {
-            //create new Unicorn
-            Unicorn.create(newFounder, function(err, newUnicorn){
-                if(err) {
-                    console.log(err);
-                    res.redirect("/choosefounder");
-                } else {
-                    //push new unicorn to user data and save
-                     foundUser.unicorns.push(newUnicorn);
-                     foundUser.save();
-                    //redirect to chooseregion
-                    res.redirect("/chooseregion");
-                }
-            });
-        }
-    });
-});
 
-router.get("/chooseregion", isLoggedIn, function(req, res) {
-    //req.user will contain credentials of loggedin user
-    res.render("chooseregion", {currentUser: req.user}); 
-    //pass currentUser through to all routes where user data needs to be available
-});
-
-//UPDATE existing user data with region info, nothing is being created
-router.put("/chooseregion", isLoggedIn, function(req, res) {
-   //get region name from form
-   var region = req.body.selectedName;
-   //find user by id and update
-   User.findByIdAndUpdate(req.user.id, {region: region}, function(err, foundUser){
-       if(err){
-           console.log(err);
-           res.redirect("/chooseregion");
-       } else {
-           console.log(req.user + " " + region);
-           res.redirect("/index");
-       }
-   });
+router.route("/region")
+.get(isLoggedIn, function(req, res) {
+	common.Region.find({}, function(err, foundAllRegions){
+		if (err) return console.error('Uhoh, there was an error (/region Region.find GET)', err)
+		res.render("region", {currentUser: req.user, Regions: foundAllRegions}); 
+	})
+})
+.put(isLoggedIn, function(req, res) {
+   	//find user by id and update
+	common.Region.findOne({name: req.body.selectedName}, function(err, foundRegion){
+		if (err) return console.error('Uhoh, there was an error (/region Region.findOne PUT)', err)
+		var foundARegion = foundRegion;
+		common.User.findByIdAndUpdate(req.user._id, {region: foundARegion}, function(err, foundUser){
+		    if (err) return console.error('Uhoh, there was an error (/region User.findByIdAndUpdate PUT)', err)
+			// console.log("req.user from findByIdAndUpdate in region PUT route: ");
+			// console.log(req.user);
+			res.redirect("/index");
+	   });
+	});
 });
 
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
         return next();
     }
-    res.redirect("/login");
+    res.redirect("/firstlogin");
 }
 
 module.exports = router;

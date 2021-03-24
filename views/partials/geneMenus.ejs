@@ -1,0 +1,57 @@
+<div class="justify-content-around flex-wrap m-3" role="group">
+	<select name="bodygene" class="geneMenu body p-2 m-1 bg-dark text-light border border-2 border-light rounded-2" id="bodyGeneSelect" aria-label="body gene menu">
+		<option value="" selected>Choose a Body Gene:</option>
+		<option value="unset">(Clear Slot)</option>
+		<% Genes.forEach(function(gene){ %>
+			<% if(gene.geneClass === "body") { %>
+			<option value="<%= gene.name %>" class="gene" data-geneclass="<%= gene.geneClass %>" data-geneid="<%= gene.id %>" data-bodygenename="<%= gene.name %>"><%= gene.name %></option>
+			<% } %>	
+		<% }); %>
+	</select>
+	<select name="hairgene" class="geneMenu hair p-2 m-1 bg-dark text-light border border-2 border-light rounded-2" id="hairGeneSelect" aria-label="hair gene menu">
+		<option value="" selected>Choose a Hair Gene:</option>
+		<option value="unset">(Clear Slot)</option>
+		<% Genes.forEach(function(gene){ %>
+			<% if(gene.geneClass === "hair") { %>
+		<option value="<%= gene.name %>" class="gene" data-geneclass="<%= gene.geneClass %>" data-geneid="<%= gene.id %>" data-hairgenename="<%= gene.name %>"><%= gene.name %></option>
+			<% } %>	
+		<% }); %>
+	</select>
+	<select name="tertiarygene" class="geneMenu tertiary p-2 m-1 bg-dark text-light border border-2 border-light rounded-2" id="tertiaryGeneSelect" aria-label="tertiary gene menu">
+		<option value="" selected>Choose a Tertiary Gene:</option>
+		<option value="unset">(Clear Slot)</option>
+		<% Genes.forEach(function(gene){ %>
+			<% if(gene.geneClass === "tertiary") { %>
+			<option value="<%= gene.name %>" class="gene" data-geneclass="<%= gene.geneClass %>" data-geneid="<%= gene.id %>" data-tertiarygenename="<%= gene.name %>"><%= gene.name %></option>
+			<% } %>	
+		<% }); %>
+	</select>
+	<select name="horngene" class="geneMenu horn p-2 m-1 bg-dark text-light border border-2 border-light rounded-2" id="hornGeneSelect" aria-label="horn gene menu">
+		<option value="" selected>Choose a Horn Gene:</option>
+		<option value="unset">(Clear Slot)</option>
+		<% Genes.forEach(function(gene){ %>
+			<% if(gene.geneClass === "horn") { %>
+			<option value="<%= gene.name %>" class="gene" data-geneclass="<%= gene.geneClass %>" data-geneid="<%= gene.id %>" data-horngenename="<%= gene.name %>"><%= gene.name %></option>
+			<% } %>	
+		<% }); %>
+	</select>
+	<select name="eyegene" class="geneMenu eye p-2 m-1 bg-dark text-light border border-2 border-light rounded-2" id="eyeGeneSelect" aria-label="eye gene menu">
+		<option value="" selected>Choose an Eye Gene:</option>
+		<option value="unset">(Clear Slot)</option>
+		<% Genes.forEach(function(gene){ %>
+			<% if(gene.geneClass === "eye") { %>
+			<option value="<%= gene.name %>" class="gene" data-geneclass="<%= gene.geneClass %>" data-geneid="<%= gene.id %>" data-eyegenename="<%= gene.name %>"><%= gene.name %></option>
+			<% } %>	
+		<% }); %>
+	</select>
+	<select name="hoofgene" class="geneMenu hoof p-2 m-1 bg-dark text-light border border-2 border-light rounded-2" id="hoofGeneSelect" aria-label="hoof gene menu">
+		<option value="" selected>Choose a Hoof Gene:</option>
+		<option value="unset">(Clear Slot)</option>
+		<% Genes.forEach(function(gene){ %>
+			<% if(gene.geneClass === "hoof") { %>
+			<option value="<%= gene.name %>" class="gene" data-geneclass="<%= gene.geneClass %>" data-geneid="<%= gene.id %>" data-hoofgenename="<%= gene.name %>"><%= gene.name %></option>
+			<% } %>	
+		<% }); %>
+	</select>
+</div>
+

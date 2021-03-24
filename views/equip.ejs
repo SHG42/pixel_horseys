@@ -2,83 +2,57 @@
 
 <div class="equippage container-fluid">
 	<% include ./partials/navbar %>
-    <div class="equipscreen d-flex flex-column flex-lg-row row">
-        <div class="equipmenu col-12 col-lg-6">
-            <form action="" name="equiproom" class="equiproom">
-                <ul class="yourinventory nav nav-tabs nav-fill justify-content-center bg-dark my-2 border border-light" id="myTab" role="tablist">
-					  <li class="nav-item">
-						<a class="nav-link active" id="wearable-tab" data-toggle="tab" href="#wearable" role="tab" aria-controls="wearable" aria-selected="true"><i class="fas fa-hat-wizard"></i> Wearable</a>
-					  </li>
-					  <li class="nav-item">
-						<a class="nav-link" id="companions-tab" data-toggle="tab" href="#companions" role="tab" aria-controls="companions" aria-selected="false"><i class="fas fa-dog"></i> Companions</a>
-					  </li>
-					  <li class="nav-item">
-						<a class="nav-link" id="accessories-tab" data-toggle="tab" href="#accessories" role="tab" aria-controls="accessories" aria-selected="false"><i class="far fa-gem"></i> Accessories</a>
-					  </li>
-					  <li class="nav-item">
-						<a class="nav-link" id="scenery-tab" data-toggle="tab" href="#scenery" role="tab" aria-controls="scenery" aria-selected="false"><i class="fas fa-tree"></i> Scenery</a>
-					  </li>
-				</ul>
-
-				<div class="tab-content equip-tabs">
-					<div class="tab-pane fade show active" id="wearable" role="tabpanel" aria-labelledby="wearable-tab">
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-					</div>
-					<div class="tab-pane fade" id="companions" role="tabpanel" aria-labelledby="companions-tab">
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-					</div>
-					<div class="tab-pane fade" id="accessories" role="tabpanel" aria-labelledby="accessories-tab">
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-					</div>
-					<div class="tab-pane fade" id="scenery" role="tabpanel" aria-labelledby="scenery-tab">
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-						<a><img src=""></a>
-					</div>
+    <div class="equipscreen d-flex flex-column flex-md-row row">
+        <div class="col-12 col-lg-3 my-1">
+			<% include ./partials/equipmenu %>
+		</div>
+        <div id="getfashionable" class="col-12 col-lg-9 my-1">
+			<form id="equipform">
+				<label for="unicornSelect" class="select-label bg-dark border border-light rounded-1 p-2">Equip Items: Choose a Unicorn</label>
+				<select name="yourUnicorns" class="custom-select text-center" id="unicornSelect" aria-label="choose a unicorn">
+					<option value="" selected>--Please choose an option--</option>
+					<% loggedInUser.unicorns.forEach(function(unicorn){ %>
+					<option value="<%= unicorn._id %>" class="unicorn" data-url="<%= cloudinary.url(`${unicorn.imgs.baseImg.public_id}.png`, {secure: "true", cloud_name: cloudname, version: unicorn.imgs.baseImg.version}) %>"><%= unicorn.name %></option>
+					<% }); %>	
+				</select>
+				<a class="d-inline float-end mx-3" data-bs-toggle="modal" data-bs-target="#helpModal" data-bs-origin="equip"><i class="fas fa-question-circle" aria-hidden="true" title="Help: Equipper"></i><span class="sr-only">Equipper Instructions</span></a>
+			</form>
+			<div class="d-flex flex-column justify-content-center">
+				<div class="canvasbuttons m-1">
+					<button id="layerDown" class="btn btn-primary btn-sm m-1" aria-label="move item behind unicorn">
+						Move Item Behind Unicorn
+					</button><button id="layerUp" class="btn btn-primary btn-sm m-1" aria-label="move item in front of unicorn">
+						Move Item In Front of Unicorn
+					</button><button id="moveUp" class="btn btn-primary btn-sm m-1" aria-label="move item up one layer">
+						Move Item Up 1 Layer
+					</button><button id="moveDown" class="btn btn-primary btn-sm m-1" aria-label="move item down one layer">
+						Move Item Down 1 Layer
+					</button><button id="unscale" class="btn btn-warning btn-sm m-1" aria-label="reset item size">
+						Reset Item
+					</button><button id="remove" class="btn btn-danger btn-sm m-1" aria-label="remove item">
+						Remove Item
+					</button>
 				</div>
-            </form>
-        </div>
-        <div class="getfashionable col-12 col-lg-6 my-2">
-			<div class="btn-group">
-			  <button type="button" class="btn btn-dark dropdown-toggle border border-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Select Unicorn
-			  </button>
-			  <div class="dropdown-menu">
-				<a class="dropdown-item" href="#">Action</a>
-				<a class="dropdown-item" href="#">Another action</a>
-				<a class="dropdown-item" href="#">Something else here</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="#">Separated link</a>
-			  </div>
+				<div class="row mx-auto">
+					<div id="container" class="col-12"></div>
+				</div>
+				<div class="equipperForm">
+					<form action="/equip?_method=PUT" method="POST" enctype="multipart/form-data" name="submitForm">
+						<button type="button" id="equipperSubmit" class="btn btn-success m-1" name="equipperButton" value="">Save Equips</button>
+					</form>
+				</div>
 			</div>
-            <img src="" alt="" class="equipme img-fluid">
         </div>
     </div>
 </div>
-
+<% include ./partials/helpModal %>
+<script>
+	var yourUnicorns = <%- JSON.stringify(loggedInUser.unicorns) %>;
+	
+	var dbInventory = <%- JSON.stringify(Inventory) %>;
+</script>
+<script src="../../scripts/inventorymenu.js"></script>
+<script src="../../scripts/equippersetup.js"></script>
+<script src="../../scripts/equipper.js"></script>
+<script src="../../scripts/equipsubmit.js"></script>
 <% include ./partials/footer %>

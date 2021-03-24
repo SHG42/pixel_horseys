@@ -1,0 +1,19 @@
+<form id="customizeform" method="" action="">
+	<label for="unicornSelect" class="select-label bg-dark border border-light rounded-1 p-2">Customize: Choose a Unicorn</label>
+	<select name="yourUnicorns" class="custom-select text-center" aria-label="choose a unicorn" id="unicornSelect">
+		<option value="" selected>--Please choose an option--</option>
+		<% loggedInUser.unicorns.forEach(function(unicorn){ %>
+		<option value="<%= unicorn._id %>" class="unicorn" data-lineartid="<%= unicorn.breedid %>"><%= unicorn.name %></option>
+		<!-- replace unicorn.id with unicorn.name after integration -->
+		<% }); %>	
+	</select>
+</form>
+<form id="buildform" method="" action="">
+	<label for="lineartSelect" class="select-label bg-dark border border-light rounded-1 p-2">Build: Choose a Breed</label>
+	<select name="linearts" id="lineartSelect" aria-label="choose a base sprite" class="custom-select text-center">
+		<option value="" selected>--Please choose an option--</option>
+		<% Breeds.forEach(function(breed){ %>
+		<option value="<%= breed.name %>" class="lineart" data-lineartid="<%= breed.id %>"><%= breed.name %></option>
+		<% }); %>	
+	</select>
+</form>

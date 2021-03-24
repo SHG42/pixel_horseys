@@ -1,0 +1,62 @@
+{
+    "sorceress": {
+        "dialogue": [
+            {
+                "emote": "sorceress_smile",
+                "text": "Ah, greetings to you! I knew you would find your way here sooner or later. I am glad that it was sooner! Pardon my little jest, ahahah."
+            },
+            {
+                "emote": "sorceress_smile",
+                "text": "I have a task for you, if your spirit is strong this day. Through the forest pass, across the ruins and the lake, there lives a forest ranger."
+            },
+            {
+                "emote": "sorceress_sad",
+                "text": "I often bring her useful things from the forest, but alas... I must remain here in my Sanctum, for the solstice draws near and there is much to be done!"
+            },
+            {
+                "emote": "sorceress_sad",
+                "text": "Will you make the journey in my stead and see the forest ranger? Bring her anything useful you may find along the way, and she will reward your generosity."
+            },
+            {
+                "emote": "sorceress_sad",
+                "text": "Your kindness is greatly appreciated, and shall not soon be forgotten."
+            },
+            {
+                "emote": "sorceress_neutral",
+                "text": "Now, come along. Follow me up the steps to the portal, and I will send you on your way."
+            },
+            {
+                "emote": "sorceress_worried",
+                "text": "Be strong, friend! The journey is a perilous one!"
+            }
+        ]
+    },
+    "ranger": {
+        "dialogue": [
+            {
+                "emote": "ranger",
+                "text": "Now who are you? You're not my usual visitor, and believe me, there aren't many who venture across the ruins! Why did you come here?"
+            },
+            {
+                "emote": "ranger",
+                "text": "Oh? The sorceress sent you? ...Yes, of course, the solstice. That'd explain it. Well, why did she send you?"
+            },
+            {
+                "emote": "ranger",
+                "text": "Ah, you've brought me something? A few somethings? Well, I appreciate it! Let's see what you've brought me..."
+            },
+            {
+                "emote": "ranger",
+                "text": "This is quite a haul! I'm in your debt. I can offer you this as a reward: a token for the genetic builder."
+            },
+            {
+                "emote": "ranger",
+                "text": "If you come back again and bring me more nice things, maybe I'll give you another!"
+            },
+            {
+                "emote": "ranger",
+                "text": "Now, I suppose you'd like some help getting home? I can do that. Let's get moving, then, the sun will be setting soon."
+            }
+        ]
+    }
+}

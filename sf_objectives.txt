@@ -1,3 +1,23 @@
+FINAL NOTES:
+(X) Add tutorial modals or popups on customizer, equipper, and game pages 
+- look into optimizing image load times
+- loading bars on canvas pages (want progress bars that run on submit also)
+- canvas localstorage save states
+- organization of directory: alphabetical? Search bar?
+- fallback/alternate content for canvases? Screen-reader content?
+- IRO: when user clicks colorselector button with colordata attribute set, move handle to color on wheel
+- Genetic Builder tokens: add one per day to user account up to 50, have completion of Phaser game grant extra 1 per day if user's total >50
+
+
+
+
+console.log(foundUser.id); //<== USE THIS TO IDENTIFY OWNER OF ACCESSED PAGE
+console.log(req.user._id); //<== USE THIS TO IDENTIFY LOGGED-IN USER
+FOR AUTHENTICATION, FOUNDUSER.ID MUST EQUAL REQ.USER._ID
+
+User.findById is for finding LOGGED IN USER, pass in foundLoggedInUser to callback, pass to template with loggedInUser
+User.findOne is for finding USER THAT OWNS CURRENT PAGE, pass in foundPageOwner to callback, pass to template with currentPageOwner
+
 LANDING: intro to site, explains what it is and what it does, button to register account and start demo
 
 REGISTER: form, lore blurb re: starting your journey from this point
@@ -19,20 +39,21 @@ YOUR HOMEPAGE: start with exciting animation, exciting lore blurb, cool logo, br
                 >> NEED: art resources for color and pattern change, interface for changing and saving changes to pet art
                 >> 3 starter genes with color selectors
                 
-        NEED for homepage: background img resources for each region, vector resources for themed environment elements  
+        NEED: background img resources for each region, vector resources for themed environment elements  
         ADD dropdowns on equip and custom pages to load specific unicorns
         ADD show page for unicorn, with buttons to go to equip and custom
         
         Pages with dynamic content: lair page, equip/custom/inventory pages, content of map (use loops?)
         
-        >> backdrop toggles affect div containing unicorn image
         
         >> ADD INDEX PAGE with all registered users so players can visit each others pages
         
-        >> ADD CHECK TO MAKE SURE NEW USER DOESN'T ALREADY HAVE A FOUNDER AND REGION TO PREVENT RE-CHOOSING, PUT FOUNDER FIELD BACK IN USER MODEL
+        >> ADD CHECK TO MAKE SURE NEW USER DOESN'T ALREADY HAVE A FOUNDER AND REGION TO PREVENT RE-CHOOSING, PUT FOUNDER FIELD BACK IN USER MODEL. Add redirect in founder choice route to check if founder field in userdata is empty. If not empty, redirect to login, add Flash message saying they already have a founder
         
         >> USE NAV-TABS FOR INVENTORY MENU, SEE BOOTSTRAP DOC
 			>>ADD ICONS TO NAV TABS (x) and navbar links
+			
+		>> REPLACE LOGO IMAGES WITH ICON FONT OR SVG
         
 FIND OUT:
 (X) how to generate incremented ID numbers per pet and companions (NOT mongodb id strings) (TEST auto-increment plugin)
@@ -42,11 +63,20 @@ how to generate images and image changes (equipping, customizing, etc)
 	how to layer and store equipped items on image
 	how to change and store colors and markings
 how to do FR style bio box (form that loads on same page [asynchronously?])
-how to change backgrounds from db on show page
 (X) how to load homepage bg based on user region
 how to display "none" for parents of gen 1s, how to display parents for bred unicorns (if statement?)
-how to let users vist each others lairs (use middleware to check ownership and display or not display appropriate buttons)
-how to have url on home pages reflect user id and/or unicorn id (NOT objectId) based on which user/unicorn you're viewing (like FR and gryffs)        
+(X) how to let users vist each others lairs (use middleware to check ownership and display or not display appropriate buttons)
+(X) how to have url on home pages reflect user id and/or unicorn id (NOT objectId) based on which user/unicorn you're viewing (like FR and gryffs) 
+how to create icon font from logo lettering OR svg
+
+RESOURCES NEEDED:
+Unicorn Icon for menu/nav items
+Gene Pattern Templates
+Equippable Item Vectors
+Vector or Pixel Map (map bg, scenery, sprites)
+
+Bug Notes:
+If there's a slash at the end of the homepage URL (eg: "/home/3/"), regional BG does not load
         
 Project structure:
 
