@@ -24,6 +24,10 @@ router.route("/login")
     }), function(req, res) {
 });
 
+router.get("/credits", function(req, res){
+   res.render("credits"); 
+});
+
 //INDEX, SITE HOMEPAGE
 router.get("/index", isLoggedIn, function(req, res) {
 	//get data of LOGGEDINUSER

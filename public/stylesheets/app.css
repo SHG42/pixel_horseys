@@ -39,6 +39,10 @@ h1, .headertext, .modal-title {
 	font-weight: bold;
 }
 
+.navbar-collapse {
+	background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+}
+
 .textboxes {
 	border: 2px solid black;
     background-color: rgb(192,192,192);
@@ -314,6 +318,29 @@ hr {
 	background-color: aliceblue;
 }
 
+.creditspage .nav-item .nav-link {
+	color: antiquewhite;
+	border-radius: 0;
+	border: 2px solid navajowhite;
+	margin-left: auto;
+	margin-right: auto;
+}
+.creditspage .nav-item {
+	padding: 0.5rem;
+	display: inline;
+}
+.creditspage .nav-item .active {
+	background-color: darkcyan;
+	font-weight: bold;
+}
+.creditspage .tab-content {
+	
+}
+.creditspage .tab-pane {
+	text-align: left;
+	margin: 3rem;
+	padding: 2rem;
+}
 
 
 
