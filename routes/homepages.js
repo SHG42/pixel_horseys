@@ -39,8 +39,9 @@ router.route("/home/:userid/unicorn/:uniid")
 		//get info and unicorns of PAGE-OWNER
 		common.User.findOne({userid: req.params.userid}).populate("region").populate("unicorns").exec(function(err, foundPageOwner){
 			if (err) return console.error('Uhoh, there was an error', err)
-			common.Unicorn.findOne({uniid: req.params.uniid}).populate({path: "unicorns", populate: { path: 'imgs.img', model: 'Image' }}).exec(function(err, foundUnicorn){
+			common.Unicorn.findOne({uniid: req.params.uniid}).populate({path: "imgs.img", model: "Image"}).exec(function(err, foundUnicorn){
 				if (err) return console.error('Uhoh, there was an error', err)
+				console.log(foundUnicorn.imgs.img);
 				res.render("bio", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser, unicorn: foundUnicorn});
 			});
 		});

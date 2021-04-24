@@ -20,8 +20,6 @@ var stage = new Konva.Stage({
 	container: "container"
 });
 
-console.log(Konva);
-
 let itemLayerBack = new Konva.Layer({id: "back"});
 stage.add(itemLayerBack);
 itemLayerBack.canvas.setPixelRatio(1)

@@ -2,24 +2,40 @@
 
 <div class="directorypage">
 	<% include ./partials/navbar %>
-	<div class="directory-list">
-		<ul class="userlist">
-			<h2 class="directoryheader">
-				Directory of Registered Adventurers
-			</h2>
+	<div id="directory-list">
+		<h2 class="directoryheader">
+			Directory of Registered Adventurers
+		</h2>
+		<input class="search" class="search" placeholder="Find An Adventurer"/>
+		<ul class="paginationTop d-flex justify-content-around flex-wrap py-2"></ul>
+		<ul class="list userlist">
+			<% registeredUsers.sort((a, b) => a.username.localeCompare(b.username)) %>
 			<% registeredUsers.forEach(function(user){ %>
 				<li>
-					<a href="/home/<%= user.userid %>"><%= user.username %></a>
+					<a class="username" href="/home/<%= user.userid %>"><%= user.username %></a>
 				</li>			
 			<% }); %>
 		</ul>
+		<ul class="paginationBottom d-flex justify-content-around flex-wrap py-2"></ul>
 	</div>
 </div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+<script>
+	var listOptions = {
+		valueNames: [ 'username' ],
+		page: 50,
+		pagination: [{
+		  name: "paginationTop",
+		  paginationClass: "paginationTop",
+		  outerWindow: 2
+		}, {
+		  paginationClass: "paginationBottom",
+		  innerWindow: 3,
+		  left: 2,
+		  right: 4
+		}]
+	};
 
-
-
-
-
-
-
+  var listObj = new List('directory-list', listOptions);
+</script>
 <% include ./partials/footer %>

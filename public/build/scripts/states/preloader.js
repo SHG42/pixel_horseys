@@ -10,7 +10,7 @@ export default class Preloader extends Phaser.State {
     preload() {
         //time event for showing logo
         this.timedEvent = this.time.events.add(Phaser.Timer.SECOND * 3, this.ready, this); 
-        this.createPreloader();
+		this.createPreloader();
     }
 
     createPreloader() {
@@ -82,5 +82,7 @@ export default class Preloader extends Phaser.State {
     startGame() {
         var data = {level: 0, newGame: true, levels: this.levels}
         this.game.state.start('NPC', true, false, data);
+		// var data = {level: 4, newGame: true, levels: this.levels}
+		// this.game.state.start('gameState', true, false, data);
     }
 }

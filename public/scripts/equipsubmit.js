@@ -3,14 +3,6 @@ async function sendData() {
 	tr.destroy();
 	// convert stage to dataURL to condense canvases to two images, front layer and back layer, then to two blobs for server transfer
 	var layers = stage.getLayers();
-	layers.forEach((layer)=>{
-		layer.clip({
-			x: 0,
-			y: 0,
-			width: 900,
-			height: 700
-		});
-	})
 	
 	if(layers[0].attrs.id === "back") {
 		var backLayer = layers[0];

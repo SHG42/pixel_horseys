@@ -16,6 +16,49 @@ var User        = require("./models/user"),
 Sharp.cache(false);
 console.log("Hello from Helpers");
 
+//SORT INVENTORY
+function sortInventory() {
+	var inventoryBackdrops = [];
+	var inventoryCompanions = [];
+	var inventoryDecorative = [];
+	var inventoryEnvironment = [];
+	var inventoryGems = [];
+	var inventoryTech = [];
+	var inventoryTiles = [];
+	
+	var inventory = Inventory.find({}).exec()
+	var sorted = inventory.then((result)=>{
+		result.forEach((item)=>{
+			if(item.category === "backdrops") {
+				inventoryBackdrops.push(item);
+			} else if(item.category === "companions") {
+				inventoryCompanions.push(item);	  
+			} else if(item.category === "decorative") {
+				inventoryDecorative.push(item);	  
+			} else if(item.category === "environment") {
+				inventoryEnvironment.push(item);	  
+			} else if(item.category === "gems") {
+				inventoryGems.push(item);	  
+			} else if(item.category === "tech") {
+				inventoryTech.push(item);	  
+			} else if(item.category === "tiles") {
+				inventoryTiles.push(item);	  
+			}
+		})
+		return {
+			inventoryBackdrops: inventoryBackdrops,
+			inventoryCompanions: inventoryCompanions,
+			inventoryDecorative: inventoryDecorative,
+			inventoryEnvironment: inventoryEnvironment,
+			inventoryGems: inventoryGems,
+			inventoryTech: inventoryTech,
+			inventoryTiles: inventoryTiles
+		}
+	})
+	return sorted;
+}
+
+
 //IMAGE COMPOSITE
 function runComposite(foundUnicorn) {
 	console.log("data from equip function in Helpers: ");
@@ -70,9 +113,8 @@ function runComposite(foundUnicorn) {
 	},
 	{
 		input: baseImg.img.data,
-		top: 650,
-		left: 850,
-		// gravity: "northwest"
+		top: y,
+		left: x,
 	}, 
 	{
 		input: frontEquips.img.data,
@@ -186,6 +228,11 @@ function dbReset(){
 	// 	if (err) return console.error('Uhoh, there was an error', err)	
 	// 	console.log("removed images");
 	// });
+	
+	// Inventory.deleteMany({}, function(err){
+	// 	if (err) return console.error('Uhoh, there was an error', err)
+	// 	console.log("removed inventory");
+	// });
 	// Inventory.counterReset('inventoryid', function(err){
 	// 	if (err) return console.error('Uhoh, there was an error', err)
 	// 	console.log("reset incremented inventory ids");
@@ -193,4 +240,4 @@ function dbReset(){
 }
 
 
-module.exports = {setData, dbReset, runComposite};
+module.exports = {setData, dbReset, runComposite, sortInventory};

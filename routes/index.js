@@ -44,10 +44,19 @@ router.get("/index", isLoggedIn, function(req, res) {
 router.get("/inventory", isLoggedIn, function(req, res){
 	common.User.findById(req.user._id, function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error (/inventory User.findById GET)', err)
-		common.Inventory.find({}, function(err, foundAllItems){
-			if (err) return console.error('Uhoh, there was an error(/inventory Inventory.find GET)', err)
-			res.render("inventory", {loggedInUser: foundLoggedInUser, Inventory: foundAllItems});
-		});
+		let sort = common.Helpers.sortInventory();
+		sort.then((result)=>{
+			res.render("inventory", {
+				loggedInUser: foundLoggedInUser,
+				inventoryBackdrops: result.inventoryBackdrops,
+				inventoryCompanions: result.inventoryCompanions,
+				inventoryDecorative: result.inventoryDecorative,
+				inventoryEnvironment: result.inventoryEnvironment,
+				inventoryGems: result.inventoryGems,
+				inventoryTech: result.inventoryTech,
+				inventoryTiles: result.inventoryTiles
+			});
+		})
 	});
 });
 
@@ -248,12 +257,21 @@ router.route("/build")
 // SHOW equip
 router.route("/equip")
 .get(isLoggedIn, function(req, res){
-	common.Inventory.find({}, function(err, foundAllItems){
-		if (err) return console.error('Uhoh, there was an error(/equip Inventory.find GET)', err)
-		common.User.findById(req.user._id).populate({ path: 'unicorns', populate: { path: 'imgs.baseImg', model: 'Image' }}).exec(function(err, foundLoggedInUser){
-			if (err) return console.error('Uhoh, there was an error (/equip User.findById GET)', err)
-			res.render("equip", {loggedInUser: foundLoggedInUser, Inventory: foundAllItems}); 
-		});
+	common.User.findById(req.user._id).populate({ path: 'unicorns', populate: { path: 'imgs.baseImg', model: 'Image' }}).exec(function(err, foundLoggedInUser){
+		if (err) return console.error('Uhoh, there was an error (/equip User.findById GET)', err)
+		let sort = common.Helpers.sortInventory();
+		sort.then((result)=>{
+			res.render("equip", {
+				loggedInUser: foundLoggedInUser,
+				inventoryBackdrops: result.inventoryBackdrops,
+				inventoryCompanions: result.inventoryCompanions,
+				inventoryDecorative: result.inventoryDecorative,
+				inventoryEnvironment: result.inventoryEnvironment,
+				inventoryGems: result.inventoryGems,
+				inventoryTech: result.inventoryTech,
+				inventoryTiles: result.inventoryTiles
+			});
+		})
 	});
 })
 .put([isLoggedIn, upload.any()], function(req, res){
@@ -319,7 +337,7 @@ router.route("/equip")
 		})
 	}
 	
-	var unicornUpdate = common.Unicorn.findByIdAndUpdate({_id: unicornId}, { "$set": { "equips": userChoices, "canvasposition.x": unicornPos.x, "canvasposition.y": unicornPos.y}}, {new: true})
+	var unicornUpdate = common.Unicorn.findByIdAndUpdate({_id: unicornId}, { "$set": { "equips": userChoices, "canvasposition.x": unicornCoords.x, "canvasposition.y": unicornCoords.y}}, {new: true})
 	.populate("imgs.baseImg")
 	.exec()
 	.then((foundUnicorn) => saveEquipImgBack(foundUnicorn))

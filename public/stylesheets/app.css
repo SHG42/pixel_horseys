@@ -33,12 +33,9 @@ h1, .headertext, .modal-title {
 .navbar {
     font-size: 1.5rem;
 }
-
 .navbar-nav li a {
-	text-decoration: underline;
 	font-weight: bold;
 }
-
 .navbar-collapse {
 	background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
 }
@@ -218,9 +215,9 @@ hr {
 	background-image: url("../../assets/background_imgs/site_layout_backgrounds/equip_inventory_background_scaledup.png");
 }
 .yourinventory .nav-item .nav-link, .yourequip .nav-item .nav-link {
-	color: antiquewhite;
+	color: ivory;
 	border-radius: 0;
-	border: 2px solid navajowhite;
+	border: 2px solid ivory;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -232,7 +229,7 @@ hr {
 	background-color: darkcyan;
 	font-weight: bold;
 }
-.inventorybox .tab-pane div {
+.inventorybox .tab-pane div, .equipbox .tab-pane div {
 	background-color: burlywood;
 	border: 1px solid wheat;
 	padding: 0.2rem;
@@ -271,37 +268,50 @@ hr {
             	linear-gradient(336deg, rgba(0,0,255,.8), rgba(0,0,255,0) 70.71%);
 }
 .colorSelector {
-	border: 2px solid navajowhite;
+	border: 2px solid ivory;
 	margin: 0.3rem;
 }
 .colorSelector:focus {
   	border: 4px solid limegreen;
 }
 
-.directory-list {
-	background-image: url("../../assets/background_imgs/site_layout_backgrounds/bookBG.jpg");
+#directory-list {
+	background-image: url("../../assets/background_imgs/site_layout_backgrounds/parchment.jpg");
 	text-align: center;
     width: 100%;
     position: absolute;
-    background-size: 100%;
+    background-size: 100% 100%;
     background-position: 50% 50%;
     background-repeat: no-repeat;
     min-height: 100vh;
 }
 .userlist {
-	background-color: rgb(237, 235, 227);
-	background-color: rgba(237, 235, 227, 0.7);
-	text-align: left;
-	margin: 3rem;
-	padding: 2rem;
+	background-color: rgb(255, 235, 205);
+	background-color: rgba(255, 235, 205, 0.7);
+	margin: 1rem;
+	padding: 1rem;
     overflow-y: scroll;
 	border: 5px double black;
 	height: 100vh;
 }
-.directoryheader {
+.paginationTop, .paginationBottom {
+	background-color: rgb(255, 235, 205);
+	background-color: rgba(255, 235, 205, 0.7);
 	text-align: center;
 	border: 5px double black;
-	padding: 0.5rem;
+	margin: 0.5rem auto 0.5rem auto;
+}
+.directoryheader {
+	background-color: rgb(255, 235, 205);
+	background-color: rgba(255, 235, 205, 0.7);
+	text-align: center;
+	border: 5px double black;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	width: 65%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 1rem;
 }
 
 .select-label {
@@ -319,9 +329,9 @@ hr {
 }
 
 .creditspage .nav-item .nav-link {
-	color: antiquewhite;
+	color: ivory;
 	border-radius: 0;
-	border: 2px solid navajowhite;
+	border: 2px solid ivory;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -334,9 +344,11 @@ hr {
 	font-weight: bold;
 }
 .creditspage .tab-content {
-	
+	background: rgb(93,93,96);
+	background: linear-gradient(90deg, rgba(93,93,96,1) 0%, rgba(213,211,211,1) 100%);
 }
 .creditspage .tab-pane {
+	background: rgba(213,211,211,1);
 	text-align: left;
 	margin: 3rem;
 	padding: 2rem;

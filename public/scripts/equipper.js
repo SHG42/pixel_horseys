@@ -78,7 +78,7 @@ function loadItem(event) {
 			itemNode.setAttrs({
 				x: 0,
 				y: 0,
-				id: itemPick.dataset.name,
+				id: itemPick.dataset.bsName,
 				draggable: true,
 				name: "item"
 			});

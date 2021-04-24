@@ -82,35 +82,58 @@ export default class gameState extends Phaser.State {
     
         // run ledge climbing function
         this.ledgeClimb();
+		
+		this.hero.body.velocity.x = 0;
+		
+		var isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down);
+		var isJumping = (!isOnGround && !this.hero.isGrabbing);
     
-        this.hero.body.velocity.x = 0;
-        
-        //Running anims
-        if (this.controls.left.isDown && !this.controls.right.isDown && !this.controls.up.isDown) {
-            this.hero.body.velocity.x -= 150;
-            this.hero.animations.play('run-left');
-        } else if (this.controls.right.isDown && !this.controls.left.isDown && !this.controls.up.isDown) {
-            this.hero.body.velocity.x += 150;
-            this.hero.animations.play('run-right');
-        } 
+		//Running anims
+		if (this.controls.left.isDown && this.controls.right.isUp && this.controls.up.isUp) {
+			this.hero.body.velocity.x = -150;
+			this.hero.animations.play('run-left');
+		} else if (this.controls.right.isDown && this.controls.left.isUp && this.controls.up.isUp) {
+			this.hero.body.velocity.x = 150;
+			this.hero.animations.play('run-right');
+		} 
+		
+		if(this.runRight.isPlaying && this.controls.up.isDown || isJumping) {
+		   this.runRight.stop(false, true);
+		} else if(this.runLeft.isPlaying && this.controls.up.isDown || isJumping) {
+		   this.runLeft.stop(false, true);
+		}
     
         //Jumping
-        //timer prevents rapid jumping
-        if (this.controls.up.isDown && this.hero.whichDirection == 'left' && this.game.time.now > this.jumpTimer && (this.hero.body.blocked.down || this.hero.body.touching.down)) {
-            this.hero.animations.play('jump-left');
-            this.hero.body.velocity.y -= 400;
-            this.jumpTimer = this.game.time.now + 1000;
-        } else if (this.controls.up.isDown && this.hero.whichDirection == 'right' && this.game.time.now > this.jumpTimer && (this.hero.body.blocked.down || this.hero.body.touching.down)) {
-            this.hero.animations.play('jump-right');
-            this.hero.body.velocity.y -= 400;
-            this.jumpTimer = this.game.time.now + 1000;
+        if (this.controls.up.justDown && isOnGround) {
+            this.hero.body.velocity.y = -350;
         }
-    
-        if (this.hero.isJumping && this.controls.left.isDown && this.controls.up.isDown) {
-            this.hero.body.velocity.x -= 200;
-        } else if (this.hero.isJumping && this.controls.right.isDown && this.controls.up.isDown) {
-            this.hero.body.velocity.x += 200;
-        }
+		
+		if (isJumping && this.hero.whichDirection == "left" && this.controls.left.isUp && this.controls.right.isUp) {
+			this.hero.animations.play('up-left');
+		} else if (isJumping && this.hero.whichDirection == "right" && this.controls.left.isUp && this.controls.right.isUp) {
+			this.hero.animations.play('up-right');
+		}
+		
+		if(this.upRight.isPlaying && isOnGround) {
+		   this.upRight.stop(false, true);
+		} else if(this.upLeft.isPlaying && isOnGround) {
+		   this.upLeft.stop(false, true);
+		}
+		
+		if(isJumping && this.hero.whichDirection == "left" && this.controls.left.isDown && this.controls.right.isUp) {
+			this.hero.body.velocity.x = -200;
+			this.hero.animations.play('jump-left');
+		} else if(isJumping && this.hero.whichDirection == "right" && this.controls.right.isDown && this.controls.left.isUp) {
+			this.hero.body.velocity.x = 200;
+			this.hero.animations.play('jump-right');
+		}
+		
+		//ledge escape
+		if(this.controls.left.isDown || this.controls.right.isDown && (this.hero.body.immovable == true || this.hero.body.moves == false || this.hero.isGrabbing)) {
+			this.hero.body.immovable = false; 
+            this.hero.body.moves = true;
+            this.hero.isGrabbing = false;
+		}
     }
 
     makeMap() {
@@ -235,15 +258,15 @@ export default class gameState extends Phaser.State {
             if (this._NEWGAME && this._LEVEL === 1) {
                 //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
                 if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3.png');
+                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3');
                 }
             } else if (!this._NEWGAME && this._LEVEL === 1) {
                 if (entrance.name === 'portalfromcave') {
                     //if returning from cave, load sprite at return pt
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3.png');
+                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3');
                 }
             } else { //otherwise, use whatever coordinates come back when function runs
-                this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3.png');
+                this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3');
             }
         });
         
@@ -258,6 +281,7 @@ export default class gameState extends Phaser.State {
         this.hero.body.bounce.y = 0.3;
         this.hero.body.collideWorldBounds = true;
         this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
+		
         //enable hero for slopes
         this.game.slopes.enable(this.hero);
         // Prefer the minimum Y offset for this physics body
@@ -269,38 +293,40 @@ export default class gameState extends Phaser.State {
         this.hero.whichDirection = 'right';
         //set custom property to handle whether player is grabbing a ledge at the moment, default 'no'
         this.hero.isGrabbing = false;
-        //add custom property to indicate sprite jumping
-        this.hero.isJumping = false;
     }
     
     createAnims() {
         //Hero anims
         //idle
-        this.idleRight = this.hero.animations.add('idle-right', Phaser.Animation.generateFrameNames('idle-right-', 0, 3, '-1.3.png', 2), 2, true, false);
-        this.idleLeft = this.hero.animations.add('idle-left', Phaser.Animation.generateFrameNames('idle-left-', 0, 3, '-1.3.png', 2), 2, true, false);
+        this.idleRight = this.hero.animations.add('idle-right', Phaser.Animation.generateFrameNames('idle-right-', 0, 3, '-1.3', 2), 2, true, false);
+        this.idleLeft = this.hero.animations.add('idle-left', Phaser.Animation.generateFrameNames('idle-left-', 0, 3, '-1.3', 2), 2, true, false);
     
         //run
-        this.runRight = this.hero.animations.add('run-right', Phaser.Animation.generateFrameNames('run-right-', 0, 5, '-1.3.png', 2), 10, true, false);
-        this.runLeft = this.hero.animations.add('run-left', Phaser.Animation.generateFrameNames('run-left-', 0, 5, '-1.3.png', 2), 10, true, false);
+        this.runRight = this.hero.animations.add('run-right', Phaser.Animation.generateFrameNames('run-right-', 0, 5, '-1.3', 2), 10, true, false);
+        this.runLeft = this.hero.animations.add('run-left', Phaser.Animation.generateFrameNames('run-left-', 0, 5, '-1.3', 2), 10, true, false);
     
         //jump
-        this.jumpRight = this.hero.animations.add('jump-right', Phaser.Animation.generateFrameNames('jump-right-', 0, 5, '-1.3.png', 2), 15, false, false);
-        this.jumpLeft = this.hero.animations.add('jump-left', Phaser.Animation.generateFrameNames('jump-left-', 0, 5, '-1.3.png', 2), 15, false, false);
+        this.jumpRight = this.hero.animations.add('jump-right', Phaser.Animation.generateFrameNames('jump-right-', 0, 5, '-1.3', 2), 10, false, false);
+        this.jumpLeft = this.hero.animations.add('jump-left', Phaser.Animation.generateFrameNames('jump-left-', 0, 5, '-1.3', 2), 10, false, false);
+		
+		//static jump
+		this.upRight = this.hero.animations.add('up-right', Phaser.Animation.generateFrameNames('crnr-jmp-right-', 0, 1, '-1.3', 2), 10, true, false);
+		this.upLeft = this.hero.animations.add('up-left', Phaser.Animation.generateFrameNames('crnr-jmp-left-', 0, 1, '-1.3', 2), 10, true, false);
     
         //grab
-        this.grabLeft = this.hero.animations.add('grab-left', Phaser.Animation.generateFrameNames('crnr-grb-left-', 0, 3, '-1.3.png', 2), 3, true, false);
-        this.grabRight = this.hero.animations.add('grab-right', Phaser.Animation.generateFrameNames('crnr-grb-right-', 0, 3, '-1.3.png', 2), 3, true, false);
+        this.grabLeft = this.hero.animations.add('grab-left', Phaser.Animation.generateFrameNames('crnr-grb-left-', 0, 3, '-1.3', 2), 3, true, false);
+        this.grabRight = this.hero.animations.add('grab-right', Phaser.Animation.generateFrameNames('crnr-grb-right-', 0, 3, '-1.3', 2), 3, true, false);
     
         //climb
-        this.climbLeft = this.hero.animations.add('climb-left', Phaser.Animation.generateFrameNames('crnr-clmb-left-', 0, 4, '-1.3.png', 2), 10, false, false);
-        this.climbRight = this.hero.animations.add('climb-right', Phaser.Animation.generateFrameNames('crnr-clmb-right-', 0, 4, '-1.3.png', 2), 10, false, false);
+        this.climbLeft = this.hero.animations.add('climb-left', Phaser.Animation.generateFrameNames('crnr-clmb-left-', 0, 4, '-1.3', 2), 10, false, false);
+        this.climbRight = this.hero.animations.add('climb-right', Phaser.Animation.generateFrameNames('crnr-clmb-right-', 0, 4, '-1.3', 2), 10, false, false);
     
         //animations settings
-        this.jumpRight.onStart.add(function() { this.hero.isJumping = true; }, this);
-        this.jumpLeft.onStart.add(function() { this.hero.isJumping = true; }, this);
-    
-        this.jumpRight.onComplete.add(function() { this.hero.animations.play('idle-right'); this.hero.isJumping = false; }, this);
-        this.jumpLeft.onComplete.add(function() { this.hero.animations.play('idle-left'); this.hero.isJumping = false; }, this);
+        this.jumpRight.onComplete.add(function() { this.hero.animations.play('idle-right'); }, this);
+        this.jumpLeft.onComplete.add(function() { this.hero.animations.play('idle-left'); }, this);
+		
+        this.upRight.onComplete.add(function() { this.hero.animations.play('idle-right'); }, this);
+        this.upLeft.onComplete.add(function() { this.hero.animations.play('idle-left'); }, this);
     
         this.grabLeft.onStart.add(function() { this.hero.body.immovable = true; this.hero.body.moves = false; this.hero.isGrabbing = true; }, this);
         this.grabRight.onStart.add(function() { this.hero.body.immovable = true; this.hero.body.moves = false; this.hero.isGrabbing = true; }, this);
@@ -326,8 +352,6 @@ export default class gameState extends Phaser.State {
     }
     
     addControls() {
-        //ininiate jump reset timer
-        this.jumpTimer = 0;
         //initiate cursor keys
         this.controls = this.game.input.keyboard.createCursorKeys();
         //add special controls for grab and climb
@@ -342,22 +366,6 @@ export default class gameState extends Phaser.State {
     
         this.controls.left.onDown.add(function() { this.hero.whichDirection = 'left' }, this);
         this.controls.right.onDown.add(function() { this.hero.whichDirection = 'right' }, this);
-    
-        //let go of ledge & reset isGrabbing if cursor keys pressed
-        this.controls.left.onDown.add(function() {
-            if (this.hero.body.immovable == true && this.hero.body.moves == false && this.hero.isGrabbing) {
-                this.hero.body.immovable = false; 
-                this.hero.body.moves = true;
-                this.hero.isGrabbing = false;
-            }
-        }, this);
-        this.controls.right.onDown.add(function() {
-            if (this.hero.body.immovable == true && this.hero.body.moves == false && this.hero.isGrabbing) {
-                this.hero.body.immovable = false; 
-                this.hero.body.moves = true;
-                this.hero.isGrabbing = false;
-            }
-        }, this);
     }
     
     onGoal(hero, goal) {
