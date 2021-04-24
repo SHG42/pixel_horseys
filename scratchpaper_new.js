@@ -1,3 +1,7 @@
+
+// var data = {level: 4, newGame: true, levels: this.levels}
+		// this.game.state.start('gameState', true, false, data);
+
 //CORRECT ANIMS BUT NO FORWARD LEAP
 this.hero.body.velocity.x = 0;
 		
