@@ -17,10 +17,15 @@ app.use(express.static("public"));
 app.use(common.methodOverride("_method"));
 app.set("view engine", "ejs");
 
-app.use(require("express-session")({
+app.use(common.session({
     secret: process.env.EXPRESS_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+	store: common.MongoStore.create({
+		mongoUrl: process.env.DB_CONN,
+		secret: process.env.EXPRESS_SECRET,
+		touchAfter: 24 * 60 * 60
+	})
 }));
 
 app.use(function (req, res, next) {
@@ -44,8 +49,8 @@ common.passport.use(new common.LocalStrategy(common.User.authenticate()));
 common.passport.serializeUser(common.User.serializeUser());
 common.passport.deserializeUser(common.User.deserializeUser());
 
-// common.Seed.seedDB();
-common.Helpers.dbReset();
+common.Seed.seedDB();
+// common.Helpers.dbReset();
 
 app.use(newPlayerRoutes);
 app.use(homeRoutes);

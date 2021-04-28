@@ -3,6 +3,8 @@ module.exports = {
     methodOverride          : require("method-override"),
     mongoose                : require("mongoose"),
     expressSanitizer        : require("express-sanitizer"),
+	session					: require("express-session"),
+	MongoStore				: require('connect-mongo'),
     passport                : require("passport"),
     LocalStrategy           : require("passport-local"),
     passportLocalMongoose   : require("passport-local-mongoose"),

@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 
 var breedSchema = new mongoose.Schema({
 	name: String,
+	publicName: String,
 	id: String,
 	lineart: {
 		baseImg: String
