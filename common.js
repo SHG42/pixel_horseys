@@ -23,6 +23,5 @@ module.exports = {
 	Breed                   : require("./models/breed"),
 	Gene                    : require("./models/gene"),
 	Image				  	: require("./models/image"),
-	Inventory				: require("./models/inventory.js"),
-	Seed					: require("./seeds")
+	Inventory				: require("./models/inventory.js")
 }
