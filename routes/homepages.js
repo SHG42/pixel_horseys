@@ -1,10 +1,9 @@
-//SEE: ROUTE DECLARATION REFACTORING LATER, LECTURE 345 YELPCAMP: REFACTORING ROUTES./
-var common = require("../common");
-var express = require("express");
-var router 	= express.Router({mergeParams: true});
+import { multer, User, Unicorn } from "../common";
+import { Router } from "express";
+var router 	= Router({mergeParams: true});
 
-var mstorage = common.multer.memoryStorage();
-var upload = common.multer({ storage: mstorage });
+var mstorage = multer.memoryStorage();
+var upload = multer({ storage: mstorage });
 
 
 router.route("/home/:userid")
@@ -13,10 +12,10 @@ router.route("/home/:userid")
 	// console.log(req.user._id);
 	// console.log(req.params.userid);
 	//get LOGGEDINUSER
-	common.User.findById(req.user._id, function(err, foundLoggedInUser){
+	User.findById(req.user._id, function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error', err);
 		//get info and unicorns of PAGE-OWNER
-		common.User.findOne({userid: req.params.userid}).populate({path: "region"}).populate({path: "unicorns", populate: { path: 'imgs.img', model: 'Image' }}).exec(function(err, foundPageOwner){
+		User.findOne({userid: req.params.userid}).populate({path: "region"}).populate({path: "unicorns", populate: { path: 'imgs.img', model: 'Image' }}).exec(function(err, foundPageOwner){
 			if (err) return console.error('Uhoh, there was an error', err)
 			res.render("home", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser});
 		});
@@ -25,7 +24,7 @@ router.route("/home/:userid")
 .put(isLoggedIn, function(req, res){
 	req.body.newName = req.sanitize(req.body.newName);
 	var newName = req.body.newName;
-	common.Unicorn.findByIdAndUpdate(req.body.unicornid, {$set: {name: newName}}, {new: true}, function(err, foundUnicorn){
+	Unicorn.findByIdAndUpdate(req.body.unicornid, {$set: {name: newName}}, {new: true}, function(err, foundUnicorn){
 		if (err) return console.error('Uhoh, there was an error Unicorn.findByIdAndUpdate{$set: {name: newName}} PUT', err)
 		res.redirect("/home/" + req.params.userid);
 	});
@@ -34,12 +33,12 @@ router.route("/home/:userid")
 // SHOW unicorn bio page
 router.route("/home/:userid/unicorn/:uniid")
 .get(isLoggedIn, function(req, res){
-	common.User.findById(req.user._id, function(err, foundLoggedInUser){
+	User.findById(req.user._id, function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error', err);
 		//get info and unicorns of PAGE-OWNER
-		common.User.findOne({userid: req.params.userid}).populate("region").populate("unicorns").exec(function(err, foundPageOwner){
+		User.findOne({userid: req.params.userid}).populate("region").populate("unicorns").exec(function(err, foundPageOwner){
 			if (err) return console.error('Uhoh, there was an error', err)
-			common.Unicorn.findOne({uniid: req.params.uniid}).populate({path: "imgs.img", model: "Image"}).exec(function(err, foundUnicorn){
+			Unicorn.findOne({uniid: req.params.uniid}).populate({path: "imgs.img", model: "Image"}).exec(function(err, foundUnicorn){
 				if (err) return console.error('Uhoh, there was an error', err)
 				console.log(foundUnicorn.imgs.img);
 				res.render("bio", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser, unicorn: foundUnicorn});
@@ -52,7 +51,7 @@ router.route("/home/:userid/unicorn/:uniid")
 	console.log(req.params);
 	// var newLore = req.sanitize(req.body.unicorn.lore);
 	var newLore = req.body.lore;
-	common.Unicorn.findOneAndUpdate({uniid: req.params.uniid}, {$set: {lore: newLore}}, {new: true}, function(err, foundUnicorn){
+	Unicorn.findOneAndUpdate({uniid: req.params.uniid}, {$set: {lore: newLore}}, {new: true}, function(err, foundUnicorn){
 	   	if (err) return console.error('Uhoh, there was an error', err) 
 		res.redirect("/home/" + req.params.userid + "/unicorn/" + req.params.uniid);
 	});
@@ -87,4 +86,4 @@ router.get("/logout", function(req, res) {
     res.redirect("/login");
 });
 
-module.exports = router;
+export default router;

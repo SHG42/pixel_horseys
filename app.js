@@ -6,8 +6,7 @@ import newPlayerRoutes from "./routes/newplayer";
 import homeRoutes from "./routes/homepages";
 import indexRoutes from "./routes/index";
 
-const dbURL = process.env.DB_CONN || "mongodb://localhost:27017/sunflame_mountain";
-mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
+mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));

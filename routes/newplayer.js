@@ -1,9 +1,9 @@
-var common = require("../common");
-var express = require("express");
-var router 	= express.Router({mergeParams: true});
+import { multer, User, passport, Breed, Gene, Region } from "../common";
+import { Router } from "express";
+var router 	= Router({mergeParams: true});
 
-var mstorage = common.multer.memoryStorage();
-var upload = common.multer({ storage: mstorage });
+var mstorage = multer.memoryStorage();
+var upload = multer({ storage: mstorage });
 //req.user will contain credentials of loggedin user
 //pass currentUser through to all routes where user data needs to be available
 
@@ -15,13 +15,13 @@ router.route("/register")
 })
 .post(function(req, res){
     //get data from reg form and store in user data
-    var newUser = new common.User({username: req.body.username, email: req.body.email});
-    common.User.register(newUser, req.body.password, function(err, createdUser){
+    var newUser = new User({username: req.body.username, email: req.body.email});
+    User.register(newUser, req.body.password, function(err, createdUser){
        if(err) {
            console.log(err);
            return res.render("register");
        } 
-       common.passport.authenticate("local")(req, res, function(){
+       passport.authenticate("local")(req, res, function(){
            res.redirect("/firstlogin");
        });
     });
@@ -31,7 +31,7 @@ router.route("/firstlogin")
 .get(function(req, res){
   res.render("firstlogin"); 
 })
-.post(common.passport.authenticate("local", {
+.post(passport.authenticate("local", {
         successRedirect: "/founder",
         failureRedirect: "/firstlogin"
     }), function(req, res) {
@@ -39,9 +39,9 @@ router.route("/firstlogin")
 
 router.route("/founder")
 .get(isLoggedIn, function(req, res) {
-	common.Breed.find({}, function(err, foundAllBreeds){
+	Breed.find({}, function(err, foundAllBreeds){
 		if (err) return console.error('Uhoh, there was an error (/founder Breed.find GET)', err)
-		common.Gene.find({}, function(err, foundAllGenes){
+		Gene.find({}, function(err, foundAllGenes){
 			if (err) return console.error('Uhoh, there was an error (/founder Gene.find GET)', err)
 			res.render("founder", {currentUser: req.user, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 		});
@@ -54,17 +54,17 @@ router.route("/founder")
 
 router.route("/region")
 .get(isLoggedIn, function(req, res) {
-	common.Region.find({}, function(err, foundAllRegions){
+	Region.find({}, function(err, foundAllRegions){
 		if (err) return console.error('Uhoh, there was an error (/region Region.find GET)', err)
 		res.render("region", {currentUser: req.user, Regions: foundAllRegions}); 
 	})
 })
 .put(isLoggedIn, function(req, res) {
    	//find user by id and update
-	common.Region.findOne({name: req.body.selectedName}, function(err, foundRegion){
+	Region.findOne({name: req.body.selectedName}, function(err, foundRegion){
 		if (err) return console.error('Uhoh, there was an error (/region Region.findOne PUT)', err)
 		var foundARegion = foundRegion;
-		common.User.findByIdAndUpdate(req.user._id, {region: foundARegion}, function(err, foundUser){
+		User.findByIdAndUpdate(req.user._id, {region: foundARegion}, function(err, foundUser){
 		    if (err) return console.error('Uhoh, there was an error (/region User.findByIdAndUpdate PUT)', err)
 			// console.log("req.user from findByIdAndUpdate in region PUT route: ");
 			// console.log(req.user);
@@ -80,4 +80,4 @@ function isLoggedIn(req, res, next){
     res.redirect("/firstlogin");
 }
 
-module.exports = router;
+export default router;
