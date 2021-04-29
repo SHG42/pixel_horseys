@@ -8,7 +8,8 @@ var newPlayerRoutes = require("./routes/newplayer"),
 	homeRoutes      = require("./routes/homepages"),
 	indexRoutes     = require("./routes/index");
 
-common.mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
+const dbURL = process.env.DB_CONN || "mongodb://localhost:27017/sunflame_mountain";
+common.mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 
 app.use(common.bodyParser.json());
 app.use(common.bodyParser.urlencoded({extended: true}));
@@ -22,14 +23,13 @@ app.use(common.session({
     resave: false,
     saveUninitialized: false,
 	store: common.MongoStore.create({
-		mongoUrl: process.env.DB_CONN,
+		mongoUrl: dbURL,
 		secret: process.env.EXPRESS_SECRET,
 		touchAfter: 24 * 60 * 60
 	})
 }));
 
 app.use(function (req, res, next) {
-    // console.log(req.method + " " + req.url);
     res.locals.req = req;
     res.locals.res = res;
 
@@ -48,9 +48,6 @@ app.use(common.passport.session());
 common.passport.use(new common.LocalStrategy(common.User.authenticate()));
 common.passport.serializeUser(common.User.serializeUser());
 common.passport.deserializeUser(common.User.deserializeUser());
-
-common.Seed.seedDB();
-// common.Helpers.dbReset();
 
 app.use(newPlayerRoutes);
 app.use(homeRoutes);
