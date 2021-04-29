@@ -1,10 +1,11 @@
-import express, { static } from "express";
-var app = express();
-import { mongoose, bodyParser, expressSanitizer, methodOverride, session, MongoStore, cloudinary, passport, LocalStrategy, User } from './common';	
+var 
+	  express                 = require("express"),
+    app                     = express(),
+	  common					        = require('./common');	
 // //ROUTE REQUIRES
-import newPlayerRoutes from "./routes/newplayer";
-import homeRoutes from "./routes/homepages";
-import indexRoutes from "./routes/index";
+var newPlayerRoutes = require("./routes/newplayer"),
+	homeRoutes      = require("./routes/homepages"),
+	indexRoutes     = require("./routes/index");
 
 mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 

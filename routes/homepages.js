@@ -1,9 +1,9 @@
-import { multer, User, Unicorn } from "../common";
-import { Router } from "express";
-var router 	= Router({mergeParams: true});
+var common = require("../common");
+var express = require("express");
+var router 	= express.Router({mergeParams: true});
 
-var mstorage = multer.memoryStorage();
-var upload = multer({ storage: mstorage });
+var mstorage = common.multer.memoryStorage();
+var upload = common.multer({ storage: mstorage });
 
 
 router.route("/home/:userid")
