@@ -86,4 +86,4 @@ router.get("/logout", function(req, res) {
     res.redirect("/login");
 });
 
-export default router;
+module.exports = router;

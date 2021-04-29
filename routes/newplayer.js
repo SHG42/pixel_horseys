@@ -78,4 +78,4 @@ function isLoggedIn(req, res, next){
     res.redirect("/firstlogin");
 }
 
-export default router;
+module.exports = router;
