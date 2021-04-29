@@ -1,27 +1,27 @@
-var 
+var
 	  express                 = require("express"),
     app                     = express(),
 	  common					        = require('./common');	
 // //ROUTE REQUIRES
 var newPlayerRoutes = require("./routes/newplayer"),
-	homeRoutes      = require("./routes/homepages"),
-	indexRoutes     = require("./routes/index");
+	  homeRoutes      = require("./routes/homepages"),
+	  indexRoutes     = require("./routes/index");
 
-mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
+common.mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(expressSanitizer());
-app.use(static("public"));
-app.use(methodOverride("_method"));
+app.use(common.bodyParser.json());
+app.use(common.bodyParser.urlencoded({extended: true}));
+app.use(common.expressSanitizer());
+app.use(express.static("public"));
+app.use(common.methodOverride("_method"));
 app.set("view engine", "ejs");
 
-app.use(session({
+app.use(common.session({
     secret: process.env.EXPRESS_SECRET,
     resave: false,
     saveUninitialized: false,
-	store: MongoStore.create({
-		mongoUrl: dbURL,
+	store: common.MongoStore.create({
+		mongoUrl: process.env.DB_CONN,
 		secret: process.env.EXPRESS_SECRET,
 		touchAfter: 24 * 60 * 60
 	})
@@ -41,11 +41,11 @@ app.use(function (req, res, next) {
     }
   });
 
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+app.use(common.passport.initialize());
+app.use(common.passport.session());
+common.passport.use(new common.LocalStrategy(common.User.authenticate()));
+common.passport.serializeUser(common.User.serializeUser());
+common.passport.deserializeUser(common.User.deserializeUser());
 
 app.use(newPlayerRoutes);
 app.use(homeRoutes);

@@ -19,7 +19,7 @@ router.route("/register")
            console.log(err);
            return res.render("register");
        } 
-       passport.authenticate("local")(req, res, function(){
+       common.passport.authenticate("local")(req, res, function(){
            res.redirect("/firstlogin");
        });
     });
@@ -29,7 +29,7 @@ router.route("/firstlogin")
 .get(function(req, res){
   res.render("firstlogin"); 
 })
-.post(passport.authenticate("local", {
+.post(common.passport.authenticate("local", {
         successRedirect: "/founder",
         failureRedirect: "/firstlogin"
     }), function(req, res) {
