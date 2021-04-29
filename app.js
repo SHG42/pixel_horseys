@@ -1,28 +1,26 @@
-var 
-	dotenv 				  	= require('dotenv').config(),
-	express                 = require("express"),
-    app                     = express(),
-	common					= require('./common');	
+import express, { static } from "express";
+var app = express();
+import { mongoose, bodyParser, expressSanitizer, methodOverride, session, MongoStore, cloudinary, passport, LocalStrategy, User } from './common';	
 // //ROUTE REQUIRES
-var newPlayerRoutes = require("./routes/newplayer"),
-	homeRoutes      = require("./routes/homepages"),
-	indexRoutes     = require("./routes/index");
+import newPlayerRoutes from "./routes/newplayer";
+import homeRoutes from "./routes/homepages";
+import indexRoutes from "./routes/index";
 
 const dbURL = process.env.DB_CONN || "mongodb://localhost:27017/sunflame_mountain";
-common.mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
+mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 
-app.use(common.bodyParser.json());
-app.use(common.bodyParser.urlencoded({extended: true}));
-app.use(common.expressSanitizer());
-app.use(express.static("public"));
-app.use(common.methodOverride("_method"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(expressSanitizer());
+app.use(static("public"));
+app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 
-app.use(common.session({
+app.use(session({
     secret: process.env.EXPRESS_SECRET,
     resave: false,
     saveUninitialized: false,
-	store: common.MongoStore.create({
+	store: MongoStore.create({
 		mongoUrl: dbURL,
 		secret: process.env.EXPRESS_SECRET,
 		touchAfter: 24 * 60 * 60
@@ -37,17 +35,17 @@ app.use(function (req, res, next) {
       throw new Error('Missing CLOUDINARY_URL environment variable');
     } else {
 		// Expose cloudinary package to view
-		res.locals.cloudinary = common.cloudinary;
+		res.locals.cloudinary = cloudinary;
 		res.locals.cloudname = process.env.CLOUDNAME;
       next();
     }
   });
 
-app.use(common.passport.initialize());
-app.use(common.passport.session());
-common.passport.use(new common.LocalStrategy(common.User.authenticate()));
-common.passport.serializeUser(common.User.serializeUser());
-common.passport.deserializeUser(common.User.deserializeUser());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use(newPlayerRoutes);
 app.use(homeRoutes);
