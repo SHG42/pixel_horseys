@@ -27,10 +27,8 @@
     </div>
 </div>
 <script>
-	console.log("loggedInUser is: ");
 	var region = '<%- JSON.stringify(loggedInUser) %>';
 	var parsed = JSON.parse(region);
-	console.log(parsed);
 </script>
 
 <% include ./partials/footer %>

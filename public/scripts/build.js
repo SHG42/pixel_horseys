@@ -62,7 +62,6 @@ function setUnicornSelection(event) {
 			colors = unicorn.colors;
 			currentGenes = unicorn.genes;
 			currentId = unicorn.breedid;
-			// console.log(unicorn);
 		}
 	});
 	//get breed that matches currently selected existing unicorn and store associated data
@@ -128,7 +127,6 @@ function setUnicornSelection(event) {
 			Gene = currentGenes.bodyGene;
 			Child = child;
 			setColorable();
-			// console.log(Child);
 			setPresetColor();
 		} else if(child.attrs.id === "hairGene") {
 			if(currentGenes.hairGene.baseImg !== "") {

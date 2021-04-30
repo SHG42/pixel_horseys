@@ -53,12 +53,8 @@
 </div>
 <% } %>
 <script>
-	console.log("loggedInUser is: ");
 	var loggedIn = <%- JSON.stringify(loggedInUser) %>;
-	console.log(loggedIn);
-	console.log("currentPageOwner is: ");
 	var pageOwner = <%- JSON.stringify(currentPageOwner) %>;
-	console.log(pageOwner);
 	
 	var nameModal = document.getElementById('nameModal');
 	nameModal.addEventListener('show.bs.modal', function (event) {

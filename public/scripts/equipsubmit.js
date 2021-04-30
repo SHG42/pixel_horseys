@@ -55,9 +55,7 @@ async function sendData() {
 		body: formData
 	});
 	let result = await response;
-	console.log(result);
 	if(result.ok) {
-		console.log(result);
 		window.location = "/equip";
 	}
 }

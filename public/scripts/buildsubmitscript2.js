@@ -26,7 +26,6 @@ async function submitData2() {
 							colors: colorDataPackage,
 						};
 	let dataString = JSON.stringify(dataPackage);
-	console.log(dataPackage.genePicks);
 
 	let formData = new FormData();
 	formData.append("image", blob, "image.png");
@@ -39,7 +38,6 @@ async function submitData2() {
 	});
 	let result = await response;
 	if(result.ok) {
-		console.log(result);
 		window.location = "/index";
 	}
 }
