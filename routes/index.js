@@ -133,15 +133,13 @@ router.route("/build")
 		}
 	}
 	
-	function createImage(newUnicorn) {
-		return common.Image.create(buffer)
-		.then((newImage)=>{
-			newImage.filename = newUnicorn._id.valueOf();
-			return {
-				newUnicorn: newUnicorn,
-				newImage: newImage
-			}
-		})
+	async function createImage(newUnicorn) {
+		const newImage = await common.Image.create(buffer);
+		newImage.filename = newUnicorn._id.valueOf();
+		return {
+			newUnicorn: newUnicorn,
+			newImage: newImage
+		};
 	}
 	
 	var unicornCreate = common.Unicorn.create(unicornData)
@@ -183,7 +181,8 @@ router.route("/build")
 	let unicornData = common.Helpers.setData(userChoices);
 	let buffer = req.files[0].buffer;
 	
-	function runUpload(foundImage, buffer, foundUnicorn) {
+	async function runUpload(foundImage, buffer, foundUnicorn) {
+		console.log("running upload from /build .put");
 		var path = foundImage.filename;
 		var folder = `Unicorns/${foundUnicorn._id}/baseImg`;
 		let options = {
@@ -195,35 +194,36 @@ router.route("/build")
 		}
 		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer));
-		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
-			// console.log(error, result);
+		var upload = bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function (error, result) {
+			console.log("cloudinary output in /build .put");
+			console.log(error, result);
 			foundImage.version = result.version;
-			foundImage.img.data = buffer;
 			foundImage.save();
 			return foundImage;
 		}))
+		foundUnicorn.set("imgs.baseImg", foundImage);
 		return {
 			foundUnicorn: foundUnicorn
 		}
 	}
 	
-	function findImage(foundUnicorn) {
-		return common.Image.findById({_id: foundUnicorn.imgs.baseImg._id})
-		.then(foundImage => {
-			return {
-				foundUnicorn: foundUnicorn,
-				foundImage: foundImage
-			}
-		})
+	async function findImage(foundUnicorn) {
+		console.log("finding and updating image document");
+		const foundImage = await common.Image.findByIdAndUpdate(foundUnicorn.imgs.baseImg._id, {"$set": {"img.data": buffer}}, {new: true});
+		return {
+			foundUnicorn: foundUnicorn,
+			foundImage: foundImage
+		};
 	}
 	
-	var unicornUpdate = common.Unicorn.findByIdAndUpdate(req.body.unicornId, { "$set": { "genes": unicornData.genes, "colors": unicornData.colors}}, {new: true})
+	var unicornUpdate = common.Unicorn.findByIdAndUpdate(req.body.unicornId, { "$set": { "genes": unicornData.genes, "colors": unicornData.colors, "breedid": unicornData.breedid}}, {new: true})
 	.populate({path: "imgs.baseImg imgs.equipBack imgs.equipFront", model: "Image"})
 	.exec()
 	.then((foundUnicorn) => findImage(foundUnicorn))
 	.then((res1) => runUpload(res1.foundImage, buffer, res1.foundUnicorn))
 	.then((res2) => {
 		if(res2.foundUnicorn.equips.length !== 0){
+			console.log("about to run composite from /build .put");
 			common.Helpers.runComposite(res2.foundUnicorn)
 		} else {
 			return res2;
@@ -308,23 +308,19 @@ router.route("/equip")
 		}
 	}
 	
-	function saveEquipImgBack(foundUnicorn) {
-		return common.Image.findOneAndUpdate({ "filename": bufferBack.filename}, { "$set": {"filename": bufferBack.filename, "img.data": bufferBack.buffer}}, {upsert: true, new: true})
-		.then(foundImage => {
-			return {
-				foundImageBack: foundImage,
-				foundUnicorn: foundUnicorn
-			}
-		})
+	async function saveEquipImgBack(foundUnicorn) {
+		const foundImage = await common.Image.findOneAndUpdate({ "filename": bufferBack.filename }, { "$set": { "filename": bufferBack.filename, "img.data": bufferBack.buffer } }, { upsert: true, new: true });
+		return {
+			foundImageBack: foundImage,
+			foundUnicorn: foundUnicorn
+		};
 	}
-	function saveEquipImgFront(foundUnicorn) {
-		return common.Image.findOneAndUpdate({ "filename": bufferFront.filename}, { "$set": {"filename": bufferFront.filename, "img.data": bufferFront.buffer}}, {upsert: true, new: true})
-		.then(foundImage => {
-			return {
-				foundImageFront: foundImage,
-				foundUnicorn: foundUnicorn
-			}
-		})
+	async function saveEquipImgFront(foundUnicorn) {
+		const foundImage = await common.Image.findOneAndUpdate({ "filename": bufferFront.filename }, { "$set": { "filename": bufferFront.filename, "img.data": bufferFront.buffer } }, { upsert: true, new: true });
+		return {
+			foundImageFront: foundImage,
+			foundUnicorn: foundUnicorn
+		};
 	}
 	
 	var unicornUpdate = common.Unicorn.findByIdAndUpdate({_id: unicornId}, { "$set": { "equips": userChoices, "canvasposition.x": unicornCoords.x, "canvasposition.y": unicornCoords.y}}, {new: true})

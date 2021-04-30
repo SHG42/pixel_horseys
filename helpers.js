@@ -61,7 +61,7 @@ function sortInventory() {
 
 //IMAGE COMPOSITE
 function runComposite(foundUnicorn) {
-	console.log("data from equip function in Helpers: ");
+	console.log("running composite function in helpers");
 	var backEquips = foundUnicorn.imgs.equipBack;
 	var frontEquips = foundUnicorn.imgs.equipFront;
 	var baseImg = foundUnicorn.imgs.baseImg;
@@ -69,7 +69,8 @@ function runComposite(foundUnicorn) {
 	var x = parseInt(foundUnicorn.canvasposition.x, 10);
 	var y = parseInt(foundUnicorn.canvasposition.y, 10);
 	
-	function runUpload(foundImage, buffer, foundUnicorn) {
+	async function runUpload(foundImage, buffer, foundUnicorn) {
+		console.log("running upload in helpers");
 		var equipFolder = `Unicorns/${foundUnicorn._id}`;
 		let options = {
 			upload_preset: 'unicornBaseImgSave',
@@ -81,8 +82,8 @@ function runComposite(foundUnicorn) {
 		var bufferStream = new stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer.buffer));
 		bufferStream.pipe(cloudinary.uploader.upload_stream(options, function(error, result) {
-			console.log("output from cloudinary upload: ");
-			// console.log(error, result);
+			console.log("cloudinary output in helpers");
+			console.log(error, result);
 			foundImage.public_id = result.public_id;
 			foundImage.etag = result.etag;
 			foundImage.version = result.version;
@@ -183,61 +184,5 @@ function setData(userChoices) {
 	return data;
 }
 
-//RESET FUNCTION
-function dbReset(){
-	// Unicorn.find({}, function(err, unicorns){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	unicorns.forEach(function(unicorn){
-	// 		for(var i=0; i <= unicorn.equips.length; i++) {
-	// 			unicorn.equips.pop();
-	// 		}
-	// 		unicorn.save();
-	// 		console.log("removed equips");
-	// 	});
-	// })
-	
-	// User.find({}).populate("unicorns").exec(function(err, users){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	users.forEach(function(user){
-	// 		for(var i=0; i <= user.unicorns.length; i++) {
-	// 			user.unicorns.pop();
-	// 		}
-	// 		user.save();
-	// 		console.log("removed unicorns");
-	// 	});
-	// })
-	
-	// User.deleteMany({}, function(err){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	console.log("removed users");
-	// });
-	// User.counterReset('userid', function(err){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	console.log("reset incremented users ids");
-	// });
-	
-	// Unicorn.deleteMany({}, function(err){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	console.log("removed unicorns");
-	// });
-	// Unicorn.counterReset('uniid', function(err){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	console.log("reset incremented unicorn ids");
-	// });
-	// Image.deleteMany({}, function(err){
-	// 	if (err) return console.error('Uhoh, there was an error', err)	
-	// 	console.log("removed images");
-	// });
-	
-	// Inventory.deleteMany({}, function(err){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	console.log("removed inventory");
-	// });
-	// Inventory.counterReset('inventoryid', function(err){
-	// 	if (err) return console.error('Uhoh, there was an error', err)
-	// 	console.log("reset incremented inventory ids");
-	// });
-}
 
-
-module.exports = {setData, dbReset, runComposite, sortInventory};
+module.exports = {setData, runComposite, sortInventory};
