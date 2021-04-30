@@ -24,12 +24,8 @@ router.get("/credits", function(req, res){
 });
 
 //INDEX, SITE HOMEPAGE
-router.get("/index", isLoggedIn, function(req, res) {
-	//get data of LOGGEDINUSER
-	// console.log("req.user._id and req.params.userid from index route: ");
-	// console.log(req.user._id);
-	// console.log(req.params.userid);
-	User.findById(req.user._id).populate("region").exec(function(err, foundLoggedInUser){
+router.get("/index", [isLoggedIn, finishedRegistration], function(req, res) {
+	common.User.findById(req.user._id).populate("region").exec(function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error (/index User.findById GET)', err)
 		res.render("index", {loggedInUser: foundLoggedInUser});
 	});
@@ -37,9 +33,9 @@ router.get("/index", isLoggedIn, function(req, res) {
 
 // SHOW inventory
 router.get("/inventory", isLoggedIn, function(req, res){
-	User.findById(req.user._id, function(err, foundLoggedInUser){
+	common.User.findById(req.user._id, function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error (/inventory User.findById GET)', err)
-		let sort = Helpers.sortInventory();
+		let sort = common.Helpers.sortInventory();
 		sort.then((result)=>{
 			res.render("inventory", {
 				loggedInUser: foundLoggedInUser,
@@ -57,26 +53,25 @@ router.get("/inventory", isLoggedIn, function(req, res){
 
 // SHOW directory
 router.get("/directory", isLoggedIn, function(req, res){
-	User.findById(req.user._id, function(err, foundLoggedInUser){
+	common.User.findById(req.user._id, function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error (/directory User.findById GET)', err)
 		//retrieve all users from database
-		User.find({}, function(err, foundUsers){
+		common.User.find({}, function(err, foundUsers){
 			if (err) return console.error('Uhoh, there was an error (/directory User.find({}) GET)', err)
 			res.render("directory", {loggedInUser: foundLoggedInUser, registeredUsers: foundUsers});
 		});
 	});
 });
 
-
 //SHOW game
 router.route("/explore")
 .get(isLoggedIn, function(req, res){
-	User.findById(req.user._id, function(err, foundLoggedInUser){
+	common.User.findById(req.user._id, function(err, foundLoggedInUser){
 		res.render("explore", {loggedInUser: foundLoggedInUser}); 
 	});
 })
 .put(isLoggedIn, function(req, res){
-	User.findById(req.user._id, function(err, foundLoggedInUser){
+	common.User.findById(req.user._id, function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error (/explore User.findByIdAndUpdate PUT)', err);
 		foundLoggedInUser.tokens++;
 		foundLoggedInUser.save();
@@ -87,11 +82,11 @@ router.route("/explore")
 // SHOW customize
 router.route("/build")
 .get(isLoggedIn, function(req, res){
-	Breed.find({}, function(err, foundAllBreeds){
+	common.Breed.find({}, function(err, foundAllBreeds){
 		if (err) return console.error('Uhoh, there was an error (/build Breed.find GET)', err)
-		Gene.find({}, function(err, foundAllGenes){
+		common.Gene.find({}, function(err, foundAllGenes){
 			if (err) return console.error('Uhoh, there was an error (/build Gene.find GET)', err)
-			User.findById(req.user._id).populate("unicorns").exec(function(err, foundLoggedInUser){
+			common.User.findById(req.user._id).populate("unicorns").exec(function(err, foundLoggedInUser){
 				if (err) return console.error('Uhoh, there was an error (/build User.findById GET)', err)
 				res.render("build", {loggedInUser: foundLoggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 			});
@@ -101,7 +96,7 @@ router.route("/build")
 .post([isLoggedIn, upload.any()], function(req, res){
 	console.log("Incoming POST user data in /build route: ");
 	let userChoices = JSON.parse(req.body.userChoices);
-	let unicornData = Helpers.setData(userChoices);
+	let unicornData = common.Helpers.setData(userChoices);
 	let loggedInUser = req.user._id;
 	let buffer = req.files[0].buffer;
 
@@ -115,9 +110,9 @@ router.route("/build")
 			public_id: newImage.filename,
 			folder: folder
 		}
-		var bufferStream = new stream.PassThrough();
+		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer));
-		bufferStream.pipe(cloudinary.uploader.upload_stream(options, function(error, result) {
+		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
 			console.log("output from newUnicorn cloudinary upload: ");
 			console.log(error, result);
 			newImage.public_id = result.public_id;
@@ -139,7 +134,7 @@ router.route("/build")
 	}
 	
 	function createImage(newUnicorn) {
-		return Image.create(buffer)
+		return common.Image.create(buffer)
 		.then((newImage)=>{
 			newImage.filename = newUnicorn._id.valueOf();
 			return {
@@ -149,9 +144,9 @@ router.route("/build")
 		})
 	}
 	
-	var unicornCreate = Unicorn.create(unicornData)
+	var unicornCreate = common.Unicorn.create(unicornData)
 	.then((newUnicorn)=> {
-		var hasUnicorns = User.findById(loggedInUser).populate("unicorns").exec()
+		var hasUnicorns = common.User.findById(loggedInUser).populate("unicorns").exec()
 		hasUnicorns.then((res)=>{
 			if(res.unicorns.length === 0) {
 				newUnicorn.founder = true;
@@ -185,7 +180,7 @@ router.route("/build")
 .put([isLoggedIn, upload.any()], function(req, res){
 	console.log("Incoming PUT user data in /build route: ");
 	let userChoices = JSON.parse(req.body.userChoices);
-	let unicornData = Helpers.setData(userChoices);
+	let unicornData = common.Helpers.setData(userChoices);
 	let buffer = req.files[0].buffer;
 	
 	function runUpload(foundImage, buffer, foundUnicorn) {
@@ -198,9 +193,9 @@ router.route("/build")
 			public_id: path,
 			folder: folder
 		}
-		var bufferStream = new stream.PassThrough();
+		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer));
-		bufferStream.pipe(cloudinary.uploader.upload_stream(options, function(error, result) {
+		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
 			// console.log(error, result);
 			foundImage.version = result.version;
 			foundImage.img.data = buffer;
@@ -213,7 +208,7 @@ router.route("/build")
 	}
 	
 	function findImage(foundUnicorn) {
-		return Image.findById({_id: foundUnicorn.imgs.baseImg._id})
+		return common.Image.findById({_id: foundUnicorn.imgs.baseImg._id})
 		.then(foundImage => {
 			return {
 				foundUnicorn: foundUnicorn,
@@ -222,14 +217,14 @@ router.route("/build")
 		})
 	}
 	
-	var unicornUpdate = Unicorn.findByIdAndUpdate(req.body.unicornId, { "$set": { "genes": unicornData.genes, "colors": unicornData.colors}}, {new: true})
+	var unicornUpdate = common.Unicorn.findByIdAndUpdate(req.body.unicornId, { "$set": { "genes": unicornData.genes, "colors": unicornData.colors}}, {new: true})
 	.populate({path: "imgs.baseImg imgs.equipBack imgs.equipFront", model: "Image"})
 	.exec()
 	.then((foundUnicorn) => findImage(foundUnicorn))
 	.then((res1) => runUpload(res1.foundImage, buffer, res1.foundUnicorn))
 	.then((res2) => {
 		if(res2.foundUnicorn.equips.length !== 0){
-			Helpers.runComposite(res2.foundUnicorn)
+			common.Helpers.runComposite(res2.foundUnicorn)
 		} else {
 			return res2;
 		}
@@ -252,9 +247,9 @@ router.route("/build")
 // SHOW equip
 router.route("/equip")
 .get(isLoggedIn, function(req, res){
-	User.findById(req.user._id).populate({ path: 'unicorns', populate: { path: 'imgs.baseImg', model: 'Image' }}).exec(function(err, foundLoggedInUser){
+	common.User.findById(req.user._id).populate({ path: 'unicorns', populate: { path: 'imgs.baseImg', model: 'Image' }}).exec(function(err, foundLoggedInUser){
 		if (err) return console.error('Uhoh, there was an error (/equip User.findById GET)', err)
-		let sort = Helpers.sortInventory();
+		let sort = common.Helpers.sortInventory();
 		sort.then((result)=>{
 			res.render("equip", {
 				loggedInUser: foundLoggedInUser,
@@ -292,9 +287,9 @@ router.route("/equip")
 			public_id: foundImage.filename,
 			folder: equipFolder
 		}
-		var bufferStream = new stream.PassThrough();
+		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer.buffer));
-		bufferStream.pipe(cloudinary.uploader.upload_stream(options, function(error, result) {
+		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
 			// console.log("output from cloudinary upload: ");
 			// console.log(error, result);
 			foundImage.public_id = result.public_id;
@@ -314,7 +309,7 @@ router.route("/equip")
 	}
 	
 	function saveEquipImgBack(foundUnicorn) {
-		return Image.findOneAndUpdate({ "filename": bufferBack.filename}, { "$set": {"filename": bufferBack.filename, "img.data": bufferBack.buffer}}, {upsert: true, new: true})
+		return common.Image.findOneAndUpdate({ "filename": bufferBack.filename}, { "$set": {"filename": bufferBack.filename, "img.data": bufferBack.buffer}}, {upsert: true, new: true})
 		.then(foundImage => {
 			return {
 				foundImageBack: foundImage,
@@ -323,7 +318,7 @@ router.route("/equip")
 		})
 	}
 	function saveEquipImgFront(foundUnicorn) {
-		return Image.findOneAndUpdate({ "filename": bufferFront.filename}, { "$set": {"filename": bufferFront.filename, "img.data": bufferFront.buffer}}, {upsert: true, new: true})
+		return common.Image.findOneAndUpdate({ "filename": bufferFront.filename}, { "$set": {"filename": bufferFront.filename, "img.data": bufferFront.buffer}}, {upsert: true, new: true})
 		.then(foundImage => {
 			return {
 				foundImageFront: foundImage,
@@ -332,7 +327,7 @@ router.route("/equip")
 		})
 	}
 	
-	var unicornUpdate = Unicorn.findByIdAndUpdate({_id: unicornId}, { "$set": { "equips": userChoices, "canvasposition.x": unicornCoords.x, "canvasposition.y": unicornCoords.y}}, {new: true})
+	var unicornUpdate = common.Unicorn.findByIdAndUpdate({_id: unicornId}, { "$set": { "equips": userChoices, "canvasposition.x": unicornCoords.x, "canvasposition.y": unicornCoords.y}}, {new: true})
 	.populate("imgs.baseImg")
 	.exec()
 	.then((foundUnicorn) => saveEquipImgBack(foundUnicorn))
@@ -342,7 +337,7 @@ router.route("/equip")
 	})
 	.then((foundUnicorn) => saveEquipImgFront(foundUnicorn))
 	.then((res3) => runUpload(res3.foundImageFront, bufferFront, res3.foundUnicorn))
-	.then((res4) => Helpers.runComposite(res4.foundUnicorn))
+	.then((res4) => common.Helpers.runComposite(res4.foundUnicorn))
 	.then((res5) => {
 		return res5
 	})
@@ -363,11 +358,16 @@ function isLoggedIn(req, res, next){
     res.redirect("/login");
 }
 
-//MIDDLEWARE TO CHECK HOMEPAGE OWNERSHIP and only display edit buttons if on your own page
-// function checkOwnership(req, res, next) {
-	
-// }
-
+//middleware for checking if loggedIn user finished registration
+function finishedRegistration(req, res, next) {
+	common.User.findById(req.user._id).populate({path: "region"}).populate({path: "unicorns"}).exec(function(err, foundUser){
+		if(!foundUser.region || foundUser.unicorns.length === 0) {
+			res.redirect("/founder");
+		} else {
+			return next();
+		}
+	});
+}
 
 //LOGOUT
 router.get("/logout", function(req, res) {

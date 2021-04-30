@@ -12,8 +12,9 @@
 	<label for="lineartSelect" class="select-label bg-dark border border-light rounded-1 p-2">Build: Choose a Breed</label>
 	<select name="linearts" id="lineartSelect" aria-label="choose a base sprite" class="custom-select text-center">
 		<option value="" selected>--Please choose an option--</option>
+		<% Breeds.sort((a, b) => a.publicName.localeCompare(b.publicName)) %>
 		<% Breeds.forEach(function(breed){ %>
-		<option value="<%= breed.name %>" class="lineart" data-lineartid="<%= breed.id %>"><%= breed.name %></option>
+		<option value="<%= breed.name %>" class="lineart" data-lineartid="<%= breed.id %>"><%= breed.publicName %></option>
 		<% }); %>	
 	</select>
 </form>

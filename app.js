@@ -1,6 +1,8 @@
 var
+dotenv 				  	= require('dotenv').config(),
 	  express                 = require("express"),
     app                     = express(),
+	  flash					          = require('connect-flash'),
 	  common					        = require('./common');	
 // //ROUTE REQUIRES
 var newPlayerRoutes = require("./routes/newplayer"),
@@ -27,6 +29,8 @@ app.use(common.session({
 	})
 }));
 
+app.use(flash());
+
 app.use(function (req, res, next) {
     res.locals.req = req;
     res.locals.res = res;
@@ -35,7 +39,7 @@ app.use(function (req, res, next) {
       throw new Error('Missing CLOUDINARY_URL environment variable');
     } else {
 		// Expose cloudinary package to view
-		res.locals.cloudinary = cloudinary;
+		res.locals.cloudinary = common.cloudinary;
 		res.locals.cloudname = process.env.CLOUDNAME;
       next();
     }

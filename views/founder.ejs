@@ -21,78 +21,17 @@
 	</button>
     <div class="d-flex flex-column justify-content-center">
         <div class="row">
+            <% Breeds.sort((a, b) => a.publicName.localeCompare(b.publicName)) %>
+            <% Breeds.forEach((breed)=>{ %>
             <div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
 				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/arabiancorn/arabiancorn_base_lineart.png" id="ara" alt="Card image">
+                    <img class="founders card-img-top" src="<%= breed.lineart.baseImg %>" id="<%= breed.id %>" alt="Card image">
                     <div class="uniCard card-body">
-                        <h5 class="card-title">Wind Strider</h5>
-                        <p class="card-text">Native Region: Desert</p>
+                        <h5 class="card-title"><%= breed.publicName %></h5>
                     </div>
                 </div>
             </div>
-			<div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/arcticcorn/arcticcorn_base_lineart.png" id="arc" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title">Breed Name</h5>
-                        <p class="card-text">Breed Native Region</p>
-                    </div>
-                </div>
-            </div>
-			<div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/deericorn/deericorn_base_lineart.png" id="dee" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title">Breed Name</h5>
-                        <p class="card-text">Breed Native Region</p>
-                    </div>
-                </div>
-            </div>
-			<div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/jumpingcorn/jumpingcorn_base_lineart.png" id="jum" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title">Breed Name</h5>
-                        <p class="card-text">Breed Native Region</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/liondeercorn/liondeercorn_base_lineart.png" id="lio" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title">Breed Name</h5>
-                        <p class="card-text">Breed Native Region</p>
-                    </div>
-                </div>
-            </div>
-			<div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/prettycorn/prettycorn_base_lineart.png" id="pre" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title">Breed Name</h5>
-                        <p class="card-text">Breed Native Region</p>
-                    </div>
-                </div>
-            </div>
-			<div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/rearingcorn/rearingcorn_base_lineart.png" id="rea" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title">Breed Name</h5>
-                        <p class="card-text">Breed Native Region</p>
-                    </div>
-                </div>
-            </div>
-			<div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="/assets/unicorn_base_imgs/traditionalcorn/traditionalcorn_base_lineart.png" id="tra" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title">Breed Name</h5>
-                        <p class="card-text">Breed Native Region</p>
-                    </div>
-                </div>
-            </div>
+            <% }) %>
         </div>
     </div>
 	<div class="builderbox" id="targetbox">
