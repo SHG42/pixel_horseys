@@ -14,8 +14,7 @@ html, body {
 
 h1, .headertext, .modal-title {
     font-family: 'IM FELL English SC', sans-serif;
-}
-/*add any other elements that get this font to this rule*/
+} /*add any other elements that get this font to this rule*/
 
 .bigwelcomelogo, .biglogo {
     width: 50%;
@@ -52,7 +51,6 @@ h1, .headertext, .modal-title {
 	margin-left: auto;
 	margin-right: auto;
 	width: 75%;
-	
 }
 
 .headertext {
@@ -107,10 +105,9 @@ hr {
 	max-width: 500px;
 }
 
-.uniCard {
-    border-color: antiquewhite;
-    background-color: rgb(192,192,192);
-    background-color:rgba(192,192,192,0.8);
+.founderpage #container{
+	border-color: antiquewhite;
+    background-color: rgb(255, 255, 255);
 }
 
 .regionMap {
@@ -188,13 +185,12 @@ hr {
 	padding: 0.5rem;
 }
 
-
 .unicornhere {
 	background-color: rgb(192,192,192);
     background-color: rgba(192,192,192,0.7);
 	border: 2px solid black;
 }
-.unicornlore {
+.biocontainer {
 	background-color: oldlace;
 	border: 2px solid navajowhite;
 	border-radius: 2px;
@@ -208,6 +204,10 @@ hr {
 }
 #loreform {
 	border: 5px double black;
+	min-height: 7rem;
+}
+#lore {
+	min-height: 5rem;
 }
 
 

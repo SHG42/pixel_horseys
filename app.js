@@ -1,13 +1,13 @@
 var
-dotenv 				  	= require('dotenv').config(),
-	  express                 = require("express"),
-    app                     = express(),
-	  flash					          = require('connect-flash'),
-	  common					        = require('./common');	
+dotenv = require('dotenv').config(),
+express = require("express"),
+app = express(),
+flash = require('connect-flash'),
+common = require('./common');	
 // //ROUTE REQUIRES
 var newPlayerRoutes = require("./routes/newplayer"),
-	  homeRoutes      = require("./routes/homepages"),
-	  indexRoutes     = require("./routes/index");
+	  homeRoutes    = require("./routes/homepages"),
+	  indexRoutes   = require("./routes/index");
 
 common.mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 

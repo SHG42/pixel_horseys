@@ -2,29 +2,27 @@
 
 <div class="unicornpage container-fluid">
 	<% include ./partials/navbar.ejs %>
-	<div class="biobox">
+	<div class="picbox">
 		<div class="unicornhere">
-			<img class="img-fluid" src="<%=cloudinary.url(`${unicorn.imgs.img.public_id}.png`, {secure: "true", cloud_name: cloudname, version: unicorn.imgs.img.version})%>">
+			<img class="img-fluid" src="<%=cloudinary.url(`${unicorn.imgs.img.public_id}.png`, {secure: 'true', cloud_name: cloudname, version: unicorn.imgs.img.version})%>">
 		</div>
-		<div class="unicornbio textboxes">
-			<div class="unicornlore">
-				<fieldset class="lorebox">
-					<h3 class="font-italic d-inline"><%= unicorn.name %>'s Lore</h3><a class="d-inline float-end mx-3" data-bs-toggle="modal" data-bs-target="#helpModal" data-bs-origin="bio"><i class="fas fa-question-circle fa-2x" aria-hidden="true" title="Help: Bio Editor"></i><span class="sr-only">Bio Editor Instructions</span></a>
-					<hr>
-					<% if(loggedInUser && currentPageOwner._id.equals(loggedInUser._id)){ %>
-					<form action="/home/<%= loggedInUser.userid %>/unicorn/<%= unicorn.uniid %>?_method=PUT" method="POST" name="loreform" id="loreform" aria-label="lore-form">
-						<div class="w-100" id="lore"><%- unicorn.lore %></div>
-						<button type="submit" class="btn btn-primary d-none" id="sendlore">Submit</button>
-						<button type="button" class="btn btn-danger d-none" id="cancel">Cancel</button>
-					</form>
-					<% } else { %>
-					<div class="w-100" id="viewlore">
-						<%- unicorn.lore %>
-					</div>
-					<% } %>
-					<hr>
-				</fieldset>
-			</div>
+		<div class="biocontainer">
+			<fieldset class="editorbox">
+				<h3 class="font-italic d-inline"><%= unicorn.name %>'s Lore</h3><a class="d-inline float-end mx-3" data-bs-toggle="modal" data-bs-target="#helpModal" data-bs-origin="bio"><i class="fas fa-question-circle fa-2x" aria-hidden="true" title="Help: Bio Editor"></i><span class="sr-only">Bio Editor Instructions</span></a>
+				<hr>
+				<% if(loggedInUser && currentPageOwner._id.equals(loggedInUser._id)){ %>
+				<form action="/home/<%= loggedInUser.userid %>/unicorn/<%= unicorn.uniid %>?_method=PUT" method="POST" name="loreform" id="loreform" aria-label="lore-form">
+					<div class="w-100" id="lore"><%- unicorn.lore %></div>
+					<button type="submit" class="btn btn-primary d-none" id="sendlore">Submit</button>
+					<button type="button" class="btn btn-danger d-none" id="cancel">Cancel</button>
+				</form>
+				<% } else { %>
+				<div class="w-100" id="viewlore">
+					<%- unicorn.lore %>
+				</div>
+				<% } %>
+				<hr>
+			</fieldset>
 		</div>
 	</div>
 </div>
@@ -36,8 +34,8 @@
 	var sendlore = document.getElementById("sendlore");
 	var cancel = document.getElementById("cancel");
 	var lore = document.querySelector("#lore");
-	
-	tinymce.init({
+
+	var tinyOptions = {
 		selector: 'div#lore',
 		mobile: {
 			menubar: true
@@ -58,7 +56,9 @@
 		quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
 		toolbar_mode: 'wrap',
 		contextmenu: 'link image imagetools table',
-	});
+	}
+	
+	tinymce.init(tinyOptions);
 	
 	lore.addEventListener("click", showEditor);
 	cancel.addEventListener("click", hide);

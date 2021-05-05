@@ -4,49 +4,62 @@
     <div class="container">
         <img src="/assets/site_imgs/site_logos/logo_hi.png" class="img-fluid w-75 m-3" alt="Responsive image">
         <p class="sr-only">Welcome to Sunflame Mountain</p>
-        <p class="textboxes lead border border-dark p-1">It's nice to meet you, <%= currentUser.username %>. Now you must choose your herd founder. This is the unicorn with whom you'll begin your journey. Follow your instincts and choose carefully.</p>
-		<p class="textboxes lead border border-dark p-1">How to use the genetic builder: Select one of the base species from the grid at the bottom. Choose genes (markings for the body, mane, tail, etc) from the selection menus. Click "Preview" to see your gene choices in the builder display. To clear a gene selection from a slot, set the menu dropdown to the "Clear Slot" option and click Preview to update your selections in the display. Change the base colors and gene colors by clicking the button for the slot you want to change, and then use the color wheel and hue slider to pick a color. The active color slot's button will have a green outline, making it easier to keep track of which slot you're currently on. The color wheel will update the selected slot's color automatically without needing to click "Preview" again. Some genes are not colorable; for these, the gene color will not change in the builder display if you use the color wheel on that gene slot. If you do not set a color for a colorable slot, it will default to black(#000000). You may fill as many or as few gene slots and color slots as you wish; none of them are required. (But you do need to choose a base species, please!) When you're satisfied with your selections, click "Build" at the bottom of the page.
-		</p>
+        <div>
+			<p class="textboxes lead border border-dark p-1">It's nice to meet you, <%= currentUser.username %>. Now you must choose your herd founder. This is the unicorn with whom you'll begin your journey. Follow your instincts and choose carefully. The blue question mark will instruct you on how to use the Genetic Builder. To begin, select the thumbnail for a base species and press Preview; you can also click "View Full-Size" to see the base image in full detail.</p>
+			<div class="d-flex flex-row justify-content-center">
+				<% Breeds.sort((a, b) => a.publicName.localeCompare(b.publicName)) %>
+				<% Breeds.forEach((breed)=>{ %>
+				<div class="w-25">
+					<button class="btn btn-light">
+						<img class="founders card-img-top" src="<%= breed.lineart.baseImg %>" id="<%= breed.id %>" alt="<%= breed.publicName %>">
+					</button>
+					<button class="btn btn-primary" data-bs-src="<%= breed.lineart.baseImg %>" data-bs-publicname="<%= breed.publicName %>" data-bs-toggle="modal" data-bs-target="#imageModal">View Full-Size</button>
+				</div>
+				<% }) %>
+			</div>
+		</div>
     </div>
-	<div class="d-flex flex-column justify-content-center">
-		<div id="picker" class="mx-auto"></div>
-		<div class="row mx-auto">
-			<div id="container" class="col-12 bg-light border border-dark rounded"></div>
+	<div class="founderpage container-fluid">
+		<div class="d-flex flex-column flex-lg-row row">
+			<div class="col-12 col-lg-6 my-2">
+				<form action="" name="buildgenerator" class="buildgenerator">
+					<ul class="picker-menu nav nav-tabs nav-fill d-flex flex-lg-column justify-content-center my-2 border border-light" id="myTab" role="tablist">
+						<button type="button" class="previewButton btn btn-primary bg-primary bg-gradient border border-light border-2 m-1 w-50 mx-auto" id="previewer">
+							Preview
+						</button><a class="d-inline float-end mx-3" data-bs-toggle="modal" data-bs-target="#helpModal" data-bs-origin="build"><i class="fas fa-question-circle fa-2x" aria-hidden="true" title="Help: Genetic Builder"></i><span class="sr-only">Genetic Builder Instructions</span></a>
+						<%- include('partials/geneMenus.ejs') %>
+						<%- include('partials/colorSelectors.ejs') %>
+						<div id="picker" class="mx-auto p-2"></div>
+					</ul>
+				</form>
+			</div>
+			<div class="getpretty col-12 col-lg-6 my-2">
+				<div class="d-flex justify-content-center">
+					<div class="row mx-auto">
+						<div id="container" class="col-12"></div>
+					</div>
+				</div>
+				<div id="submits" class="m-2">
+					<div class="builderbox" id="targetbox">
+						<div class="builderForm">
+							<form action="/founder" method="POST" enctype="multipart/form-data" name="submitForm" id="submitform">
+								<button type="button" id="founderSubmit" class="btn btn-success w-75" name="builderButton" value="" disabled="true">Build</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
-	<% include ./partials/colorSelectors %>
-	<% include ./partials/geneMenus %>
-	<button type="button" class="previewButton btn w-50 mx-auto btn-primary" id="previewer">
-		Preview
-	</button>
-    <div class="d-flex flex-column justify-content-center">
-        <div class="row">
-            <% Breeds.sort((a, b) => a.publicName.localeCompare(b.publicName)) %>
-            <% Breeds.forEach((breed)=>{ %>
-            <div class="col-12 col-sm-6 col-lg-3 align-items-stretch">
-				<div class="card">
-                    <img class="founders card-img-top" src="<%= breed.lineart.baseImg %>" id="<%= breed.id %>" alt="Card image">
-                    <div class="uniCard card-body">
-                        <h5 class="card-title"><%= breed.publicName %></h5>
-                    </div>
-                </div>
-            </div>
-            <% }) %>
-        </div>
-    </div>
-	<div class="builderbox" id="targetbox">
-		<div class="builderForm">
-			<form action="/founder" method="POST" enctype="multipart/form-data" name="submitForm" id="submitform">
-				<button type="button" id="founderSubmit" class="btn btn-success w-75" name="builderButton" value="" disabled="true">Build</button>
-			</form>
-		</div>
-	</div>
+	<% include ./partials/helpModal %>
+	<% include ./partials/imageModal %>
 </div>
 <script>
 	var Breeds = '<%- JSON.stringify(Breeds) %>';
 	var parsedBreeds = JSON.parse(Breeds);
 	var yourTokens = <%- JSON.stringify(currentUser.tokens) %>;
 </script>
+<script src="../../scripts/imagemodal.js"></script>
 <script src="../../scripts/buildvariables.js"></script>
 <script src="../../scripts/buildsetup.js"></script>
 <script src="../../scripts/founderbuilder.js"></script>

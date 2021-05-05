@@ -103,7 +103,7 @@ function runComposite(foundUnicorn) {
 			width: 900,
 			height: 700,
 			channels: 4,
-			background: { r: 0, g: 0, b: 0, alpha: 1 }
+			background: { r: 0, g: 0, b: 0, alpha: 0 }
 		}
 	})
 	.composite([

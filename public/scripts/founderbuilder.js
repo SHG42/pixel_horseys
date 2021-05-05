@@ -38,15 +38,15 @@ function showLineart() {
 }
 
 function showBaseColors() {
-	let child1 = baseColorsLayer.findOne("#body");
+	let child1 = baseColorsLayer.findOne("#body")
 	child1.attrs.image.src = breedBaseColors.body.baseImg;
-	let child2 = baseColorsLayer.findOne("#hair");
+	let child2 = baseColorsLayer.findOne("#hair")
 	child2.attrs.image.src = breedBaseColors.hair.baseImg;
-	let child3 = baseColorsLayer.findOne("#eyes");
+	let child3 = baseColorsLayer.findOne("#eyes")
 	child3.attrs.image.src = breedBaseColors.eyes.baseImg;
-	let child4 = baseColorsLayer.findOne("#hoof");
+	let child4 = baseColorsLayer.findOne("#hoof")
 	child4.attrs.image.src = breedBaseColors.hoof.baseImg;
-	let child5 = baseColorsLayer.findOne("#horn");
+	let child5 = baseColorsLayer.findOne("#horn")
 	child5.attrs.image.src = breedBaseColors.horn.baseImg;
 	var existingChildren = baseColorsLayer.getChildren();
 	existingChildren.forEach(function(child){
@@ -257,7 +257,6 @@ function showGenes() {
 		}
 	});
 }
-
 
 //Color Picker Stuff
 var activeColor;
