@@ -1,5 +1,4 @@
 var
-dotenv = require('dotenv').config(),
 express = require("express"),
 app = express(),
 flash = require('connect-flash'),
