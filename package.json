@@ -37,5 +37,6 @@
     "phaser-arcade-slopes": "^0.3.1",
     "phaser-ce": "^2.16.2",
     "sharp": "^0.28.0"
-  }
+  },
+  "type": "module"
 }
