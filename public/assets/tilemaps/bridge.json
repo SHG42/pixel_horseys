@@ -4,7 +4,7 @@
      "export":
         {
          "format":"json1",
-         "target":"..\/..\/..\/..\/..\/Web Dev\/Sunflame Mountain Folder\/resources\/ExploreMap\/Ver2\/sunflame-explore-CE\/Webpack\/public\/assets\/tilemaps\/bridge.json"
+         "target":"bridge.json"
         }
     },
  "height":72,
@@ -219,18 +219,6 @@
                  "width":0,
                  "x":262,
                  "y":706
-                }, 
-                {
-                 "height":0,
-                 "id":13,
-                 "name":"ledge",
-                 "point":true,
-                 "rotation":0,
-                 "type":"ledge",
-                 "visible":true,
-                 "width":0,
-                 "x":351,
-                 "y":610
                 }, 
                 {
                  "height":0,
@@ -791,20 +779,6 @@
                 }
             },
          "tilewidth":186
-        }, 
-        {
-         "columns":57,
-         "firstgid":27725,
-         "image":"..\/..\/..\/..\/..\/Web Dev\/Project Resources\/platformtest\/item sets\/NEWSPRITESHEET.png",
-         "imageheight":352,
-         "imagewidth":912,
-         "margin":0,
-         "name":"NEWSPRITESHEET",
-         "spacing":0,
-         "tilecount":1254,
-         "tileheight":16,
-         "tilewidth":16,
-         "transparentcolor":"#ff007f"
         }],
  "tilewidth":16,
  "type":"map",

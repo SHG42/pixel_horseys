@@ -5,9 +5,9 @@ import gameState from '/build/scripts/states/gameState.js';
 
 var gamedoor = document.getElementById('gamedoor');
 var magicdoor = document.getElementById('magicdoor');
-magicdoor.addEventListener("click", ()=>{
+magicdoor.addEventListener("pointerdown", ()=>{
 	gamedoor.replaceChildren();
-	var game = new Phaser.Game(document.clientWidth, document.clientHeight, Phaser.AUTO, 'gamedoor', null, false, true);
+	var game = new Phaser.Game(window.screen.availWidth, window.screen.availHeight, Phaser.AUTO, 'gamedoor', null, false, true);
 
 	game.state.add('Boot', Boot);
 	game.state.add('Preloader', Preloader);

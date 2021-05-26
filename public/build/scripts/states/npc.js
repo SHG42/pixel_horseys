@@ -29,21 +29,22 @@ export default class NPC extends Phaser.State {
 		this.NPCdata = this.cache.getJSON('NPCdata');
 
         if(this._LEVEL === 0) {
-            this.bg = this.game.add.image(0, 0, "cutscene1", null);
-            this.bg.width = this.game.width;
-            this.bg.height = this.game.height;
+            this.bgName = "cutscene1";
             this.NPC_is = this.time.events.add(Phaser.Timer.SECOND * 2, function(){
                 this.sorceress = this.game.add.sprite(0, 0, 'sorceress', 'sorceress_smile');
                 this.time.events.add(Phaser.Timer.SECOND * 1, this.launch, this);
             }, this);
         } else if(this._LEVEL === 5) {
-            this.bg = this.game.add.image(0, 0, "cutscene2", null);
-            this.bg.width = this.game.width;
-            this.bg.height = this.game.height;
+            this.bgName = "cutscene2";
             this.NPC_is = this.time.events.add(Phaser.Timer.SECOND * 2, function(){
                 this.ranger = this.game.add.image(0, 0, "forest_ranger", null);
                 this.time.events.add(Phaser.Timer.SECOND * 1, this.launch, this);
             }, this);
+        }
+
+        this.bg = this.game.add.image(0, 0, this.bgName, null);
+        if(this.game.width < this.game.height) { //portrait
+            this.bg.anchor.x = 0.5;
         }
     }
 
