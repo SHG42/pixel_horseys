@@ -50,6 +50,7 @@ var exampleModal = document.getElementById('helpModal')
 `KEY COMBO-- LEAP: Hit LEFT ARROW <- + UP ARROW ^ or RIGHT ARROW -> + UP ARROW ^ to jump forward while running.`,
 `LEDGE GRAB: Up Arrow ^ + 'G'`, 
 `LEDGE CLIMB: 'C' (While sprite is holding onto a ledge)`,
+`LEDGE RELEASE: Down Arrow`,
 `HINT: You can leap and grab (G) a ledge! Try Left/Right Arrow <-/-> + UP Arrow ^ + Grab (G)`,
 `TIP: Having trouble with a ledge? Some are more challenging than others, but none are impossible! Try moving slightly closer or further from the base of the ledge before jumping Up ^ to grab (G) it, and make sure you're facing towards the ledge you want to grab. Let go of ledges while grabbing by hitting the Left < or Right > arrows.`,`Still having ledge trouble? Click the Easy Mode button to toggle targets that will show you where the ledges are.`];
 			setContent(titletext, bodytext);
