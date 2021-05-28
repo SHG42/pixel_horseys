@@ -83,9 +83,12 @@ export default class gameState extends Phaser.State {
         this.game.physics.arcade.overlap(this.hero, this.objectsGroup, this.getLoot, null, this);
     
 		this.hero.body.velocity.x = 0;
+
+        this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
+		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.isGrabbing);
     
 		//Running anims
-        if(this.controls.up.isUp) {
+        if(this.controls.up.isUp && this.hero.isOnGround) {
             if (this.controls.left.isDown && this.controls.right.isUp) {
                 this.hero.body.velocity.x = -150;
                 this.hero.animations.play('run-left');
@@ -95,42 +98,53 @@ export default class gameState extends Phaser.State {
             } 
         }
 		
-        if(this.controls.up.isDown || this.hero.isJumping) {
+        if(this.controls.up.isDown || this.hero.isAirborne) {
             if(this.runRight.isPlaying) {
                 this.runRight.stop(false, true);
-             } else if(this.runLeft.isPlaying) {
+            } else if(this.runLeft.isPlaying) {
                 this.runLeft.stop(false, true);
-             }
+            } else if(this.idleLeft.isPlaying) {
+                this.idleLeft.stop(false, true);
+            } else if(this.idleRight.isPlaying) {
+                this.idleRight.stop(false, true);
+            }
         }
     
         //Jumping
         if (this.controls.up.justDown && this.hero.isOnGround) {
-            this.hero.body.velocity.y = -350;
+            this.hero.body.velocity.y = -325;
+            if(this.hero.body.velocity.y < -325) {
+                this.hero.body.velocity.y = -325;
+            }
         }
 		
         if(this.controls.left.isUp && this.controls.right.isUp) {
-            if (this.hero.isJumping && this.hero.whichDirection == "left") {
+            if (this.hero.isAirborne && this.hero.whichDirection == "left") {
                 this.hero.animations.play('up-left');
-            } else if (this.hero.isJumping && this.hero.whichDirection == "right") {
+            } else if (this.hero.isAirborne && this.hero.whichDirection == "right") {
                 this.hero.animations.play('up-right');
             }
         }
 		
+		if(this.hero.whichDirection == "left" && this.hero.isAirborne && this.controls.left.isDown && this.controls.right.isUp) {
+			this.hero.body.velocity.x = -180;
+            this.hero.animations.play('jump-left');
+		} else if(this.hero.whichDirection == "right" && this.hero.isAirborne && this.controls.right.isDown && this.controls.left.isUp) {
+			this.hero.body.velocity.x = 180;
+            this.hero.animations.play('jump-right');
+		}
+
         if(this.hero.isOnGround) {
             if(this.upRight.isPlaying) {
                 this.upRight.stop(false, true);
             } else if(this.upLeft.isPlaying) {
                 this.upLeft.stop(false, true);
+            } else if (this.jumpLeft.isPlaying) {
+                this.jumpLeft.stop(false, true);
+            } else if (this.jumpRight.isPlaying) {
+                this.jumpRight.stop(false, true);
             }
         }
-		
-		if(this.hero.isJumping && this.hero.whichDirection == "left" && this.controls.left.isDown && this.controls.right.isUp) {
-			this.hero.body.velocity.x = -200;
-			this.hero.animations.play('jump-left');
-		} else if(this.hero.isJumping && this.hero.whichDirection == "right" && this.controls.right.isDown && this.controls.left.isUp) {
-			this.hero.body.velocity.x = 200;
-			this.hero.animations.play('jump-right');
-		}
 		
 		//ledge release
 		if(this.controls.down.isDown && (this.hero.body.immovable || !this.hero.body.moves || this.hero.isGrabbing)) {
@@ -287,9 +301,6 @@ export default class gameState extends Phaser.State {
         this.hero.whichDirection = 'right';
         //set custom property to handle whether player is grabbing a ledge at the moment, default 'no'
         this.hero.isGrabbing = false;
-        //custom properties to handle jumping
-        this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down);
-		this.hero.isJumping = (!this.hero.isOnGround && !this.hero.isGrabbing);
     }
    
     makeMap() {

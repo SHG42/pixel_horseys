@@ -7,7 +7,16 @@ var gamedoor = document.getElementById('gamedoor');
 var magicdoor = document.getElementById('magicdoor');
 magicdoor.addEventListener("pointerdown", ()=>{
 	gamedoor.replaceChildren();
-	var game = new Phaser.Game(window.screen.availWidth, window.screen.availHeight, Phaser.AUTO, 'gamedoor', null, false, true);
+	var config = {
+		width: window.screen.availWidth,
+		height: window.screen.availHeight,
+		parent: 'gamedoor',
+		transparent: false,
+		antialias: false,
+		crisp: true,
+		enableDebug: false
+	}
+	var game = new Phaser.Game(config);
 
 	game.state.add('Boot', Boot);
 	game.state.add('Preloader', Preloader);
