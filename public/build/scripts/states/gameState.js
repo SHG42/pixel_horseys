@@ -152,9 +152,53 @@ export default class gameState extends Phaser.State {
             this.hero.body.moves = true;
             this.hero.isGrabbing = false;
             this.hero.body.enable = true;
+            this.controls.left.enabled = true;
+            this.controls.right.enabled = true;
 		}
     }
+
+    addControls() {
+        //pointer controls
+        this.activePointer = this.game.input.activePointer;
+
+        //initiate cursor keys
+        this.controls = this.game.input.keyboard.createCursorKeys();
+        //add special controls for grab and climb
+        this.grabKey = this.game.input.keyboard.addKey(71); //'G'
+        this.climbKey = this.game.input.keyboard.addKey(67); //'C'
     
+        this.game.input.keyboard.addKeyCapture([37, 38, 39, 40 ]);
+    
+        //anim-specific settings
+        this.controls.left.onUp.add(()=> { this.hero.animations.play('idle-left'); }, this);
+        this.controls.right.onUp.add(()=> { this.hero.animations.play('idle-right'); }, this);
+    
+        this.controls.left.onDown.add(()=> { this.hero.whichDirection = 'left' }, this);
+        this.controls.right.onDown.add(()=> { this.hero.whichDirection = 'right' }, this);
+
+        this.climbKey.onDown.add(()=> {
+            if (this.hero.whichDirection == 'left' && this.hero.isGrabbing) {
+                this.hero.animations.play('climb-left');
+            } else if (this.hero.whichDirection == 'right' && this.hero.isGrabbing) {
+                this.hero.animations.play('climb-right');
+            }
+        })
+    }
+
+    ledgeHit(hero, ledge) {
+        //check difference between ledge coords and hero.left vs hero.right to determine which side ledge is on
+        if (this.hero.whichDirection === "left" && this.hero.body.velocity.y < 0 && this.grabKey.isDown) {
+            hero.animations.play('grab-left');
+            hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
+            hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
+        }
+        if (this.hero.whichDirection === "right" && this.hero.body.velocity.y < 0 && this.grabKey.isDown) {
+            hero.animations.play('grab-right');
+            hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
+            hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
+        }
+    }
+
     createAnims() {
         //Hero anims
         //idle
@@ -207,56 +251,6 @@ export default class gameState extends Phaser.State {
     
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
-    }
-
-    ledgeHit(hero, ledge) {
-        //check difference between ledge coords and hero.left vs hero.right to determine which side ledge is on
-        //coords match: sprite left & ledge right, sprite right & ledge left
-        var heroLeft = hero.body.left;
-        var heroRight = hero.body.right;
-    
-        var ledgeLeft = ledge.left;
-        var ledgeRight = ledge.right;
-    
-        var diffLeft = this.game.math.difference(heroLeft, ledgeRight);
-        var diffRight = this.game.math.difference(heroRight, ledgeLeft);
-        
-        // check if diff fits margin
-        if (diffLeft < 10 && this.grabKey.isDown) {
-            hero.animations.play('grab-left');
-            hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
-            hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
-        }
-        if (diffRight < 10 && this.grabKey.isDown) {
-            hero.animations.play('grab-right');
-            hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
-            hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
-        }
-    }
-
-    addControls() {
-        //initiate cursor keys
-        this.controls = this.game.input.keyboard.createCursorKeys();
-        //add special controls for grab and climb
-        this.grabKey = this.game.input.keyboard.addKey(71); //'G'
-        this.climbKey = this.game.input.keyboard.addKey(67); //'C'
-    
-        this.game.input.keyboard.addKeyCapture([37, 38, 39, 40 ]);
-    
-        //anim-specific settings
-        this.controls.left.onUp.add(()=> { this.hero.animations.play('idle-left'); }, this);
-        this.controls.right.onUp.add(()=> { this.hero.animations.play('idle-right'); }, this);
-    
-        this.controls.left.onDown.add(()=> { this.hero.whichDirection = 'left' }, this);
-        this.controls.right.onDown.add(()=> { this.hero.whichDirection = 'right' }, this);
-
-        this.climbKey.onDown.add(()=> {
-            if (this.hero.whichDirection == 'left' && this.hero.isGrabbing) {
-                this.hero.animations.play('climb-left');
-            } else if (this.hero.whichDirection == 'right' && this.hero.isGrabbing) {
-                this.hero.animations.play('climb-right');
-            }
-        })
     }
     
     addHero() {
@@ -334,7 +328,6 @@ export default class gameState extends Phaser.State {
     
         //convert tile layer to work with slopes plugin
         this.game.slopes.convertTilemapLayer(this.mapLayer, 'arcadeslopes');
-        // mapLayer.debug = true;
     }
     
     parseObjectGroups() {
@@ -400,11 +393,13 @@ export default class gameState extends Phaser.State {
         this.ledgePoints.forEach(ledgePt => {
             if (ledgePt.type === 'ledge') {
                 this.ledge = this.game.add.sprite(ledgePt.x, ledgePt.y, 'point');
+                this.ledge.anchor.x = 0.5;
+                this.ledge.anchor.y = 0.5;
                 this.ledgesGroup.add(this.ledge);
                 this.ledgesGroup.setAll('body.allowGravity', false);
             }
         });
-    
+
         //loot objects
         this.mapObjects = this.map.objects.objects;
         this.objectsGroup = this.game.add.group();
@@ -468,7 +463,7 @@ export default class gameState extends Phaser.State {
                 this.graphics.clear();
             } else {
                 this.ledgesGroup.forEach(ledge => {
-                    this.graphics.lineStyle(3, 0xbe00ff).beginFill(0x000000, 0).arc(ledge.x, ledge.y, ledge.width*5, 0, 360, true);
+                    this.graphics.lineStyle(3, 0xff0000).beginFill(0x000000, 0).arc(ledge.x, ledge.y, ledge.width, 0, 360, true);
                     this.graphics.endFill();
                 });
             }
@@ -490,5 +485,4 @@ export default class gameState extends Phaser.State {
     resetFade() {
         this.game.camera.resetFX();
     }
-    
 }
