@@ -15,7 +15,7 @@
 					<option value="<%= unicorn._id %>" class="unicorn" data-url="<%= cloudinary.url(`${unicorn.imgs.baseImg.public_id}.png`, {secure: "true", cloud_name: cloudname, version: unicorn.imgs.baseImg.version}) %>"><%= unicorn.name %></option>
 					<% }); %>	
 				</select>
-				<a class="d-inline float-end mx-3" data-bs-toggle="modal" data-bs-target="#helpModal" data-bs-origin="equip"><i class="fas fa-question-circle fa-2x" aria-hidden="true" title="Help: Equipper"></i><span class="sr-only">Equipper Instructions</span></a>
+				<a class="d-inline float-end mx-3"><i class="fas fa-question-circle fa-2x" data-bs-toggle="modal" data-bs-target="#helpModal" data-bs-origin="equip" aria-hidden="true" title="Help: Equipper"></i><span class="sr-only">Equipper Instructions</span></a>
 			</form>
 			<div class="d-flex flex-column justify-content-center">
 				<div class="canvasbuttons m-1">

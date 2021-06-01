@@ -81,58 +81,19 @@ export default class gameState extends Phaser.State {
     
         //run loot get function
         this.game.physics.arcade.overlap(this.hero, this.objectsGroup, this.getLoot, null, this);
-    
-		this.hero.body.velocity.x = 0;
 
+        if(this.pointer.isUp) {
+            this.hero.body.velocity.x = 0;
+            if(this.hero.whichDirection === "left" && this.hero.isOnGround) {
+                this.hero.animations.play('idle-left');
+            } else if(this.hero.whichDirection === "right" && this.hero.isOnGround) {
+                this.hero.animations.play('idle-right');
+            }
+        }
+    
         this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
+        this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
 		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.isGrabbing);
-    
-		//Running anims
-        if(this.controls.up.isUp && this.hero.isOnGround) {
-            if (this.controls.left.isDown && this.controls.right.isUp) {
-                this.hero.body.velocity.x = -150;
-                this.hero.animations.play('run-left');
-            } else if (this.controls.right.isDown && this.controls.left.isUp) {
-                this.hero.body.velocity.x = 150;
-                this.hero.animations.play('run-right');
-            } 
-        }
-		
-        if(this.controls.up.isDown || this.hero.isAirborne) {
-            if(this.runRight.isPlaying) {
-                this.runRight.stop(false, true);
-            } else if(this.runLeft.isPlaying) {
-                this.runLeft.stop(false, true);
-            } else if(this.idleLeft.isPlaying) {
-                this.idleLeft.stop(false, true);
-            } else if(this.idleRight.isPlaying) {
-                this.idleRight.stop(false, true);
-            }
-        }
-    
-        //Jumping
-        if (this.controls.up.justDown && this.hero.isOnGround) {
-            this.hero.body.velocity.y = -325;
-            if(this.hero.body.velocity.y < -325) {
-                this.hero.body.velocity.y = -325;
-            }
-        }
-		
-        if(this.controls.left.isUp && this.controls.right.isUp) {
-            if (this.hero.isAirborne && this.hero.whichDirection == "left") {
-                this.hero.animations.play('up-left');
-            } else if (this.hero.isAirborne && this.hero.whichDirection == "right") {
-                this.hero.animations.play('up-right');
-            }
-        }
-		
-		if(this.hero.whichDirection == "left" && this.hero.isAirborne && this.controls.left.isDown && this.controls.right.isUp) {
-			this.hero.body.velocity.x = -180;
-            this.hero.animations.play('jump-left');
-		} else if(this.hero.whichDirection == "right" && this.hero.isAirborne && this.controls.right.isDown && this.controls.left.isUp) {
-			this.hero.body.velocity.x = 180;
-            this.hero.animations.play('jump-right');
-		}
 
         if(this.hero.isOnGround) {
             if(this.upRight.isPlaying) {
@@ -145,58 +106,65 @@ export default class gameState extends Phaser.State {
                 this.jumpRight.stop(false, true);
             }
         }
-		
-		//ledge release
-		if(this.controls.down.isDown && (this.hero.body.immovable || !this.hero.body.moves || this.hero.isGrabbing)) {
-			this.hero.body.immovable = false;
-            this.hero.body.moves = true;
-            this.hero.isGrabbing = false;
-            this.hero.body.enable = true;
-            this.controls.left.enabled = true;
-            this.controls.right.enabled = true;
-		}
+
+        if(this.hero.isAirborne) {
+            if(this.runRight.isPlaying) {
+                this.runRight.stop(false, true);
+            } else if(this.runLeft.isPlaying) {
+                this.runLeft.stop(false, true);
+            } else if(this.idleLeft.isPlaying) {
+                this.idleLeft.stop(false, true);
+            } else if(this.idleRight.isPlaying) {
+                this.idleRight.stop(false, true);
+            }
+        }
     }
 
     addControls() {
-        //pointer controls
-        this.activePointer = this.game.input.activePointer;
+        //establish pointer
+        this.pointer = this.game.input.pointer1;
+        this.game.input.onDown.add(this.pointerInput, this);
+        // this.game.input.onUp.add(this.pointerUp, this);
+    }
 
-        //initiate cursor keys
-        this.controls = this.game.input.keyboard.createCursorKeys();
-        //add special controls for grab and climb
-        this.grabKey = this.game.input.keyboard.addKey(71); //'G'
-        this.climbKey = this.game.input.keyboard.addKey(67); //'C'
-    
-        this.game.input.keyboard.addKeyCapture([37, 38, 39, 40 ]);
-    
-        //anim-specific settings
-        this.controls.left.onUp.add(()=> { this.hero.animations.play('idle-left'); }, this);
-        this.controls.right.onUp.add(()=> { this.hero.animations.play('idle-right'); }, this);
-    
-        this.controls.left.onDown.add(()=> { this.hero.whichDirection = 'left' }, this);
-        this.controls.right.onDown.add(()=> { this.hero.whichDirection = 'right' }, this);
+    pointerInput(input) {
+        //pointer conditions
+        this.pointerLeft = (this.pointer.worldX < this.hero.body.center.x);
+        this.pointerRight = (this.pointer.worldX > this.hero.body.center.x);
+        this.pointerAbove = (this.pointer.worldY < this.hero.body.center.y);
+        this.pointerBelow = (this.pointer.worldY > this.hero.body.center.y);
+        this.pointerXThreshold = (this.game.math.difference(this.pointer.worldX, this.hero.body.center.x));
+        this.pointerYThreshold = (this.game.math.difference(this.pointer.worldY, this.hero.body.center.y));
 
-        this.climbKey.onDown.add(()=> {
-            if (this.hero.whichDirection == 'left' && this.hero.isGrabbing) {
-                this.hero.animations.play('climb-left');
-            } else if (this.hero.whichDirection == 'right' && this.hero.isGrabbing) {
-                this.hero.animations.play('climb-right');
+        if(this.pointerXThreshold < 100 && this.pointerYThreshold < 15 && this.hero.isOnGround) {
+            if(this.pointerLeft) {
+                this.hero.whichDirection = 'left';
+                this.hero.body.velocity.x = -150;
+                this.hero.animations.play('run-left');
+            } else if(this.pointerRight) {
+                this.hero.whichDirection = 'right';
+                this.hero.body.velocity.x = 150;
+                this.hero.animations.play('run-right');
             }
-        })
+        }
+    }
+
+    pointerUp() {
+        
     }
 
     ledgeHit(hero, ledge) {
         //check difference between ledge coords and hero.left vs hero.right to determine which side ledge is on
-        if (this.hero.whichDirection === "left" && this.hero.body.velocity.y < 0 && this.grabKey.isDown) {
-            hero.animations.play('grab-left');
-            hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
-            hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
-        }
-        if (this.hero.whichDirection === "right" && this.hero.body.velocity.y < 0 && this.grabKey.isDown) {
-            hero.animations.play('grab-right');
-            hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
-            hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
-        }
+        // if (this.hero.whichDirection === "left" && this.hero.body.velocity.y < 0 && this.grabKey.isDown) {
+        //     hero.animations.play('grab-left');
+        //     hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
+        //     hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
+        // }
+        // if (this.hero.whichDirection === "right" && this.hero.body.velocity.y < 0 && this.grabKey.isDown) {
+        //     hero.animations.play('grab-right');
+        //     hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
+        //     hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
+        // }
     }
 
     createAnims() {
@@ -283,7 +251,7 @@ export default class gameState extends Phaser.State {
         this.hero.body.bounce.y = 0.3;
         this.hero.body.collideWorldBounds = true;
         this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
-		
+		// this.hero.debug = true;
         //enable hero for slopes
         this.game.slopes.enable(this.hero);
         // Prefer the minimum Y offset for this physics body
@@ -485,4 +453,9 @@ export default class gameState extends Phaser.State {
     resetFade() {
         this.game.camera.resetFX();
     }
+
+    // render() {
+    //     this.game.debug.body(this.hero);
+    //     this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
+    // }
 }
