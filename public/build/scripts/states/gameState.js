@@ -82,75 +82,61 @@ export default class gameState extends Phaser.State {
         //run loot get function
         this.game.physics.arcade.overlap(this.hero, this.objectsGroup, this.getLoot, null, this);
 
+        if(this.pointer.isDown) {
+            this.pointerInput();
+        }
+
         if(this.pointer.isUp) {
-            this.hero.body.velocity.x = 0;
-            if(this.hero.whichDirection === "left" && this.hero.isOnGround) {
-                this.hero.animations.play('idle-left');
-            } else if(this.hero.whichDirection === "right" && this.hero.isOnGround) {
-                this.hero.animations.play('idle-right');
-            }
+            this.pointerUp();
         }
     
         this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
         this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
 		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.isGrabbing);
-
-        if(this.hero.isOnGround) {
-            if(this.upRight.isPlaying) {
-                this.upRight.stop(false, true);
-            } else if(this.upLeft.isPlaying) {
-                this.upLeft.stop(false, true);
-            } else if (this.jumpLeft.isPlaying) {
-                this.jumpLeft.stop(false, true);
-            } else if (this.jumpRight.isPlaying) {
-                this.jumpRight.stop(false, true);
-            }
-        }
-
-        if(this.hero.isAirborne) {
-            if(this.runRight.isPlaying) {
-                this.runRight.stop(false, true);
-            } else if(this.runLeft.isPlaying) {
-                this.runLeft.stop(false, true);
-            } else if(this.idleLeft.isPlaying) {
-                this.idleLeft.stop(false, true);
-            } else if(this.idleRight.isPlaying) {
-                this.idleRight.stop(false, true);
-            }
-        }
     }
 
     addControls() {
         //establish pointer
         this.pointer = this.game.input.pointer1;
-        this.game.input.onDown.add(this.pointerInput, this);
-        // this.game.input.onUp.add(this.pointerUp, this);
     }
 
     pointerInput(input) {
         //pointer conditions
-        this.pointerLeft = (this.pointer.worldX < this.hero.body.center.x);
-        this.pointerRight = (this.pointer.worldX > this.hero.body.center.x);
-        this.pointerAbove = (this.pointer.worldY < this.hero.body.center.y);
-        this.pointerBelow = (this.pointer.worldY > this.hero.body.center.y);
-        this.pointerXThreshold = (this.game.math.difference(this.pointer.worldX, this.hero.body.center.x));
-        this.pointerYThreshold = (this.game.math.difference(this.pointer.worldY, this.hero.body.center.y));
+        this.pointerLeft = this.pointer.worldX < this.hero.body.x;
+        this.pointerRight = this.pointer.worldX > this.hero.body.x;
+        this.pointerAbove = this.pointer.worldY < this.hero.body.y;
+        this.pointerBelow = this.pointer.worldY > this.hero.body.y;
+        this.pointerXThreshold = this.game.math.difference(this.pointer.worldX, this.hero.body.x);
+        this.pointerYThreshold = this.game.math.difference(this.pointer.worldY, this.hero.body.y);
 
-        if(this.pointerXThreshold < 100 && this.pointerYThreshold < 15 && this.hero.isOnGround) {
+        if(this.pointerXThreshold < 100 && this.hero.isOnGround) {
             if(this.pointerLeft) {
                 this.hero.whichDirection = 'left';
                 this.hero.body.velocity.x = -150;
+                if(this.hero.body.velocity.x < -150) {
+                    this.hero.body.velocity.x = -150;
+                }
                 this.hero.animations.play('run-left');
             } else if(this.pointerRight) {
                 this.hero.whichDirection = 'right';
                 this.hero.body.velocity.x = 150;
+                if(this.hero.body.velocity.x > 150) {
+                    this.hero.body.velocity.x = 150;
+                }
                 this.hero.animations.play('run-right');
             }
+        } else if(this.pointerXThreshold > 100) {
+            this.pointerUp();
         }
     }
 
     pointerUp() {
-        
+        this.hero.body.velocity.x = 0;
+        if(this.hero.whichDirection === "left" && this.hero.isOnGround) {
+            this.hero.animations.play('idle-left');
+        } else if(this.hero.whichDirection === "right" && this.hero.isOnGround) {
+            this.hero.animations.play('idle-right');
+        }
     }
 
     ledgeHit(hero, ledge) {
@@ -258,7 +244,6 @@ export default class gameState extends Phaser.State {
         this.hero.body.slopes.preferY = true;
         // Pull the player into downwards collisions with a velocity of 50
         this.hero.body.slopes.pullDown = 50;
-    
         //set custom property to handle which direction the sprite is facing, default 'right'
         this.hero.whichDirection = 'right';
         //set custom property to handle whether player is grabbing a ledge at the moment, default 'no'
