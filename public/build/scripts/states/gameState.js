@@ -96,19 +96,53 @@ export default class gameState extends Phaser.State {
     }
 
     addControls() {
+        //leap: click-drag pointer, have sprite follow pointer
         //establish pointer
         this.pointer = this.game.input.pointer1;
+
+        //pointer conditions
+        //angle range for horizontal movement:  
+        //angle range for horizontal leap:
+        //angle rage for vertical jump: 60-120
+        this.game.input.onDown.add(()=>{
+            this.pointerXThreshold = this.game.math.difference(this.pointer.worldX, this.hero.body.x);
+            this.pointerYThreshold = this.game.math.difference(this.pointer.worldY, this.hero.body.y);
+
+            if(this.pointer.worldX < this.hero.body.x) {
+                this.pointerLeft = true;
+                this.pointerRight = false;
+            } else if(this.pointer.worldX > this.hero.body.x) {
+                this.pointerLeft = false;
+                this.pointerRight = true;
+            } else if(this.pointer.worldY < this.hero.body.y) {
+                this.pointerAbove = true;
+                this.pointerBelow = false;
+            } else if(this.pointer.worldY > this.hero.body.y) {
+                this.pointerAbove = false;
+                this.pointerBelow = true;
+            }
+
+            this.angle = this.game.physics.arcade.angleToPointer(this.hero);
+            //angle range for horizontal movement: left=> -2.5 -> 2.5, right=> 0.5 -> -0.5
+            //angle range for horizontal leap:
+            //angle range for vertical jump: -0.6 -> -1.6
+        }, this);
+
+        this.game.input.onTap.add(this.tapJump, this);
     }
 
-    pointerInput(input) {
-        //pointer conditions
-        this.pointerLeft = this.pointer.worldX < this.hero.body.x;
-        this.pointerRight = this.pointer.worldX > this.hero.body.x;
-        this.pointerAbove = this.pointer.worldY < this.hero.body.y;
-        this.pointerBelow = this.pointer.worldY > this.hero.body.y;
-        this.pointerXThreshold = this.game.math.difference(this.pointer.worldX, this.hero.body.x);
-        this.pointerYThreshold = this.game.math.difference(this.pointer.worldY, this.hero.body.y);
+    tapJump() {
+        this.angle = this.game.physics.arcade.angleToPointer(this.hero);
 
+        if(this.hero.isOnGround && (this.angle < -0.6 && this.angle > -1.6)) {
+            this.hero.body.velocity.y = -325;
+            if(this.hero.body.velocity.y < -325) {
+                this.hero.body.velocity.y = -325;
+            }
+        }
+    }
+
+    pointerInput() {
         if(this.pointerXThreshold < 100 && this.hero.isOnGround) {
             if(this.pointerLeft) {
                 this.hero.whichDirection = 'left';
