@@ -82,6 +82,18 @@ export default class gameState extends Phaser.State {
         //run loot get function
         this.game.physics.arcade.overlap(this.hero, this.objectsGroup, this.getLoot, null, this);
 
+        this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
+        this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
+		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.isGrabbing);
+
+        if(this.hero.tapped && this.pointer.duration < 400) {
+            this.tapJump();
+        }
+
+        if(this.hero.input.isDragged && this.pointer.duration < 300) {
+            this.tapLeap();
+        }
+
         if(this.pointer.isDown) {
             this.pointerInput();
         }
@@ -89,24 +101,45 @@ export default class gameState extends Phaser.State {
         if(this.pointer.isUp) {
             this.pointerUp();
         }
-    
-        this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
-        this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
-		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.isGrabbing);
+
+        if(this.hero.isAirborne) {
+            if(this.runRight.isPlaying) {
+                this.runRight.stop(false, true);
+            } else if(this.runLeft.isPlaying) {
+                this.runLeft.stop(false, true);
+            } else if(this.idleLeft.isPlaying) {
+                this.idleLeft.stop(false, true);
+            } else if(this.idleRight.isPlaying) {
+                this.idleRight.stop(false, true);
+            }
+        } else if(this.hero.isOnGround) {
+            if(this.upRight.isPlaying) {
+                this.upRight.stop(false, true);
+            } else if(this.upLeft.isPlaying) {
+                this.upLeft.stop(false, true);
+            } else if (this.jumpLeft.isPlaying) {
+                this.jumpLeft.stop(false, true);
+            } else if (this.jumpRight.isPlaying) {
+                this.jumpRight.stop(false, true);
+            }
+        }
     }
 
     addControls() {
-        //leap: click-drag pointer, have sprite follow pointer
+        //jump: tap ON SPRITE
+        // leap: tap ON SPRITE and swipe: pointer movement within certain angle range
+        this.hero.events.onInputUp.add(()=>{ this.hero.tapped = false; });
+        this.hero.events.onInputOut.add(()=>{ this.hero.tapped = false; });
+        this.hero.events.onInputDown.add(()=>{ 
+            this.hero.tapped = true;
+        });
+        
         //establish pointer
         this.pointer = this.game.input.pointer1;
 
         //pointer conditions
-        //angle range for horizontal movement:  
-        //angle range for horizontal leap:
-        //angle rage for vertical jump: 60-120
         this.game.input.onDown.add(()=>{
-            this.pointerXThreshold = this.game.math.difference(this.pointer.worldX, this.hero.body.x);
-            this.pointerYThreshold = this.game.math.difference(this.pointer.worldY, this.hero.body.y);
+            this.pointerThreshold = this.game.physics.arcade.distanceToPointer(this.hero, this.pointer, true);
 
             if(this.pointer.worldX < this.hero.body.x) {
                 this.pointerLeft = true;
@@ -121,29 +154,11 @@ export default class gameState extends Phaser.State {
                 this.pointerAbove = false;
                 this.pointerBelow = true;
             }
-
-            this.angle = this.game.physics.arcade.angleToPointer(this.hero);
-            //angle range for horizontal movement: left=> -2.5 -> 2.5, right=> 0.5 -> -0.5
-            //angle range for horizontal leap:
-            //angle range for vertical jump: -0.6 -> -1.6
         }, this);
-
-        this.game.input.onTap.add(this.tapJump, this);
-    }
-
-    tapJump() {
-        this.angle = this.game.physics.arcade.angleToPointer(this.hero);
-
-        if(this.hero.isOnGround && (this.angle < -0.6 && this.angle > -1.6)) {
-            this.hero.body.velocity.y = -325;
-            if(this.hero.body.velocity.y < -325) {
-                this.hero.body.velocity.y = -325;
-            }
-        }
     }
 
     pointerInput() {
-        if(this.pointerXThreshold < 100 && this.hero.isOnGround) {
+        if(this.pointerThreshold < 250 && this.pointerThreshold > this.hero.body.width && this.hero.isOnGround && !this.hero.tapped) {
             if(this.pointerLeft) {
                 this.hero.whichDirection = 'left';
                 this.hero.body.velocity.x = -150;
@@ -159,8 +174,41 @@ export default class gameState extends Phaser.State {
                 }
                 this.hero.animations.play('run-right');
             }
-        } else if(this.pointerXThreshold > 100) {
+        } else if(this.pointerThreshold > 250 || this.pointerThreshold < this.hero.body.width) {
             this.pointerUp();
+        }
+    }
+
+    tapLeap() {
+        this.angle = this.game.physics.arcade.angleToPointer(this.hero);
+        this.hero.body.velocity.y = this.hero.body.velocity.y;
+        if(this.hero.body.velocity.y < -180) {
+            this.hero.body.velocity.y = -180;
+        }
+        if(this.hero.whichDirection === "left" && (this.angle < -1 && this.angle > -2.8)) {
+            this.hero.animations.play('jump-left');
+            this.hero.body.velocity.x = -180;
+            if(this.hero.body.velocity.x < -180) {
+                this.hero.body.velocity.x = -180;
+            }
+        } else if(this.hero.whichDirection === "right" && (this.angle > -1 && this.angle < 0)) {
+            this.hero.animations.play('jump-right');
+            this.hero.body.velocity.x = 180;
+            if(this.hero.body.velocity.x > 180) {
+                this.hero.body.velocity.x = 180;
+            }
+        }
+    }
+
+    tapJump() {
+        if(this.hero.whichDirection === "left") {
+            this.hero.animations.play('up-left');
+        } else if(this.hero.whichDirection === "right") {
+            this.hero.animations.play('up-right');
+        }
+        this.hero.body.velocity.y = -150;
+        if(this.hero.body.velocity.y < -150) {
+            this.hero.body.velocity.y = -150;
         }
     }
 
@@ -271,6 +319,11 @@ export default class gameState extends Phaser.State {
         this.hero.body.bounce.y = 0.3;
         this.hero.body.collideWorldBounds = true;
         this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
+        this.hero.inputEnabled = true;
+        this.hero.hitArea = this.hero.body.width * this.hero.body.height;
+        this.hero.input.enableDrag(true);
+        this.hero.input.setDragLock(true, false);
+        this.dragLimit = this.hero.body.width*3;
 		// this.hero.debug = true;
         //enable hero for slopes
         this.game.slopes.enable(this.hero);
@@ -278,10 +331,10 @@ export default class gameState extends Phaser.State {
         this.hero.body.slopes.preferY = true;
         // Pull the player into downwards collisions with a velocity of 50
         this.hero.body.slopes.pullDown = 50;
-        //set custom property to handle which direction the sprite is facing, default 'right'
+        //set custom properties
         this.hero.whichDirection = 'right';
-        //set custom property to handle whether player is grabbing a ledge at the moment, default 'no'
         this.hero.isGrabbing = false;
+        this.hero.tapped = false;
     }
    
     makeMap() {
