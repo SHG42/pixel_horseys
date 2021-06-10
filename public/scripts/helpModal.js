@@ -5,10 +5,11 @@ var exampleModal = document.getElementById('helpModal')
 		// Button that triggered the modal
 		var button = event.relatedTarget
 		// Extract info from data-bs-* attributes
-		var origin = button.getAttribute('data-bs-origin')
+		var origin = button.getAttribute('data-bs-origin');
+		var id = button.getAttribute("data-bs-id");
 		// Update the modal's content.
 		modalBody.replaceChildren();
-		updateContent(origin);
+		updateContent(origin, id);
 	})
 	
 	function setContent(titletext, bodytext) {
@@ -20,7 +21,7 @@ var exampleModal = document.getElementById('helpModal')
 		})
 	}
 
-	function updateContent(origin) {
+	function updateContent(origin, id) {
 		if(origin === "bio"){
 			var titletext = "Help: Bio Editor";
 			var bodytext = [`To activate the Bio Editor, click inside the double-bordered box (the element labeled 'lore' for users assisted by screen readers). To close the Bio Editor without saving any changes, click the Cancel button, or click outside the double-bordered box.`];
@@ -41,6 +42,11 @@ var exampleModal = document.getElementById('helpModal')
 `Click the Save button anytime to save your progress.`];
 			setContent(titletext, bodytext);
 		} else if(origin === "explore"){
+			if(id === "keyboard") {
+				
+			} else if(id === "pointer") {
+				
+			}
 			var titletext = "Help: Explore";
 			var bodytext = [`How to Play:`, 
 `Navigate around the map and collect items. Use your device's keyboard or touchscreen.`, 

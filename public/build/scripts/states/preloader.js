@@ -16,8 +16,8 @@ export default class Preloader extends Phaser.State {
     createPreloader() {
         this.loadAssets();
 
-        var width = this.game.width;
-        var height = this.game.height;
+        var width = this.camera.view.width;
+        var height = this.camera.view.height;
 
         var logo = this.game.add.image(width/2-10, height/2+50, 'sunflame_logo');
         logo.anchor = {x: 0.5, y: 0.5};
@@ -28,7 +28,7 @@ export default class Preloader extends Phaser.State {
         var bar = this.game.add.graphics();
         bar.beginFill(0xffffff, 0.3);
         bar.drawRect(0, 20, width, 100);
-        var text = this.game.add.text(0, 0, "Please Wait, Loading In Progress...", { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" });
+        var text = this.game.add.text(0, 0, "Please Wait, Loading In Progress...", { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle", wordWrap: true, wordWrapWidth: width-100 });
         text.setShadow(3, 3, 'rgba(255,255,255,0.5)', 2);
         text.setTextBounds(0, 20, width, 100);
         //remove progressbar when complete
@@ -80,8 +80,10 @@ export default class Preloader extends Phaser.State {
     }
 
     startGame() {
+        //use this one
         // var data = {level: 0, newGame: true, levels: this.levels}
         // this.game.state.start('NPC', true, false, data);
+        //testing only
         var data = {level: 2, newGame: true, levels: this.levels}
         this.game.state.start('gameState', true, false, data);
     }

@@ -19,7 +19,7 @@ export default class NPC extends Phaser.State {
     create() {
         this.addNPC();
         //init anim
-        this.portal = this.game.add.sprite(this.game.width/2, this.game.height/2, 'portal', '0000');
+        this.portal = this.game.add.sprite(this.camera.view.width/2, this.camera.view.height/2, 'portal', '0000');
         this.portal.anchor = {x: 0.5, y: 0.5};
         this.portal.visible = false;
         this.portalAnim = this.portal.animations.add('portal', Phaser.Animation.generateFrameNames('', 0, 8, '', 4), 7, true, false);
@@ -51,13 +51,13 @@ export default class NPC extends Phaser.State {
     launch() {
         this.bar = this.game.add.graphics();
         this.bar.beginFill(0xffffff, 0.8);
-        this.bar.drawRect(0, this.game.height-200, this.game.width, 200);
+        this.bar.drawRect(0, this.camera.view.height-200, this.camera.view.width, 200);
 
-        this.text = this.game.add.text(0, 0, "", { font: "bold 20px Arial", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle", wordWrap: true, wordWrapWidth: this.game.width-150 });
+        this.text = this.game.add.text(0, 0, "", { font: "bold 20px Arial", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle", wordWrap: true, wordWrapWidth: this.camera.view.width-150 });
         this.text.setShadow(2, 2, 'rgba(0,0,0,0.8)', 2);
-        this.text.setTextBounds(0, this.game.height-200, this.game.width-100, 200);
+        this.text.setTextBounds(0, this.camera.view.height-200, this.camera.view.width-100, 200);
 
-        this.next = this.game.add.image(this.game.width-50, this.game.height-50, "forward", null);
+        this.next = this.game.add.image(this.camera.view.width-50, this.camera.view.height-50, "forward", null);
         this.next.visible = false;
 
         this.runDialogue();
@@ -135,11 +135,6 @@ export default class NPC extends Phaser.State {
             this.game.camera.onFadeComplete.add(this.startGame, this);
         }, 4000);
     }
-	
-	startGame() {
-        var data = {level: 1, newGame: true, levels: this._LEVELS}
-        this.state.start('gameState', true, false, data);
-    }
 
     runEnd() {
         this.ranger.destroy();
@@ -148,6 +143,11 @@ export default class NPC extends Phaser.State {
 			this.game.pendingDestroy = true;
 			win();
 		}, this);
+    }
+
+    startGame() {
+        var data = {level: 1, newGame: true, levels: this._LEVELS}
+        this.state.start('gameState', true, false, data);
     }
 }
 
