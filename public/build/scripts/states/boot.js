@@ -10,6 +10,7 @@ export default class Boot extends Phaser.State {
     }
     
     create() {
+        this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); };
         this.state.start('Preloader');
     }
 }

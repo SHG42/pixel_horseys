@@ -67,6 +67,7 @@ export default class gameState extends Phaser.State {
             this.game.camera.fade(0x000000, 2000);
             this.game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
         }
+
         //platform collider
         this.game.physics.arcade.collide(this.hero, this.mapLayer);
     
@@ -82,16 +83,10 @@ export default class gameState extends Phaser.State {
         //run loot get function
         this.game.physics.arcade.overlap(this.hero, this.objectsGroup, this.getLoot, null, this);
 
-        this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
-        this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
-		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.isGrabbing);
+        this.heroConditions();
 
         if(this.hero.tapped && this.pointer.duration < 400) {
             this.tapJump();
-        }
-
-        if(this.hero.input.isDragged && this.pointer.duration < 300) {
-            this.tapLeap();
         }
 
         if(this.pointer.isDown) {
@@ -101,101 +96,74 @@ export default class gameState extends Phaser.State {
         if(this.pointer.isUp) {
             this.pointerUp();
         }
-
-        if(this.hero.isAirborne) {
-            if(this.runRight.isPlaying) {
-                this.runRight.stop(false, true);
-            } else if(this.runLeft.isPlaying) {
-                this.runLeft.stop(false, true);
-            } else if(this.idleLeft.isPlaying) {
-                this.idleLeft.stop(false, true);
-            } else if(this.idleRight.isPlaying) {
-                this.idleRight.stop(false, true);
-            }
-        } else if(this.hero.isOnGround) {
-            if(this.upRight.isPlaying) {
-                this.upRight.stop(false, true);
-            } else if(this.upLeft.isPlaying) {
-                this.upLeft.stop(false, true);
-            } else if (this.jumpLeft.isPlaying) {
-                this.jumpLeft.stop(false, true);
-            } else if (this.jumpRight.isPlaying) {
-                this.jumpRight.stop(false, true);
-            }
-        }
     }
 
     addControls() {
-        //jump: tap ON SPRITE
-        // leap: tap ON SPRITE and swipe: pointer movement within certain angle range
-        this.hero.events.onInputUp.add(()=>{ this.hero.tapped = false; });
-        this.hero.events.onInputOut.add(()=>{ this.hero.tapped = false; });
+        this.hero.events.onInputUp.add(()=>{ this.hero.tapped = false; }, this);
+        this.hero.events.onInputOut.add(()=>{ this.hero.tapped = false; }, this);
         this.hero.events.onInputDown.add(()=>{ 
             this.hero.tapped = true;
         });
         
         //establish pointer
         this.pointer = this.game.input.pointer1;
+    }
 
-        //pointer conditions
-        this.game.input.onDown.add(()=>{
-            this.pointerThreshold = this.game.physics.arcade.distanceToPointer(this.hero, this.pointer, true);
+    pointerConditions() {
+        this.angle = this.game.physics.arcade.angleToPointer(this.hero);
+        this.angleAbove = (this.angle > -1.8 && this.angle < -0.2);
+        this.angleBelow = (this.angle > 0.5 && this.angle < 1.5);
 
-            if(this.pointer.worldX < this.hero.body.x) {
-                this.pointerLeft = true;
-                this.pointerRight = false;
-            } else if(this.pointer.worldX > this.hero.body.x) {
-                this.pointerLeft = false;
-                this.pointerRight = true;
-            } else if(this.pointer.worldY < this.hero.body.y) {
-                this.pointerAbove = true;
-                this.pointerBelow = false;
-            } else if(this.pointer.worldY > this.hero.body.y) {
-                this.pointerAbove = false;
-                this.pointerBelow = true;
-            }
-        }, this);
+        this.pointerThreshold = this.game.physics.arcade.distanceToPointer(this.hero, this.pointer, true);
+        
+        if(this.pointer.worldX < this.hero.body.x) {
+            this.pointerLeft = true;
+            this.pointerRight = false;
+        } else if(this.pointer.worldX > this.hero.body.x) {
+            this.pointerLeft = false;
+            this.pointerRight = true;
+        }
+        if(this.pointer.worldY < this.hero.body.y) {
+            this.pointerAbove = true;
+            this.pointerBelow = false;
+        } else if (this.pointer.worldY > this.hero.body.y) {
+            this.pointerAbove = false;
+            this.pointerBelow = true;
+        }
     }
 
     pointerInput() {
-        if(this.pointerThreshold < 250 && this.pointerThreshold > this.hero.body.width && this.hero.isOnGround && !this.hero.tapped) {
-            if(this.pointerLeft) {
-                this.hero.whichDirection = 'left';
-                this.hero.body.velocity.x = -150;
-                if(this.hero.body.velocity.x < -150) {
-                    this.hero.body.velocity.x = -150;
-                }
-                this.hero.animations.play('run-left');
-            } else if(this.pointerRight) {
-                this.hero.whichDirection = 'right';
-                this.hero.body.velocity.x = 150;
-                if(this.hero.body.velocity.x > 150) {
-                    this.hero.body.velocity.x = 150;
-                }
-                this.hero.animations.play('run-right');
-            }
-        } else if(this.pointerThreshold > 250 || this.pointerThreshold < this.hero.body.width) {
-            this.pointerUp();
-        }
-    }
+        this.pointerConditions();
 
-    tapLeap() {
-        this.angle = this.game.physics.arcade.angleToPointer(this.hero);
-        this.hero.body.velocity.y = this.hero.body.velocity.y;
-        if(this.hero.body.velocity.y < -180) {
-            this.hero.body.velocity.y = -180;
-        }
-        if(this.hero.whichDirection === "left" && (this.angle < -1 && this.angle > -2.8)) {
-            this.hero.animations.play('jump-left');
-            this.hero.body.velocity.x = -180;
-            if(this.hero.body.velocity.x < -180) {
-                this.hero.body.velocity.x = -180;
+        if(!this.hero.tapped) {
+            if(this.angleAbove && this.pointerThreshold < 250 && this.pointerThreshold > this.hero.body.width && this.pointer.duration < 500) {
+                if(this.pointerLeft && !this.pointerRight) {
+                    this.hero.body.velocity.x = -150;
+                    this.hero.whichDirection = 'left';
+                    this.hero.animations.play('jump-left');
+                } else if(this.pointerRight && !this.pointerLeft) {
+                    this.hero.body.velocity.x = 150;
+                    this.hero.whichDirection = 'right';
+                    this.hero.animations.play('jump-right');
+                }
+                this.hero.body.velocity.y = -150;
+                if(this.hero.body.velocity.y < -150) {
+                    this.hero.body.velocity.y = -150;
+                }
             }
-        } else if(this.hero.whichDirection === "right" && (this.angle > -1 && this.angle < 0)) {
-            this.hero.animations.play('jump-right');
-            this.hero.body.velocity.x = 180;
-            if(this.hero.body.velocity.x > 180) {
-                this.hero.body.velocity.x = 180;
+    
+            if(!this.angleAbove && this.pointerThreshold < 250 && this.pointerThreshold > this.hero.body.width && this.hero.isOnGround) {
+                if(this.pointerLeft && !this.pointerRight) {
+                    this.hero.whichDirection = 'left';
+                    this.hero.body.velocity.x = -150;
+                    this.hero.animations.play('run-left');
+                } else if(this.pointerRight && !this.pointerLeft) {
+                    this.hero.whichDirection = 'right';
+                    this.hero.body.velocity.x = 150;
+                    this.hero.animations.play('run-right');
+                }
+            } else if(this.pointerThreshold > 250 || this.pointerThreshold < this.hero.body.width || this.angleAbove) {
+                this.pointerUp();
             }
         }
     }
@@ -222,7 +190,6 @@ export default class gameState extends Phaser.State {
     }
 
     ledgeHit(hero, ledge) {
-        //check difference between ledge coords and hero.left vs hero.right to determine which side ledge is on
         // if (this.hero.whichDirection === "left" && this.hero.body.velocity.y < 0 && this.grabKey.isDown) {
         //     hero.animations.play('grab-left');
         //     hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
@@ -268,8 +235,8 @@ export default class gameState extends Phaser.State {
         this.upRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
         this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
     
-        this.grabLeft.onStart.add(()=> { this.hero.body.immovable = true; this.hero.body.moves = false; this.hero.isGrabbing = true; this.hero.body.enable = false; this.controls.left.enabled = false; this.controls.right.enabled = false; }, this);
-        this.grabRight.onStart.add(()=> { this.hero.body.immovable = true; this.hero.body.moves = false; this.hero.isGrabbing = true; this.hero.body.enable = false; this.controls.left.enabled = false; this.controls.right.enabled = false; }, this);
+        this.grabLeft.onStart.add(()=> { this.hero.body.immovable = true; this.hero.body.moves = false; this.hero.isGrabbing = true; this.hero.body.enable = false; this.hero.isAirborne = false; /*this.controls.left.enabled = false; this.controls.right.enabled = false;*/ }, this);
+        this.grabRight.onStart.add(()=> { this.hero.body.immovable = true; this.hero.body.moves = false; this.hero.isGrabbing = true; this.hero.body.enable = false; this.hero.isAirborne = false; /*this.controls.left.enabled = false; this.controls.right.enabled = false;*/ }, this);
     
         this.climbLeft.onStart.add(()=> { 
             for (let index = 0; index < 18; index++) {
@@ -282,8 +249,8 @@ export default class gameState extends Phaser.State {
             }
         }, this);
     
-        this.climbLeft.onComplete.add(()=> { this.hero.position.x-=10; this.hero.body.enable = true; this.hero.body.immovable = false; this.hero.body.moves = true; this.hero.isGrabbing = false; this.hero.animations.play('idle-left'); this.controls.left.enabled = true; this.controls.right.enabled = true; }, this);
-        this.climbRight.onComplete.add(()=> { this.hero.position.x+=10; this.hero.body.enable = true; this.hero.body.immovable = false; this.hero.body.moves = true; this.hero.isGrabbing = false; this.hero.animations.play('idle-right'); this.controls.left.enabled = true; this.controls.right.enabled = true; }, this);
+        this.climbLeft.onComplete.add(()=> { this.hero.position.x-=10; this.hero.body.enable = true; this.hero.body.immovable = false; this.hero.body.moves = true; this.hero.isGrabbing = false; this.hero.animations.play('idle-left'); /*this.controls.left.enabled = true; this.controls.right.enabled = true;*/ }, this);
+        this.climbRight.onComplete.add(()=> { this.hero.position.x+=10; this.hero.body.enable = true; this.hero.body.immovable = false; this.hero.body.moves = true; this.hero.isGrabbing = false; this.hero.animations.play('idle-right'); /*this.controls.left.enabled = true; this.controls.right.enabled = true;*/ }, this);
     
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
@@ -321,9 +288,6 @@ export default class gameState extends Phaser.State {
         this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
         this.hero.inputEnabled = true;
         this.hero.hitArea = this.hero.body.width * this.hero.body.height;
-        this.hero.input.enableDrag(true);
-        this.hero.input.setDragLock(true, false);
-        this.dragLimit = this.hero.body.width*3;
 		// this.hero.debug = true;
         //enable hero for slopes
         this.game.slopes.enable(this.hero);
@@ -336,7 +300,37 @@ export default class gameState extends Phaser.State {
         this.hero.isGrabbing = false;
         this.hero.tapped = false;
     }
-   
+
+    heroConditions() {
+        this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
+        this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
+		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.isGrabbing);
+
+        if(this.hero.isAirborne) {
+            if(this.runRight.isPlaying) {
+                this.runRight.stop(false, true);
+            } else if(this.runLeft.isPlaying) {
+                this.runLeft.stop(false, true);
+            }
+            if(this.idleLeft.isPlaying) {
+                this.idleLeft.stop(false, true);
+            } else if(this.idleRight.isPlaying) {
+                this.idleRight.stop(false, true);
+            }
+        } else if(this.hero.isOnGround) {
+            if(this.upRight.isPlaying) {
+                this.upRight.stop(false, true);
+            } else if(this.upLeft.isPlaying) {
+                this.upLeft.stop(false, true);
+            }
+            if (this.jumpLeft.isPlaying) {
+                this.jumpLeft.stop(false, true);
+            } else if (this.jumpRight.isPlaying) {
+                this.jumpRight.stop(false, true);
+            }
+        }
+    }
+
     makeMap() {
         this.map = this.game.add.tilemap(this._LEVELS[this._LEVEL]);
     
@@ -531,3 +525,98 @@ export default class gameState extends Phaser.State {
     //     this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
     // }
 }
+
+// // KEYBOARD CONTROLS
+// //from addControls function
+// //initiate cursor keys
+// this.controls = this.game.input.keyboard.createCursorKeys();
+// //add special controls for grab and climb
+// this.grabKey = this.game.input.keyboard.addKey(71); //'G'
+// this.climbKey = this.game.input.keyboard.addKey(67); //'C'
+
+// this.game.input.keyboard.addKeyCapture([37, 38, 39, 40 ]);
+
+// //anim-specific settings
+// this.controls.left.onUp.add(()=> { this.hero.animations.play('idle-left'); }, this);
+// this.controls.right.onUp.add(()=> { this.hero.animations.play('idle-right'); }, this);
+
+// this.controls.left.onDown.add(()=> { this.hero.whichDirection = 'left' }, this);
+// this.controls.right.onDown.add(()=> { this.hero.whichDirection = 'right' }, this);
+
+// this.climbKey.onDown.add(()=> {
+//     if (this.hero.whichDirection == 'left' && this.hero.isGrabbing) {
+//         this.hero.animations.play('climb-left');
+//     } else if (this.hero.whichDirection == 'right' && this.hero.isGrabbing) {
+//         this.hero.animations.play('climb-right');
+//     }
+// })
+
+////from update loop
+// //Running anims
+// if(this.controls.up.isUp && this.hero.isOnGround) {
+//     if (this.controls.left.isDown && this.controls.right.isUp) {
+//         this.hero.body.velocity.x = -150;
+//         this.hero.animations.play('run-left');
+//     } else if (this.controls.right.isDown && this.controls.left.isUp) {
+//         this.hero.body.velocity.x = 150;
+//         this.hero.animations.play('run-right');
+//     } 
+// } 
+
+// if(this.controls.up.isDown || this.hero.isAirborne) {
+//     if(this.runRight.isPlaying) {
+//         this.runRight.stop(false, true);
+//     } else if(this.runLeft.isPlaying) {
+//         this.runLeft.stop(false, true);
+//     } else if(this.idleLeft.isPlaying) {
+//         this.idleLeft.stop(false, true);
+//     } else if(this.idleRight.isPlaying) {
+//         this.idleRight.stop(false, true);
+//     }
+// }
+
+// //Jumping
+// if (this.controls.up.justDown && this.hero.isOnGround) {
+//     this.hero.body.velocity.y = -325;
+//     if(this.hero.body.velocity.y < -325) {
+//         this.hero.body.velocity.y = -325;
+//     }
+// }
+
+// if(this.controls.left.isUp && this.controls.right.isUp) {
+//     if (this.hero.isAirborne && this.hero.whichDirection == "left") {
+//         this.hero.animations.play('up-left');
+//     } else if (this.hero.isAirborne && this.hero.whichDirection == "right") {
+//         this.hero.animations.play('up-right');
+//     }
+// }
+
+// if(this.hero.whichDirection == "left" && this.hero.isAirborne && this.controls.left.isDown && this.controls.right.isUp) {
+//     this.hero.body.velocity.x = -180;
+//     this.hero.animations.play('jump-left');
+// } else if(this.hero.whichDirection == "right" && this.hero.isAirborne && this.controls.right.isDown && this.controls.left.isUp) {
+//     this.hero.body.velocity.x = 180;
+//     this.hero.animations.play('jump-right');
+// }
+
+// if(this.hero.isOnGround) {
+//     if(this.upRight.isPlaying) {
+//         this.upRight.stop(false, true);
+//     } else if(this.upLeft.isPlaying) {
+//         this.upLeft.stop(false, true);
+//     } else if (this.jumpLeft.isPlaying) {
+//         this.jumpLeft.stop(false, true);
+//     } else if (this.jumpRight.isPlaying) {
+//         this.jumpRight.stop(false, true);
+//     }
+// }
+
+// //ledge release
+// if(this.controls.down.isDown && (this.hero.body.immovable || !this.hero.body.moves || this.hero.isGrabbing)) {
+//     this.hero.body.immovable = false;
+//     this.hero.body.moves = true;
+//     this.hero.isGrabbing = false;
+//     this.hero.body.enable = true;
+//     this.controls.left.enabled = true;
+//     this.controls.right.enabled = true;
+// }
