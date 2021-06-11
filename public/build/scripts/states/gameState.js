@@ -154,16 +154,16 @@ export default class gameState extends Phaser.State {
 
             if (diffLeft < 5 && hero.whichDirection === "left") {
                 hero.custom.isGrabbing = true; 
-                hero.isAirborne = false;
                 hero.custom.grabLeft = true;
+                hero.isAirborne = false;
                 hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
                 hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
                 this.freeze();
             }
             if (diffRight < 5 && hero.whichDirection === "right") {
                 hero.custom.isGrabbing = true; 
-                hero.isAirborne = false;
                 hero.custom.grabRight = true;
+                hero.isAirborne = false;
                 hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
                 hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
                 this.freeze();
@@ -184,48 +184,6 @@ export default class gameState extends Phaser.State {
         } else if(this.hero.custom.whichDirection === "right") {
             this.hero.animations.play('climb-right');
         }
-    }
-
-    createAnims() {
-        //Hero anims
-        //idle
-        this.idleRight = this.hero.animations.add('idle-right', Phaser.Animation.generateFrameNames('idle-right-', 0, 3, '-1.3', 2), 2, true, false);
-        this.idleLeft = this.hero.animations.add('idle-left', Phaser.Animation.generateFrameNames('idle-left-', 0, 3, '-1.3', 2), 2, true, false);
-    
-        //run
-        this.runRight = this.hero.animations.add('run-right', Phaser.Animation.generateFrameNames('run-right-', 0, 5, '-1.3', 2), 10, true, false);
-        this.runLeft = this.hero.animations.add('run-left', Phaser.Animation.generateFrameNames('run-left-', 0, 5, '-1.3', 2), 10, true, false);
-    
-        //jump
-        this.jumpRight = this.hero.animations.add('jump-right', Phaser.Animation.generateFrameNames('jump-right-', 0, 5, '-1.3', 2), 10, false, false);
-        this.jumpLeft = this.hero.animations.add('jump-left', Phaser.Animation.generateFrameNames('jump-left-', 0, 5, '-1.3', 2), 10, false, false);
-		
-		//static jump
-		this.upRight = this.hero.animations.add('up-right', Phaser.Animation.generateFrameNames('crnr-jmp-right-', 0, 1, '-1.3', 2), 10, true, false);
-		this.upLeft = this.hero.animations.add('up-left', Phaser.Animation.generateFrameNames('crnr-jmp-left-', 0, 1, '-1.3', 2), 10, true, false);
-    
-        //grab
-        this.grabLeft = this.hero.animations.add('grab-left', Phaser.Animation.generateFrameNames('crnr-grb-left-', 0, 3, '-1.3', 2), 3, true, false);
-        this.grabRight = this.hero.animations.add('grab-right', Phaser.Animation.generateFrameNames('crnr-grb-right-', 0, 3, '-1.3', 2), 3, true, false);
-    
-        //climb
-        this.climbLeft = this.hero.animations.add('climb-left', Phaser.Animation.generateFrameNames('crnr-clmb-left-', 0, 4, '-1.3', 2), 10, false, false);
-        this.climbRight = this.hero.animations.add('climb-right', Phaser.Animation.generateFrameNames('crnr-clmb-right-', 0, 4, '-1.3', 2), 10, false, false);
-    
-        //animations settings
-        this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
-        this.jumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
-		
-        this.upRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
-        this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
-
-        // this.grabLeft.onStart.add(()=>{  }, this);
-        // this.grabRight.onStart.add(()=>{  }, this);
-    
-        // this.climbLeft.onStart.add(()=>{  })
-        // this.climbRight.onStart.add(()=>{  })
-        //play 'idle-right' by default
-        this.hero.animations.play('idle-right');
     }
     
     addHero() {
@@ -292,12 +250,57 @@ export default class gameState extends Phaser.State {
             this.hero.animations.currentAnim.stop(false, true);
         }
         if(this.hero.custom.isGrabbing) {
+            this.hero.custom.isClimbing = !this.hero.custom.isGrabbing;
             if(this.hero.custom.whichDirection === "left" && this.hero.custom.grabLeft) {
+                this.hero.custom.climbLeft = !this.hero.custom.grabLeft;
                 this.hero.animations.play('grab-left');
             } else if(this.hero.custom.whichDirection === "right" && this.hero.custom.grabRight) {
+                this.hero.custom.climbRight = !this.hero.custom.grabRight;
                 this.hero.animations.play('grab-right');
             }
         }
+    }
+
+    createAnims() {
+        //Hero anims
+        //idle
+        this.idleRight = this.hero.animations.add('idle-right', Phaser.Animation.generateFrameNames('idle-right-', 0, 3, '-1.3', 2), 2, true, false);
+        this.idleLeft = this.hero.animations.add('idle-left', Phaser.Animation.generateFrameNames('idle-left-', 0, 3, '-1.3', 2), 2, true, false);
+    
+        //run
+        this.runRight = this.hero.animations.add('run-right', Phaser.Animation.generateFrameNames('run-right-', 0, 5, '-1.3', 2), 10, true, false);
+        this.runLeft = this.hero.animations.add('run-left', Phaser.Animation.generateFrameNames('run-left-', 0, 5, '-1.3', 2), 10, true, false);
+    
+        //jump
+        this.jumpRight = this.hero.animations.add('jump-right', Phaser.Animation.generateFrameNames('jump-right-', 0, 5, '-1.3', 2), 10, false, false);
+        this.jumpLeft = this.hero.animations.add('jump-left', Phaser.Animation.generateFrameNames('jump-left-', 0, 5, '-1.3', 2), 10, false, false);
+		
+		//static jump
+		this.upRight = this.hero.animations.add('up-right', Phaser.Animation.generateFrameNames('crnr-jmp-right-', 0, 1, '-1.3', 2), 10, true, false);
+		this.upLeft = this.hero.animations.add('up-left', Phaser.Animation.generateFrameNames('crnr-jmp-left-', 0, 1, '-1.3', 2), 10, true, false);
+    
+        //grab
+        this.grabLeft = this.hero.animations.add('grab-left', Phaser.Animation.generateFrameNames('crnr-grb-left-', 0, 3, '-1.3', 2), 3, true, false);
+        this.grabRight = this.hero.animations.add('grab-right', Phaser.Animation.generateFrameNames('crnr-grb-right-', 0, 3, '-1.3', 2), 3, true, false);
+    
+        //climb
+        this.climbLeft = this.hero.animations.add('climb-left', Phaser.Animation.generateFrameNames('crnr-clmb-left-', 0, 4, '-1.3', 2), 10, false, false);
+        this.climbRight = this.hero.animations.add('climb-right', Phaser.Animation.generateFrameNames('crnr-clmb-right-', 0, 4, '-1.3', 2), 10, false, false);
+    
+        //animations settings
+        this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
+        this.jumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
+		
+        this.upRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
+        this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
+
+        // this.grabLeft.onStart.add(()=>{  }, this);
+        // this.grabRight.onStart.add(()=>{  }, this);
+    
+        // this.climbLeft.onStart.add(()=>{  })
+        // this.climbRight.onStart.add(()=>{  })
+        //play 'idle-right' by default
+        this.hero.animations.play('idle-right');
     }
 
     makeMap() {
