@@ -149,9 +149,6 @@ export default class gameState extends Phaser.State {
 
     ledgeHit(hero, ledge) {
         if(hero.tapped && hero.body.velocity.y < 0) {
-            hero.isGrabbing = true; 
-            hero.isAirborne = false;
-
             var heroLeft = hero.body.left;
             var heroRight = hero.body.right;
             var ledgeLeft = ledge.body.left;
@@ -160,12 +157,16 @@ export default class gameState extends Phaser.State {
             var diffRight = this.game.math.difference(heroRight, ledgeRight);
 
             if (diffLeft < 5 && hero.whichDirection === "left") {
+                hero.isGrabbing = true; 
+                hero.isAirborne = false;
                 hero.grabLeft = true;
                 hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
                 hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
                 this.freeze();
             }
             if (diffRight < 5 && hero.whichDirection === "right") {
+                hero.isGrabbing = true; 
+                hero.isAirborne = false;
                 hero.grabRight = true;
                 hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
                 hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
@@ -174,21 +175,30 @@ export default class gameState extends Phaser.State {
         }
     }
 
-    freeze() {
-        if(this.hero.isGrabbing) {
-            this.hero.body.immovable = true; 
-            this.hero.body.moves = false; 
-            this.hero.body.enable = false; 
-            this.hero.tapped = false;
+    climb() {
+        if(this.hero.whichDirection === "left" && this.hero.grabLeft) {
+            this.hero.isClimbing = true;
+            this.hero.climbLeft = true;
+            this.unfreeze();
+        } else if(this.hero.whichDirection === "right" && this.hero.grabRight) {
+            this.hero.isClimbing = true;
+            this.hero.climbRight = true;
+            this.unfreeze();
         }
     }
 
-    climb() {
-        if(this.hero.whichDirection === "left") {
-            this.hero.animations.play('climb-left');
-        } else if(this.hero.whichDirection === "right") {
-            this.hero.animations.play('climb-right');
-        }
+    freeze() {
+        this.hero.body.immovable = true; 
+        this.hero.body.moves = false; 
+        this.hero.body.enable = false; 
+        this.hero.tapped = false;
+    }
+
+    unfreeze() {
+        this.hero.body.immovable = false; 
+        this.hero.body.moves = true; 
+        this.hero.body.enable = true; 
+        this.hero.tapped = true;
     }
 
     createAnims() {
@@ -223,7 +233,7 @@ export default class gameState extends Phaser.State {
 		
         this.upRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
         this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
-    
+
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
     }
@@ -290,10 +300,23 @@ export default class gameState extends Phaser.State {
             this.hero.animations.currentAnim.stop(false, true);
         }
         if(this.hero.isGrabbing) {
+            this.hero.isClimbing = false;
             if(this.hero.whichDirection === "left" && this.hero.grabLeft) {
                 this.hero.animations.play('grab-left');
+                this.hero.climbLeft = false;
             } else if(this.hero.whichDirection === "right" && this.hero.grabRight) {
                 this.hero.animations.play('grab-right');
+                this.hero.climbRight = false;
+            }
+        }
+        if(this.hero.isClimbing) {
+            this.hero.isGrabbing = false;
+            if(this.hero.whichDirection === "left" && this.hero.climbLeft) {
+                this.hero.animations.play('climb-left');
+                this.hero.grabLeft = false;
+            } else if(this.hero.whichDirection === "right" && this.hero.climbRight) {
+                this.hero.animations.play('climb-right');
+                this.hero.grabRight = false;
             }
         }
     }
