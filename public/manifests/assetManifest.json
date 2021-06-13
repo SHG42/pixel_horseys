@@ -29,7 +29,7 @@
         ]
     },
     "spritesheets": [
-        "compiled-hero",
+        "hero",
         "objects",
         "portal",
         "sorceress"

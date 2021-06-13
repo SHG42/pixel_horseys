@@ -57,10 +57,6 @@ export default class gameState extends Phaser.State {
 
         this.heroConditions();
 
-        if(this.hero.custom.tapped && this.pointer.duration < 400) {
-            this.tapJump();
-        }
-
         if(this.pointer.isDown) {
             this.pointerInput();
         }
@@ -71,10 +67,10 @@ export default class gameState extends Phaser.State {
     }
 
     addControls() {
+        this.hero.events.onInputDown.add(()=>{ this.hero.custom.tapped = true; });
         this.hero.events.onInputUp.add(()=>{ this.hero.custom.tapped = false; }, this);
         this.hero.events.onInputOut.add(()=>{ this.hero.custom.tapped = false; }, this);
-        this.hero.events.onInputDown.add(()=>{ this.hero.custom.tapped = true; });
-        
+
         //establish pointer
         this.pointer = this.game.input.pointer1;
     }
@@ -122,7 +118,7 @@ export default class gameState extends Phaser.State {
         }
     }
 
-    tapJump() {
+    tapJump() {//for leap, use launcher examples?
         if(this.hero.custom.whichDirection === "left") {
             this.hero.animations.play('jump-left');
         } else if(this.hero.custom.whichDirection === "right") {
@@ -135,16 +131,18 @@ export default class gameState extends Phaser.State {
     }
 
     pointerUp() {
-        this.hero.body.velocity.x = 0;
-        if(this.hero.custom.whichDirection === "left" && this.hero.isOnGround) {
-            this.hero.animations.play('idle-left');
-        } else if(this.hero.custom.whichDirection === "right" && this.hero.isOnGround) {
-            this.hero.animations.play('idle-right');
+        if(!this.hero.isGrabbing) {
+            this.hero.body.velocity.x = 0;
+            if(this.hero.custom.whichDirection === "left" && this.hero.isOnGround) {
+                this.hero.animations.play('idle-left');
+            } else if(this.hero.custom.whichDirection === "right" && this.hero.isOnGround) {
+                this.hero.animations.play('idle-right');
+            }
         }
     }
 
     ledgeHit(hero, ledge) {
-        if(hero.tapped && hero.body.velocity.y < 0) {
+        if(hero.custom.tapped && hero.body.velocity.y < 0) {
             var heroLeft = hero.body.left;
             var heroRight = hero.body.right;
             var ledgeLeft = ledge.body.left;
@@ -152,90 +150,54 @@ export default class gameState extends Phaser.State {
             var diffLeft = this.game.math.difference(heroLeft, ledgeLeft);
             var diffRight = this.game.math.difference(heroRight, ledgeRight);
 
-            if (diffLeft < 5 && hero.whichDirection === "left") {
-                hero.custom.isGrabbing = true; 
+            this.goUpBy = ledge.body.position.y - 16;
+
+            if (diffLeft < 5 && hero.custom.whichDirection === "left") {
+                this.goLeftBy = ledge.body.position.x - 16;
+                this.hero.animations.play('grab-left');
                 hero.custom.grabLeft = true;
-                hero.isAirborne = false;
                 hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
-                hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
+                hero.body.position.setTo(ledge.body.x, ledge.body.y);
                 this.freeze();
             }
-            if (diffRight < 5 && hero.whichDirection === "right") {
-                hero.custom.isGrabbing = true; 
+            if (diffRight < 5 && hero.custom.whichDirection === "right") {
+                this.goRightBy = ledge.body.position.x + 16;
+                this.hero.animations.play('grab-right');
                 hero.custom.grabRight = true;
-                hero.isAirborne = false;
                 hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
-                hero.body.position.setTo(ledge.body.center.x, ledge.body.center.y);
+                hero.body.position.setTo(ledge.body.x, ledge.body.y);
                 this.freeze();
             }
         }
+    }
+
+    climbingLeft() { 
+        this.hero.input.enabled = false;
+        this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 2000, 'Quad.easeOut', false, 0, 0, false);
+        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; }, this);
+        this.hero.animations.play('climb-left');
     }
 
     freeze() {
+        this.hero.custom.isGrabbing = true;
+        this.hero.custom.tapped = false;
+        this.hero.input.enabled = true;
+        this.hero.body.stop();
         this.hero.body.immovable = true; 
         this.hero.body.moves = false; 
         this.hero.body.enable = false; 
-        this.hero.custom.tapped = false;
+        this.hero.body.allowGravity = false;
+        this.game.physics.arcade.gravity = {x: 0, y: 0};
     }
 
-    climb() {
-        if(this.hero.custom.whichDirection === "left") {
-            this.hero.animations.play('climb-left');
-        } else if(this.hero.custom.whichDirection === "right") {
-            this.hero.animations.play('climb-right');
-        }
-    }
-    
-    addHero() {
-        //load sprite at entry point object in map data
-        //iterate over available entrances
-        this.entrancesGroup.forEach(entrance => {
-            if (this._NEWGAME && this._LEVEL === 1) {
-                //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
-                if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3');
-                }
-            } else if (!this._NEWGAME && this._LEVEL === 1) {
-                if (entrance.name === 'portalfromcave') {
-                    //if returning from cave, load sprite at return pt
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3');
-                }
-            } else { //otherwise, use whatever coordinates come back when function runs
-                this.hero = this.game.add.sprite(entrance.x, entrance.y, 'compiled-hero', 'idle-right-00-1.3');
-            }
-        });
-        
-        //add hero to sorting group
-        this.sortGroup.add(this.hero);
-        this.sortGroup.sendToBack(this.hero);
-        if (this._LEVEL === 4) {
-            this.sortGroup.sendToBack(this.goal);
-        }
-    
-        this.game.physics.arcade.enable(this.hero);
-        this.hero.body.bounce.y = 0.3;
-        this.hero.body.collideWorldBounds = true;
-        this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
-        this.hero.inputEnabled = true;
-        this.hero.hitArea = this.hero.body.width * this.hero.body.height;
-		// this.hero.debug = true;
-        //enable hero for slopes
-        this.game.slopes.enable(this.hero);
-        // Prefer the minimum Y offset for this physics body
-        this.hero.body.slopes.preferY = true;
-        // Pull the player into downwards collisions with a velocity of 50
-        this.hero.body.slopes.pullDown = 50;
-        //set custom properties
-        this.hero.custom = {
-            whichDirection = 'right',
-            isGrabbing = false,
-            grabLeft = false,
-            grabRight = false,
-            isClimbing = false,
-            climbLeft = false,
-            climbRight = false,
-            tapped = false
-        }
+    unfreeze() {
+        this.hero.custom.isGrabbing = false;
+        this.hero.custom.tapped = false;
+        this.hero.input.enabled = true;
+        this.hero.body.immovable = false; 
+        this.hero.body.moves = true; 
+        this.hero.body.enable = true; 
+        this.hero.body.allowGravity = true;
     }
 
     heroConditions() {
@@ -243,21 +205,21 @@ export default class gameState extends Phaser.State {
         this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
 		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.custom.isGrabbing && !this.hero.custom.isClimbing);
 
+        if(this.hero.custom.tapped && !this.hero.isGrabbing && this.pointer.duration < 400) {
+            this.tapJump();
+        }
+
         if(this.hero.isAirborne && (this.hero.animations.currentAnim.name.includes("idle") || this.hero.animations.currentAnim.name.includes("run"))) {
             this.hero.animations.currentAnim.stop(false, true);
         }
         if(this.hero.isOnGround && (this.hero.animations.currentAnim.name.includes("up") || this.hero.animations.currentAnim.name.includes("jump"))) {
             this.hero.animations.currentAnim.stop(false, true);
         }
-        if(this.hero.custom.isGrabbing) {
-            this.hero.custom.isClimbing = !this.hero.custom.isGrabbing;
+
+        if(this.hero.custom.tapped && this.hero.custom.isGrabbing) {
             if(this.hero.custom.whichDirection === "left" && this.hero.custom.grabLeft) {
-                this.hero.custom.climbLeft = !this.hero.custom.grabLeft;
-                this.hero.animations.play('grab-left');
-            } else if(this.hero.custom.whichDirection === "right" && this.hero.custom.grabRight) {
-                this.hero.custom.climbRight = !this.hero.custom.grabRight;
-                this.hero.animations.play('grab-right');
-            }
+                this.climbingLeft();
+            } 
         }
     }
 
@@ -294,14 +256,63 @@ export default class gameState extends Phaser.State {
         this.upRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
         this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
 
-        // this.grabLeft.onStart.add(()=>{  }, this);
-        // this.grabRight.onStart.add(()=>{  }, this);
-    
-        // this.climbLeft.onStart.add(()=>{  })
-        // this.climbRight.onStart.add(()=>{  })
+        this.climbLeft.onStart.add(()=>{ 
+            this.tweenUp.start();
+         }, this);
+
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
     }
+
+    addHero() {
+        //iterate over available entrances
+        this.entrancesGroup.forEach(entrance => {
+            if (this._NEWGAME && this._LEVEL === 1) {
+                //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
+                if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
+                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                }
+            } else if (!this._NEWGAME && this._LEVEL === 1) {
+                if (entrance.name === 'portalfromcave') {
+                    //if returning from cave, load sprite at return pt
+                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                }
+            } else { //otherwise, use whatever coordinates come back when function runs
+                this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            }
+        });
+        
+        //add hero to sorting group
+        this.sortGroup.add(this.hero);
+        this.sortGroup.sendToBack(this.hero);
+        if (this._LEVEL === 4) {
+            this.sortGroup.sendToBack(this.goal);
+        }
+    
+        this.game.physics.arcade.enable(this.hero);
+        this.hero.body.bounce.y = 0.3;
+        this.hero.body.collideWorldBounds = true;
+        this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
+        this.hero.inputEnabled = true;
+        this.hero.hitArea = this.hero.body.width * this.hero.body.height;
+		this.hero.debug = true;
+        //enable hero for slopes
+        this.game.slopes.enable(this.hero);
+        // Prefer the minimum Y offset for this physics body
+        this.hero.body.slopes.preferY = true;
+        // Pull the player into downwards collisions with a velocity of 50
+        this.hero.body.slopes.pullDown = 50;
+        //set custom properties
+        this.hero.custom = {
+            whichDirection : 'right',
+            isGrabbing : false,
+            grabLeft : false,
+            grabRight : false,
+            isClimbing : false,
+            tapped : false
+        }
+    }
+
 
     makeMap() {
         this.map = this.game.add.tilemap(this._LEVELS[this._LEVEL]);
@@ -523,14 +534,14 @@ export default class gameState extends Phaser.State {
         this.game.camera.resetFX();
     }
 
-    // render() {
-    //     this.game.debug.body(this.hero);
-    //     this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
-    //     this.ledgesGroup.forEach((ledge)=>{
-    //         this.game.debug.body(ledge);
-    //         this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
-    //     })
-    // }
+    render() {
+        this.game.debug.body(this.hero);
+        this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
+        // this.ledgesGroup.forEach((ledge)=>{
+        //     this.game.debug.body(ledge);
+        //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
+        // })
+    }
 }
 
 // // KEYBOARD CONTROLS
