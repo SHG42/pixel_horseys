@@ -150,10 +150,10 @@ export default class gameState extends Phaser.State {
             var diffLeft = this.game.math.difference(heroLeft, ledgeLeft);
             var diffRight = this.game.math.difference(heroRight, ledgeRight);
 
-            this.goUpBy = ledge.body.position.y - 16;
+            this.goUpBy = ledge.body.y - 15;
 
             if (diffLeft < 5 && hero.custom.whichDirection === "left") {
-                this.goLeftBy = ledge.body.position.x - 16;
+                this.goLeftBy = ledge.body.x - 32;
                 this.hero.animations.play('grab-left');
                 hero.custom.grabLeft = true;
                 hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
@@ -161,7 +161,7 @@ export default class gameState extends Phaser.State {
                 this.freeze();
             }
             if (diffRight < 5 && hero.custom.whichDirection === "right") {
-                this.goRightBy = ledge.body.position.x + 16;
+                this.goRightBy = ledge.body.x + 32;
                 this.hero.animations.play('grab-right');
                 hero.custom.grabRight = true;
                 hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
@@ -173,9 +173,20 @@ export default class gameState extends Phaser.State {
 
     climbingLeft() { 
         this.hero.input.enabled = false;
-        this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 2000, 'Quad.easeOut', false, 0, 0, false);
-        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; }, this);
+        
+        this.addTweenUp();
+
+        this.tweenLeft = this.game.add.tween(this.hero).to({x: this.goLeftBy, y: this.hero.position.y-5}, 1000, 'Quad.easeOut');
+        this.tweenLeft.onStart.add(()=>{ this.hero.anchor.y = 0; this.unfreeze(); }, this);
+        this.rollLeft.onComplete.addOnce(()=> { this.hero.animations.play('slide-left'); }, this);
+
         this.hero.animations.play('climb-left');
+    }
+
+    addTweenUp() {
+        this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut', false, 0, 0, false);
+        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5;}, this);
+        this.tweenUp.onComplete.add(()=>{ this.hero.animations.play('roll-left'); }, this);
     }
 
     freeze() {
@@ -187,7 +198,6 @@ export default class gameState extends Phaser.State {
         this.hero.body.moves = false; 
         this.hero.body.enable = false; 
         this.hero.body.allowGravity = false;
-        this.game.physics.arcade.gravity = {x: 0, y: 0};
     }
 
     unfreeze() {
@@ -248,7 +258,15 @@ export default class gameState extends Phaser.State {
         //climb
         this.climbLeft = this.hero.animations.add('climb-left', Phaser.Animation.generateFrameNames('crnr-clmb-left-', 0, 4, '-1.3', 2), 10, false, false);
         this.climbRight = this.hero.animations.add('climb-right', Phaser.Animation.generateFrameNames('crnr-clmb-right-', 0, 4, '-1.3', 2), 10, false, false);
-    
+
+        //roll
+        this.rollLeft = this.hero.animations.add('roll-left', Phaser.Animation.generateFrameNames('smrslt-left-', 0, 3, '-1.3', 2), 10, false, false);
+        this.rollRight = this.hero.animations.add('roll-right', Phaser.Animation.generateFrameNames('smrslt-right-', 0, 3, '-1.3', 2), 10, false, false);
+
+        //up from roll
+        this.slideLeft = this.hero.animations.add('slide-left', Phaser.Animation.generateFrameNames('slide-left-', 0, 4, '-1.3', 2), 15, false, false);
+        this.slideRight = this.hero.animations.add('slide-right', Phaser.Animation.generateFrameNames('slide-right-', 0, 4, '-1.3', 2), 15, false, false);
+
         //animations settings
         this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
         this.jumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
@@ -256,9 +274,15 @@ export default class gameState extends Phaser.State {
         this.upRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
         this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
 
+        this.rollLeft.onStart.add(()=>{
+            this.tweenLeft.start();
+        }, this);
+
+        this.slideLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
+
         this.climbLeft.onStart.add(()=>{ 
             this.tweenUp.start();
-         }, this);
+        }, this);
 
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
@@ -267,19 +291,25 @@ export default class gameState extends Phaser.State {
     addHero() {
         //iterate over available entrances
         this.entrancesGroup.forEach(entrance => {
-            if (this._NEWGAME && this._LEVEL === 1) {
-                //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
-                if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
+            if(this._LEVEL === 2) { //remove after testing
+                if(entrance.name === 'test') {
                     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
-            } else if (!this._NEWGAME && this._LEVEL === 1) {
-                if (entrance.name === 'portalfromcave') {
-                    //if returning from cave, load sprite at return pt
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-                }
-            } else { //otherwise, use whatever coordinates come back when function runs
-                this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            }
+            }   
+
+            // if (this._NEWGAME && this._LEVEL === 1) {
+            //     //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
+            //     if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
+            //         this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            //     }
+            // } else if (!this._NEWGAME && this._LEVEL === 1) {
+            //     if (entrance.name === 'portalfromcave') {
+            //         //if returning from cave, load sprite at return pt
+            //         this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            //     }
+            // } else { //otherwise, use whatever coordinates come back when function runs
+            //     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            // }
         });
         
         //add hero to sorting group
