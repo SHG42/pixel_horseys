@@ -3,8 +3,8 @@
     {
      "export":
         {
-         "format":"json1",
-         "target":"..\/..\/..\/..\/..\/Web Dev\/Sunflame Mountain Folder\/resources\/ExploreMap\/Ver2\/sunflame-explore-CE\/Platformer CE gamecode template working copy\/public\/assets\/tilemaps\/cave.json"
+         "format":"json",
+         "target":"cave.json"
         }
     },
  "height":72,
@@ -31,9 +31,9 @@
          "height":72,
          "id":1,
          "name":"cave-platform-collides",
-         "opacity":0,
+         "opacity":0.12,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":192,
          "x":0,
          "y":0
@@ -107,7 +107,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -126,21 +126,22 @@
                  "width":47,
                  "x":105,
                  "y":157
-                },
+                }, 
                 {
-                  "height":3,
-                  "id":28,
-                  "name":"test",
-                  "rotation":0,
-                  "type":"entryportal",
-                  "visible":true,
-                  "width":47,
-                  "x":635,
-                  "y":614
-                 }],
+                 "height":0,
+                 "id":28,
+                 "name":"test",
+                 "point":true,
+                 "rotation":0,
+                 "type":"entryportal",
+                 "visible":true,
+                 "width":0,
+                 "x":635,
+                 "y":614
+                }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -162,7 +163,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -176,6 +177,14 @@
                  "id":7,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":38
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -185,33 +194,17 @@
                 }, 
                 {
                  "height":0,
-                 "id":8,
-                 "name":"ledge",
-                 "point":true,
-                 "rotation":0,
-                 "type":"ledge",
-                 "visible":true,
-                 "width":0,
-                 "x":96,
-                 "y":162
-                }, 
-                {
-                 "height":0,
-                 "id":9,
-                 "name":"ledge",
-                 "point":true,
-                 "rotation":0,
-                 "type":"ledge",
-                 "visible":true,
-                 "width":0,
-                 "x":158,
-                 "y":197
-                }, 
-                {
-                 "height":0,
                  "id":10,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":39
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -221,33 +214,17 @@
                 }, 
                 {
                  "height":0,
-                 "id":11,
-                 "name":"ledge",
-                 "point":true,
-                 "rotation":0,
-                 "type":"ledge",
-                 "visible":true,
-                 "width":0,
-                 "x":222,
-                 "y":293
-                }, 
-                {
-                 "height":0,
-                 "id":12,
-                 "name":"ledge",
-                 "point":true,
-                 "rotation":0,
-                 "type":"ledge",
-                 "visible":true,
-                 "width":0,
-                 "x":286,
-                 "y":325
-                }, 
-                {
-                 "height":0,
                  "id":13,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":40
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -260,6 +237,14 @@
                  "id":14,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":41
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -272,6 +257,14 @@
                  "id":15,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":37
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -281,21 +274,17 @@
                 }, 
                 {
                  "height":0,
-                 "id":16,
-                 "name":"ledge",
-                 "point":true,
-                 "rotation":0,
-                 "type":"ledge",
-                 "visible":true,
-                 "width":0,
-                 "x":671,
-                 "y":678
-                }, 
-                {
-                 "height":0,
                  "id":17,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":42
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -308,6 +297,14 @@
                  "id":18,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":43
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -320,6 +317,14 @@
                  "id":19,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":44
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -332,6 +337,14 @@
                  "id":20,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":45
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -344,6 +357,14 @@
                  "id":21,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":46
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -356,6 +377,14 @@
                  "id":22,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":47
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -368,6 +397,14 @@
                  "id":23,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":48
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -380,6 +417,14 @@
                  "id":24,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":49
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -392,6 +437,14 @@
                  "id":25,
                  "name":"ledge",
                  "point":true,
+                 "properties":
+                    {
+                     "end":50
+                    },
+                 "propertytypes":
+                    {
+                     "end":"object"
+                    },
                  "rotation":0,
                  "type":"ledge",
                  "visible":true,
@@ -401,21 +454,200 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":8,
+         "name":"endpoints",
+         "objects":[
+                {
+                 "height":0,
+                 "id":37,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":624,
+                 "y":592
+                }, 
+                {
+                 "height":0,
+                 "id":38,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":58,
+                 "y":63
+                }, 
+                {
+                 "height":0,
+                 "id":39,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":176,
+                 "y":222
+                }, 
+                {
+                 "height":0,
+                 "id":40,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":315,
+                 "y":351
+                }, 
+                {
+                 "height":0,
+                 "id":41,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":433,
+                 "y":447
+                }, 
+                {
+                 "height":0,
+                 "id":42,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":717,
+                 "y":704
+                }, 
+                {
+                 "height":0,
+                 "id":43,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":983,
+                 "y":832
+                }, 
+                {
+                 "height":0,
+                 "id":44,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":1421,
+                 "y":1024
+                }, 
+                {
+                 "height":0,
+                 "id":45,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":1510,
+                 "y":1024
+                }, 
+                {
+                 "height":0,
+                 "id":46,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":2161,
+                 "y":1088
+                }, 
+                {
+                 "height":0,
+                 "id":47,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":2257,
+                 "y":1088
+                }, 
+                {
+                 "height":0,
+                 "id":48,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":2510,
+                 "y":959
+                }, 
+                {
+                 "height":0,
+                 "id":49,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":2608,
+                 "y":863
+                }, 
+                {
+                 "height":0,
+                 "id":50,
+                 "name":"end",
+                 "point":true,
+                 "rotation":0,
+                 "type":"end",
+                 "visible":true,
+                 "width":0,
+                 "x":2671,
+                 "y":767
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":26,
+ "nextlayerid":9,
+ "nextobjectid":53,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.6.0",
+ "tiledversion":"1.7.0",
  "tileheight":16,
  "tilesets":[
         {
          "columns":17,
          "firstgid":1,
-         "image":"..\/..\/..\/..\/..\/Web Dev\/Sunflame Mountain Folder\/resources\/ExploreMap\/Ver2\/phaser-arcade-slopes-master\/assets\/arcade-slopes-16.png",
+         "image":"..\/images\/tilesets\/arcade-slopes-16.png",
          "imageheight":48,
          "imagewidth":272,
          "margin":0,

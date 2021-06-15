@@ -67,6 +67,7 @@ export default class Preloader extends Phaser.State {
 
         this.assetData.tilemaps.forEach((tilemap)=>{
             this.game.load.tilemap(tilemap, `./assets/tilemaps/${tilemap}.json`, null, Phaser.Tilemap.TILED_JSON);
+            this.game.load.json(tilemap, `./assets/tilemaps/${tilemap}.json`);
         })
     }
 

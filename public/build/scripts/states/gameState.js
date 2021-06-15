@@ -151,9 +151,9 @@ export default class gameState extends Phaser.State {
             var diffRight = this.game.math.difference(heroRight, ledgeRight);
 
             this.goUpBy = ledge.body.y - 15;
+            this.getEndpoint(ledge);
 
             if (diffLeft < 5 && hero.custom.whichDirection === "left") {
-                this.goLeftBy = ledge.body.x - 32;
                 this.hero.animations.play('grab-left');
                 hero.custom.grabLeft = true;
                 hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
@@ -161,7 +161,6 @@ export default class gameState extends Phaser.State {
                 this.freeze();
             }
             if (diffRight < 5 && hero.custom.whichDirection === "right") {
-                this.goRightBy = ledge.body.x + 32;
                 this.hero.animations.play('grab-right');
                 hero.custom.grabRight = true;
                 hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
@@ -171,20 +170,28 @@ export default class gameState extends Phaser.State {
         }
     }
 
-    climbingLeft() { 
+    getEndpoint(ledge) {
+        this.ledgesGroup.endsgroup.forEach((end)=>{
+            if(end.id === ledge.end) {
+                this.end = end;
+            }
+        });
+    }
+
+    climbingLeft() { //add ledge end points, tween from-to
         this.hero.input.enabled = false;
         
         this.addTweenUp();
 
-        this.tweenLeft = this.game.add.tween(this.hero).to({x: this.goLeftBy}, 1000, 'Quad.easeOut');
-        this.tweenLeft.onStart.add(()=>{ this.hero.anchor.y = 0; this.hero.position.y -= 8; this.unfreeze(); }, this);
-        this.rollLeft.onComplete.addOnce(()=> { this.hero.animations.play('slide-left'); }, this);
+        this.tweenLeft = this.game.add.tween(this.hero).to({x: this.end.position.x, y: this.end.position.y}, 1000, 'Quad.easeInOut');
+        // this.tweenLeft.onStart.add(()=>{ this.hero.anchor.y = 0; }, this);
+        this.tweenLeft.onComplete.add(()=>{ this.hero.animations.stop('roll-left'); this.hero.animations.play('slide-left'); this.unfreeze(); }, this);
 
         this.hero.animations.play('climb-left');
     }
 
     addTweenUp() {
-        this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut', false, 0, 0, false);
+        this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut');
         this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5;}, this);
         this.tweenUp.onComplete.add(()=>{ this.hero.animations.play('roll-left'); }, this);
     }
@@ -260,12 +267,12 @@ export default class gameState extends Phaser.State {
         this.climbRight = this.hero.animations.add('climb-right', Phaser.Animation.generateFrameNames('crnr-clmb-right-', 0, 4, '-1.3', 2), 10, false, false);
 
         //roll
-        this.rollLeft = this.hero.animations.add('roll-left', Phaser.Animation.generateFrameNames('smrslt-left-', 0, 3, '-1.3', 2), 10, false, false);
-        this.rollRight = this.hero.animations.add('roll-right', Phaser.Animation.generateFrameNames('smrslt-right-', 0, 3, '-1.3', 2), 10, false, false);
+        this.rollLeft = this.hero.animations.add('roll-left', Phaser.Animation.generateFrameNames('smrslt-left-', 0, 3, '-1.3', 2), 10, true, false);
+        this.rollRight = this.hero.animations.add('roll-right', Phaser.Animation.generateFrameNames('smrslt-right-', 0, 3, '-1.3', 2), 10, true, false);
 
         //up from roll
-        this.slideLeft = this.hero.animations.add('slide-left', Phaser.Animation.generateFrameNames('slide-left-', 0, 4, '-1.3', 2), 15, false, false);
-        this.slideRight = this.hero.animations.add('slide-right', Phaser.Animation.generateFrameNames('slide-right-', 0, 4, '-1.3', 2), 15, false, false);
+        this.slideLeft = this.hero.animations.add('slide-left', Phaser.Animation.generateFrameNames('slide-left-', 0, 4, '-1.3', 2), 10, false, false);
+        this.slideRight = this.hero.animations.add('slide-right', Phaser.Animation.generateFrameNames('slide-right-', 0, 4, '-1.3', 2), 10, false, false);
 
         //animations settings
         this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
@@ -325,7 +332,7 @@ export default class gameState extends Phaser.State {
         this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
         this.hero.inputEnabled = true;
         this.hero.hitArea = this.hero.body.width * this.hero.body.height;
-		this.hero.debug = true;
+		// this.hero.debug = true;
         //enable hero for slopes
         this.game.slopes.enable(this.hero);
         // Prefer the minimum Y offset for this physics body
@@ -346,7 +353,14 @@ export default class gameState extends Phaser.State {
 
     makeMap() {
         this.map = this.game.add.tilemap(this._LEVELS[this._LEVEL]);
-    
+        
+        this.jsonfile = this.cache.getJSON(this.map.key);
+        this.jsonfile.layers.forEach((layer) => {
+            if(layer.name === "endpoints") {
+                this.map.endpoints = layer.objects;
+            }
+        });
+        
         //Multi-layer test
         this.tilesets = this.map.tilesets;
         //establish foreground & background tilesets
@@ -433,17 +447,21 @@ export default class gameState extends Phaser.State {
         });
     
         //ledge points
-        this.ledgePoints = this.map.objects.ledgePoints;
+        this.ledgepoints = this.map.objects.ledgePoints;
         this.ledgesGroup = this.game.add.group();
         this.ledgesGroup.enableBody = true;
         this.ledgesGroup.physicsBodyType = Phaser.Physics.ARCADE;
-        this.ledgePoints.forEach(ledgePt => {
-            if (ledgePt.type === 'ledge') {
-                this.ledge = this.game.add.sprite(ledgePt.x, ledgePt.y, 'point');
-                this.ledgesGroup.add(this.ledge);
-                this.ledgesGroup.setAll('body.allowGravity', false);
-                // this.ledge.debug = true;
-            }
+        this.ledgesGroup.endsgroup = this.game.add.group(this.ledgesGroup, 'endsgroup');
+        this.ledgepoints.forEach(ledgePt => {
+            this.ledge = this.ledgesGroup.create(ledgePt.x, ledgePt.y, 'point');
+            this.ledge.end = ledgePt.properties.end;
+            this.ledgesGroup.setAll('body.allowGravity', false);
+        });
+
+        //endpoints
+        this.map.endpoints.forEach((end)=>{
+            this.endPt = this.ledgesGroup.endsgroup.create(end.x, end.y, 'point');
+            this.endPt.id = end.id;
         });
 
         //loot objects
@@ -564,14 +582,14 @@ export default class gameState extends Phaser.State {
         this.game.camera.resetFX();
     }
 
-    render() {
-        this.game.debug.body(this.hero);
-        this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
-        // this.ledgesGroup.forEach((ledge)=>{
-        //     this.game.debug.body(ledge);
-        //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
-        // })
-    }
+    // render() {
+    //     this.game.debug.body(this.hero);
+    //     this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
+    //     // this.ledgesGroup.forEach((ledge)=>{
+    //     //     this.game.debug.body(ledge);
+    //     //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
+    //     // })
+    // }
 }
 
 // // KEYBOARD CONTROLS

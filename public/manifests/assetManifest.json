@@ -32,7 +32,8 @@
         "hero",
         "objects",
         "portal",
-        "sorceress"
+        "sorceress",
+        "utility"
     ],
     "tilemaps": [
         "bridge",
