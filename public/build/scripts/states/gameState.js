@@ -183,9 +183,15 @@ export default class gameState extends Phaser.State {
         
         this.addTweenUp();
 
-        this.tweenLeft = this.game.add.tween(this.hero).to({x: this.end.position.x, y: this.end.position.y}, 1000, 'Quad.easeInOut');
-        // this.tweenLeft.onStart.add(()=>{ this.hero.anchor.y = 0; }, this);
-        this.tweenLeft.onComplete.add(()=>{ this.hero.animations.stop('roll-left'); this.hero.animations.play('slide-left'); this.unfreeze(); }, this);
+        this.tweenLeft = this.game.add.tween(this.hero).to({y: this.end.position.y }, 500, 'Sine.easeOut');
+        this.tweenLeft.onStart.add(()=>{ 
+            this.hero.position.x--;
+            if (this.hero.position.x = this.end.position.x) {
+                console.log("ye")
+                this.tweenLeft.stop(true);
+            };
+        }, this);
+        this.tweenLeft.onComplete.add(()=>{ this.hero.animations.stop('roll-left'); this.hero.animations.play('slide-left'); this.hero.anchor.y = 0; this.unfreeze(); }, this);
 
         this.hero.animations.play('climb-left');
     }
