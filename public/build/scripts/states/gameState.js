@@ -143,24 +143,17 @@ export default class gameState extends Phaser.State {
 
     ledgeHit(hero, ledge) {
         if(hero.custom.tapped && hero.body.velocity.y < 0) {
-            var heroLeft = hero.body.left;
-            var heroRight = hero.body.right;
-            var ledgeLeft = ledge.body.left;
-            var ledgeRight = ledge.body.right;
-            var diffLeft = this.game.math.difference(heroLeft, ledgeLeft);
-            var diffRight = this.game.math.difference(heroRight, ledgeRight);
-
-            this.goUpBy = ledge.body.y - 15;
+            this.goUpBy = ledge.body.y - 13;
             this.getEndpoint(ledge);
 
-            if (diffLeft < 5 && hero.custom.whichDirection === "left") {
+            if (hero.custom.whichDirection === "left") {
                 this.hero.animations.play('grab-left');
                 hero.custom.grabLeft = true;
                 hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
                 hero.body.position.setTo(ledge.body.x, ledge.body.y);
                 this.freeze();
             }
-            if (diffRight < 5 && hero.custom.whichDirection === "right") {
+            if (hero.custom.whichDirection === "right") {
                 this.hero.animations.play('grab-right');
                 hero.custom.grabRight = true;
                 hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
@@ -171,34 +164,35 @@ export default class gameState extends Phaser.State {
     }
 
     getEndpoint(ledge) {
-        this.ledgesGroup.endsgroup.forEach((end)=>{
+        this.endsGroup.forEach((end)=>{
             if(end.id === ledge.end) {
                 this.end = end;
+                this.angleToEnd = this.game.physics.arcade.angleBetween(ledge, this.end);
             }
         });
     }
 
-    climbingLeft() { //add ledge end points, tween from-to
-        this.hero.input.enabled = false;
-        
+    climbingLeft() { 
         this.addTweenUp();
-
-        this.tweenLeft = this.game.add.tween(this.hero).to({y: this.end.position.y }, 500, 'Sine.easeOut');
-        this.tweenLeft.onStart.add(()=>{ 
-            this.hero.position.x--;
-            if (this.hero.position.x = this.end.position.x) {
-                console.log("ye")
-                this.tweenLeft.stop(true);
-            };
-        }, this);
-        this.tweenLeft.onComplete.add(()=>{ this.hero.animations.stop('roll-left'); this.hero.animations.play('slide-left'); this.hero.anchor.y = 0; this.unfreeze(); }, this);
-
+        this.hero.input.enabled = false;
         this.hero.animations.play('climb-left');
+    }
+
+    rollingLeft() {//ALMOST WORKS!!! try: slow down increment
+        this.hero.body.enable = true;
+       for (let i = this.hero.body.position.x; i > this.end.body.position.x; i--) {
+           this.hero.body.position.x--;
+           this.hero.body.velocity.x = -100;
+        }
+        if(this.hero.body.position.x === this.end.body.position.x) {
+            this.hero.animations.stop('roll-left'); 
+            this.unfreeze();
+       }
     }
 
     addTweenUp() {
         this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut');
-        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5;}, this);
+        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; this.hero.input.enabled = false; }, this);
         this.tweenUp.onComplete.add(()=>{ this.hero.animations.play('roll-left'); }, this);
     }
 
@@ -206,21 +200,23 @@ export default class gameState extends Phaser.State {
         this.hero.custom.isGrabbing = true;
         this.hero.custom.tapped = false;
         this.hero.input.enabled = true;
-        this.hero.body.stop();
-        this.hero.body.immovable = true; 
-        this.hero.body.moves = false; 
-        this.hero.body.enable = false; 
-        this.hero.body.allowGravity = false;
+        this.hero.body.stop(); //set speed/accel/velo to 0
+        this.hero.body.immovable = true; //no impact from other bodies
+        this.hero.body.moves = false; //physics system does not move body, but can be moved manually 
+        this.hero.body.enable = false; //won't be checked for any form of collision or overlap or have its pre/post updates run.
+        this.hero.body.allowGravity = false; //body's local gravity disabled
+        this.hero.body.checkCollision.none = true; //retains motion but disables collision/overlap check
     }
 
     unfreeze() {
-        this.hero.custom.isGrabbing = false;
         this.hero.custom.tapped = false;
+        this.hero.custom.isGrabbing = false;        
         this.hero.input.enabled = true;
-        this.hero.body.immovable = false; 
-        this.hero.body.moves = true; 
-        this.hero.body.enable = true; 
+        this.hero.body.immovable = false;
+        this.hero.body.moves = true;  
         this.hero.body.allowGravity = true;
+        this.hero.body.gravity.x = 0;
+        this.hero.body.checkCollision.none = false;
     }
 
     heroConditions() {
@@ -288,8 +284,10 @@ export default class gameState extends Phaser.State {
         this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
 
         this.rollLeft.onStart.add(()=>{
-            this.tweenLeft.start();
+            this.rollingLeft();
         }, this);
+
+        this.rollLeft.onComplete.add(()=> { this.hero.animations.play('slide-left'); }, this);
 
         this.slideLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
 
@@ -305,7 +303,7 @@ export default class gameState extends Phaser.State {
         //iterate over available entrances
         this.entrancesGroup.forEach(entrance => {
             if(this._LEVEL === 2) { //remove after testing
-                if(entrance.name === 'test') {
+                if(entrance.name === 'test2') {
                     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
             }   
@@ -351,7 +349,6 @@ export default class gameState extends Phaser.State {
             isGrabbing : false,
             grabLeft : false,
             grabRight : false,
-            isClimbing : false,
             tapped : false
         }
     }
@@ -457,17 +454,27 @@ export default class gameState extends Phaser.State {
         this.ledgesGroup = this.game.add.group();
         this.ledgesGroup.enableBody = true;
         this.ledgesGroup.physicsBodyType = Phaser.Physics.ARCADE;
-        this.ledgesGroup.endsgroup = this.game.add.group(this.ledgesGroup, 'endsgroup');
         this.ledgepoints.forEach(ledgePt => {
             this.ledge = this.ledgesGroup.create(ledgePt.x, ledgePt.y, 'point');
-            this.ledge.end = ledgePt.properties.end;
+            this.ledge.anchor.x = 0.5;
+            this.ledge.anchor.y = 0.5;
+            if(ledgePt.properties) {
+                this.ledge.end = ledgePt.properties.end;
+            }
             this.ledgesGroup.setAll('body.allowGravity', false);
         });
 
         //endpoints
+        this.endsGroup = this.game.add.group();
+        this.endsGroup.enableBody = true;
+        this.endsGroup.physicsBodyType = Phaser.Physics.ARCADE;
         this.map.endpoints.forEach((end)=>{
-            this.endPt = this.ledgesGroup.endsgroup.create(end.x, end.y, 'point');
+            this.endPt = this.endsGroup.create(end.x, end.y, 'point');
             this.endPt.id = end.id;
+            this.endPt.anchor.x = 1;
+            this.endPt.anchor.y = 1;
+            this.endPt.debug = true;
+            this.endsGroup.setAll('body.allowGravity', false);
         });
 
         //loot objects
@@ -588,14 +595,18 @@ export default class gameState extends Phaser.State {
         this.game.camera.resetFX();
     }
 
-    // render() {
-    //     this.game.debug.body(this.hero);
-    //     this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
-    //     // this.ledgesGroup.forEach((ledge)=>{
-    //     //     this.game.debug.body(ledge);
-    //     //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
-    //     // })
-    // }
+    render() {
+        this.game.debug.body(this.hero);
+        this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
+        this.ledgesGroup.forEach((ledge)=>{
+            this.game.debug.body(ledge);
+            this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
+        })
+        this.endsGroup.forEach((end)=>{
+            this.game.debug.body(end);
+            this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
+        })
+    }
 }
 
 // // KEYBOARD CONTROLS
