@@ -61,9 +61,9 @@ export default class gameState extends Phaser.State {
             this.pointerInput();
         }
 
-        if(this.pointer.isUp) {
-            this.pointerUp();
-        }  
+        // if(this.pointer.isUp) {
+        //     this.pointerUp();
+        // }  
     }
 
     addControls() {
@@ -178,18 +178,6 @@ export default class gameState extends Phaser.State {
         this.hero.animations.play('climb-left');
     }
 
-    rollingLeft() {//ALMOST WORKS!!! try: slow down increment
-        this.hero.body.enable = true;
-       for (let i = this.hero.body.position.x; i > this.end.body.position.x; i--) {
-           this.hero.body.position.x--;
-           this.hero.body.velocity.x = -100;
-        }
-        if(this.hero.body.position.x === this.end.body.position.x) {
-            this.hero.animations.stop('roll-left'); 
-            this.unfreeze();
-       }
-    }
-
     addTweenUp() {
         this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut');
         this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; this.hero.input.enabled = false; }, this);
@@ -205,18 +193,21 @@ export default class gameState extends Phaser.State {
         this.hero.body.moves = false; //physics system does not move body, but can be moved manually 
         this.hero.body.enable = false; //won't be checked for any form of collision or overlap or have its pre/post updates run.
         this.hero.body.allowGravity = false; //body's local gravity disabled
-        this.hero.body.checkCollision.none = true; //retains motion but disables collision/overlap check
+    }
+
+    unfreeze0() {
+        this.hero.body.immovable = false;
+        this.hero.body.enable = true;
+        this.hero.body.moves = true;  
+        this.hero.body.allowGravity = true;
     }
 
     unfreeze() {
+        this.hero.body.reset();
         this.hero.custom.tapped = false;
         this.hero.custom.isGrabbing = false;        
         this.hero.input.enabled = true;
-        this.hero.body.immovable = false;
-        this.hero.body.moves = true;  
-        this.hero.body.allowGravity = true;
-        this.hero.body.gravity.x = 0;
-        this.hero.body.checkCollision.none = false;
+        this.pointerUp();
     }
 
     heroConditions() {
@@ -284,12 +275,20 @@ export default class gameState extends Phaser.State {
         this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
 
         this.rollLeft.onStart.add(()=>{
-            this.rollingLeft();
+            this.unfreeze0();
+            this.hero.body.gravity.x = -500;
+        }, this);
+
+        this.rollLeft.onLoop.add(()=>{
+            this.game.physics.arcade.moveToObject(this.hero, this.end);
+            if(this.game.physics.arcade.collide(this.hero, this.end)) {
+                this.rollLeft.stop(false, true);
+            }
         }, this);
 
         this.rollLeft.onComplete.add(()=> { this.hero.animations.play('slide-left'); }, this);
 
-        this.slideLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
+        this.slideLeft.onComplete.add(()=>{ this.unfreeze(); }, this);
 
         this.climbLeft.onStart.add(()=>{ 
             this.tweenUp.start();
