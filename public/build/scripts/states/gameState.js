@@ -290,6 +290,7 @@ export default class gameState extends Phaser.State {
         this.upRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
         this.upLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
 
+        ////LEFT-HAND ROLL
         this.rollLeft.onStart.add(()=>{
             this.unfreeze0();
             this.hero.body.gravity.x = -500;
@@ -302,7 +303,7 @@ export default class gameState extends Phaser.State {
             };
             if(this.game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
-            } else if(this.hero.isBlocked) {
+            } else if(this.hero.isBlocked && this.hero.body.position.x <= this.end.body.position.x) {
                 this.rollLeft.stop(false, true);
             }
         }, this);
@@ -315,8 +316,31 @@ export default class gameState extends Phaser.State {
             this.tweenUp.start();
         }, this);
 
-        ///
-
+        ////RIGHT-HAND ROLL
+        this.rollRight.onStart.add(()=>{
+            this.unfreeze0();
+            this.hero.body.gravity.x = 500;
+        }, this);
+        
+        this.rollRight.onLoop.add(()=>{
+            this.game.physics.arcade.moveToObject(this.hero, this.end);
+            if(this.hero.body.gravity.x > 0) { 
+                this.hero.body.gravity.x = this.hero.body.gravity.x-10; 
+            };
+            if(this.game.physics.arcade.collide(this.hero, this.end)) {
+                this.rollRight.stop(false, true);
+            } else if(this.hero.isBlocked && this.hero.body.position.x >= this.end.body.position.x) {
+                this.rollLeft.stop(false, true);
+            }
+        }, this);
+        
+        this.rollRight.onComplete.add(()=> { this.hero.animations.play('slide-Right'); }, this);
+        
+        this.slideRight.onComplete.add(()=>{ this.hero.body.speed = 0; this.unfreeze(); if(this.hero.body.gravity.x < 0) { this.hero.body.gravity.x = 0 }; }, this);
+        
+        this.climbRight.onStart.add(()=>{ 
+            this.tweenUp.start();
+        }, this);
         
 
         //play 'idle-right' by default
@@ -327,7 +351,7 @@ export default class gameState extends Phaser.State {
         //iterate over available entrances
         this.entrancesGroup.forEach(entrance => {
             if(this._LEVEL === 2) { //remove after testing
-                if(entrance.name === 'test2') {
+                if(entrance.name === 'test1') {
                     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
             }   
