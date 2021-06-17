@@ -178,10 +178,22 @@ export default class gameState extends Phaser.State {
         this.hero.animations.play('climb-left');
     }
 
+    climbingRight() {
+        this.addTweenUp();
+        this.hero.input.enabled = false;
+        this.hero.animations.play('climb-right');
+    }
+
     addTweenUp() {
         this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut');
         this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; this.hero.input.enabled = false; }, this);
-        this.tweenUp.onComplete.add(()=>{ this.hero.animations.play('roll-left'); }, this);
+        this.tweenUp.onComplete.add(()=>{ 
+            if(this.hero.custom.whichDirection === "left") {
+                this.hero.animations.play('roll-left'); 
+            } else if(this.hero.custom.whichDirection === "right") {
+                this.hero.animations.play('roll-right'); 
+            }
+        }, this);
     }
 
     freeze() {
@@ -231,7 +243,9 @@ export default class gameState extends Phaser.State {
             this.hero.custom.isClimbing = true;
             if(this.hero.custom.whichDirection === "left" && this.hero.custom.grabLeft) {
                 this.climbingLeft();
-            } 
+            } else if(this.hero.custom.whichDirection === "right" && this.hero.custom.grabRight) {
+                this.climbingRight();
+            }
         }
     }
 
@@ -288,6 +302,8 @@ export default class gameState extends Phaser.State {
             };
             if(this.game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
+            } else if(this.hero.isBlocked) {
+                this.rollLeft.stop(false, true);
             }
         }, this);
 
@@ -299,6 +315,10 @@ export default class gameState extends Phaser.State {
             this.tweenUp.start();
         }, this);
 
+        ///
+
+        
+
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
     }
@@ -307,7 +327,7 @@ export default class gameState extends Phaser.State {
         //iterate over available entrances
         this.entrancesGroup.forEach(entrance => {
             if(this._LEVEL === 2) { //remove after testing
-                if(entrance.name === 'test1') {
+                if(entrance.name === 'test2') {
                     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
             }   
