@@ -47,7 +47,7 @@
          "name":"cave-fg",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":192,
          "x":0,
          "y":0
