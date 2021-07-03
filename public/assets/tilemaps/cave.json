@@ -31,9 +31,9 @@
          "height":72,
          "id":1,
          "name":"cave-platform-collides",
-         "opacity":0.07,
+         "opacity":0.92,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":192,
          "x":0,
          "y":0
@@ -124,32 +124,20 @@
                  "type":"entryportal",
                  "visible":true,
                  "width":47,
-                 "x":105,
-                 "y":157
+                 "x":3,
+                 "y":25
                 }, 
                 {
                  "height":0,
-                 "id":54,
-                 "name":"test1",
+                 "id":59,
+                 "name":"test",
                  "point":true,
                  "rotation":0,
                  "type":"entryportal",
                  "visible":true,
                  "width":0,
-                 "x":2568,
-                 "y":878
-                }, 
-                {
-                 "height":0,
-                 "id":55,
-                 "name":"test2",
-                 "point":true,
-                 "rotation":0,
-                 "type":"entryportal",
-                 "visible":true,
-                 "width":0,
-                 "x":638,
-                 "y":625
+                 "x":2640,
+                 "y":796
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -163,7 +151,7 @@
          "name":"exitPortals",
          "objects":[
                 {
-                 "height":14,
+                 "height":19,
                  "id":6,
                  "name":"portaltobridge",
                  "rotation":0,
@@ -191,11 +179,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":38
+                     "end":38,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -211,11 +201,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":39
+                     "end":39,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -231,11 +223,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":40
+                     "end":40,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -251,11 +245,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":41
+                     "end":41,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -271,11 +267,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":37
+                     "end":37,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -291,11 +289,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":42
+                     "end":42,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -311,11 +311,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":43
+                     "end":43,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -331,11 +333,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":44
+                     "end":44,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -351,11 +355,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":45
+                     "end":45,
+                     "side":"right"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -371,11 +377,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":46
+                     "end":46,
+                     "side":"left"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -391,11 +399,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":47
+                     "end":47,
+                     "side":"right"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -411,11 +421,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":48
+                     "end":48,
+                     "side":"right"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -431,11 +443,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":49
+                     "end":49,
+                     "side":"right"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -451,11 +465,13 @@
                  "point":true,
                  "properties":
                     {
-                     "end":50
+                     "end":50,
+                     "side":"right"
                     },
                  "propertytypes":
                     {
-                     "end":"object"
+                     "end":"object",
+                     "side":"string"
                     },
                  "rotation":0,
                  "type":"ledge",
@@ -463,18 +479,6 @@
                  "width":0,
                  "x":2658,
                  "y":773
-                }, 
-                {
-                 "height":0,
-                 "id":53,
-                 "name":"ledge",
-                 "point":true,
-                 "rotation":0,
-                 "type":"ledge",
-                 "visible":true,
-                 "width":0,
-                 "x":56,
-                 "y":17
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -629,7 +633,7 @@
                  "visible":true,
                  "width":0,
                  "x":2534,
-                 "y":959
+                 "y":960
                 }, 
                 {
                  "height":0,
@@ -652,8 +656,8 @@
                  "type":"end",
                  "visible":true,
                  "width":0,
-                 "x":2695,
-                 "y":766
+                 "x":2703,
+                 "y":767
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -662,7 +666,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":56,
+ "nextobjectid":60,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.0",

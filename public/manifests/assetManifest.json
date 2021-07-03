@@ -22,9 +22,11 @@
             "keyboard",
             "point",
             "pointer",
+            "port",
             "portal-h",
             "portal-v",
             "restart_button",
+            "starboard",
             "sunflame_icon"
         ]
     },

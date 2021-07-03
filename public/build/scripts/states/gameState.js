@@ -63,13 +63,9 @@ export default class gameState extends Phaser.State {
             this.pointerInput();
         }
 
-        if(this.pointer.isDown && this.pointer.duration < 1000 && this.angleAbove) {
-            this.pointerLeap();
-        }
-
         if(this.pointer.isUp) {
             this.pointerUp();
-        } 
+        }
     }
 
     addControls() {
@@ -86,9 +82,10 @@ export default class gameState extends Phaser.State {
         }
 
         //establish keyboard
-        // if (this.game.input.keyboard.active) {
-            //key controls go here
-        // }
+        this.game.input.keyboard.active = false;
+        if (this.game.input.keyboard.active) {
+            //keyboard controls here
+        }
     }
 
     pointerConditions() {
@@ -103,6 +100,7 @@ export default class gameState extends Phaser.State {
         this.dtp = this.game.physics.arcade.distanceToPointer(this.hero, this.pointer, true);
         this.upperlimit = this.hero.body.width*10;
         this.lowerlimit = this.hero.body.width;
+        this.pointerDistanceIsCorrect = this.dtp < this.upperlimit && this.dtp > this.lowerlimit;
         
         if(this.pointer.worldX < this.hero.body.x) {
             this.pointerLeft = true;
@@ -115,7 +113,7 @@ export default class gameState extends Phaser.State {
 
     pointerInput() {
         if(!this.hero.custom.tapped && this.hero.isOnGround) {
-            if(!this.angleAbove && !this.angleBelow) {
+            if(!this.angleAbove && !this.angleBelow && this.pointerDistanceIsCorrect) {
                 if(this.pointerLeft && !this.pointerRight) {
                     this.hero.custom.whichDirection = 'left';
                     this.hero.body.velocity.x = -150;
@@ -125,42 +123,25 @@ export default class gameState extends Phaser.State {
                     this.hero.body.velocity.x = 150;
                     this.hero.animations.play('run-right');
                 }
-            } else if(this.angleBelow) {
+            } else if(this.angleBelow || this.angleAbove || !this.pointerDistanceIsCorrect) {
                 this.pointerUp();
-            } else if(this.angleAbove) {
-                this.pointerLeap();
             }
         }
     }
-
-    pointerLeap() {
-        this.hero.custom.isLeaping = true;
-        this.hero.body.velocity.y = -50;
-        if(this.hero.body.velocity.y < -50) {
-            this.hero.body.velocity.y = -50;
-        }
-
-        if(this.hero.custom.whichDirection === "left" && this.pointerLeft && !this.pointerRight) {
-            this.hero.animations.play('slow-jump-left');
-        } else if(this.hero.custom.whichDirection === "right" && this.pointerRight && !this.pointerLeft) {
-            this.hero.animations.play('slow-jump-right');
-        }
-
-        if(this.pointer.duration > 1000) {
-            this.pointerUp();
-        }
-    }
-
+    
     tapJump() {
         this.hero.custom.isJumping = true;
-        if(this.hero.custom.whichDirection === "left") {
-            this.hero.animations.play('quick-jump-left');
-        } else if(this.hero.custom.whichDirection === "right") {
-            this.hero.animations.play('quick-jump-right');
-        }
         this.hero.body.velocity.y = -150;
-        if(this.hero.body.velocity.y < -150) {
-            this.hero.body.velocity.y = -150;
+        if(this.hero.custom.whichDirection === "left") {
+            this.hero.animations.play('jump-left');
+            if(!this.hero.body.blocked.left && !this.hero.body.touching.left) {
+                this.hero.body.position.x-=3;
+            }
+        } else if(this.hero.custom.whichDirection === "right") {
+            this.hero.animations.play('jump-right');
+            if(!this.hero.body.blocked.left && !this.hero.body.touching.left) {
+                this.hero.body.position.x+=3;
+            }
         }
     }
 
@@ -173,6 +154,7 @@ export default class gameState extends Phaser.State {
                 this.hero.animations.play('idle-right');
             }
         }
+        this.game.input.reset(true);
     }
 
     ledgeHit(hero, ledge) {
@@ -180,14 +162,14 @@ export default class gameState extends Phaser.State {
             this.goUpBy = ledge.body.y - 13;
             this.getEndpoint(ledge);
 
-            if (hero.custom.whichDirection === "left") {
+            if (ledge.side === "left" && hero.custom.whichDirection === "left") {
                 this.hero.animations.play('grab-left');
                 hero.custom.grabLeft = true;
                 hero.alignIn(ledge, Phaser.TOP_LEFT, 15, 5); //offset accounts for sprite bounding box
                 hero.body.position.setTo(ledge.body.x, ledge.body.y);
                 this.freeze();
             }
-            if (hero.custom.whichDirection === "right") {
+            if (ledge.side === "right" && hero.custom.whichDirection === "right") {
                 this.hero.animations.play('grab-right');
                 hero.custom.grabRight = true;
                 hero.alignIn(ledge, Phaser.TOP_RIGHT, 15, 5); //offset accounts for sprite bounding box
@@ -201,7 +183,6 @@ export default class gameState extends Phaser.State {
         this.endsGroup.forEach((end)=>{
             if(end.id === ledge.end) {
                 this.end = end;
-                this.angleToEnd = this.game.physics.arcade.angleBetween(ledge, this.end);
             }
         });
     }
@@ -223,7 +204,7 @@ export default class gameState extends Phaser.State {
         this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; this.hero.input.enabled = false; }, this);
         this.tweenUp.onComplete.add(()=>{ 
             if(this.hero.custom.whichDirection === "left") {
-                this.hero.animations.play('roll-left'); 
+                this.hero.animations.play('roll-left');
             } else if(this.hero.custom.whichDirection === "right") {
                 this.hero.animations.play('roll-right'); 
             }
@@ -232,6 +213,8 @@ export default class gameState extends Phaser.State {
 
     freeze() {
         this.hero.custom.isGrabbing = true;
+        this.hero.custom.isJumping = false;
+        this.hero.custom.isLeaping = false;
         this.hero.custom.tapped = false;
         this.hero.input.enabled = true;
         this.hero.body.stop(); //set speed/accel/velo to 0
@@ -268,8 +251,6 @@ export default class gameState extends Phaser.State {
 
         if(this.hero.isOnGround && this.hero.custom.isJumping) {
             this.hero.custom.isJumping = false;
-        } else if(this.hero.isOnGround && this.hero.custom.isLeaping) {
-            this.hero.custom.isLeaping = false;
         }
 
         if(this.hero.isAirborne && (this.hero.animations.currentAnim.name.includes("idle") || this.hero.animations.currentAnim.name.includes("run"))) {
@@ -290,7 +271,6 @@ export default class gameState extends Phaser.State {
     }
 
     createAnims() {
-        //Hero anims
         //idle
         this.idleRight = this.hero.animations.add('idle-right', Phaser.Animation.generateFrameNames('idle-right-', 0, 3, '-1.3', 2), 2, true, false);
         this.idleLeft = this.hero.animations.add('idle-left', Phaser.Animation.generateFrameNames('idle-left-', 0, 3, '-1.3', 2), 2, true, false);
@@ -300,10 +280,8 @@ export default class gameState extends Phaser.State {
         this.runLeft = this.hero.animations.add('run-left', Phaser.Animation.generateFrameNames('run-left-', 0, 5, '-1.3', 2), 10, true, false);
     
         //jump
-        this.slowjumpRight = this.hero.animations.add('slow-jump-right', Phaser.Animation.generateFrameNames('jump-right-', 0, 5, '-1.3', 2), 5, false, false);
-        this.slowjumpLeft = this.hero.animations.add('slow-jump-left', Phaser.Animation.generateFrameNames('jump-left-', 0, 5, '-1.3', 2), 5, false, false);
-        this.quickjumpRight = this.hero.animations.add('quick-jump-right', Phaser.Animation.generateFrameNames('jump-right-', 0, 5, '-1.3', 2), 10, false, false);
-        this.quickjumpLeft = this.hero.animations.add('quick-jump-left', Phaser.Animation.generateFrameNames('jump-left-', 0, 5, '-1.3', 2), 10, false, false);
+        this.jumpRight = this.hero.animations.add('jump-right', Phaser.Animation.generateFrameNames('jump-right-', 0, 5, '-1.3', 2), 10, false, false);
+        this.jumpLeft = this.hero.animations.add('jump-left', Phaser.Animation.generateFrameNames('jump-left-', 0, 5, '-1.3', 2), 10, false, false);
     
         //grab
         this.grabLeft = this.hero.animations.add('grab-left', Phaser.Animation.generateFrameNames('crnr-grb-left-', 0, 3, '-1.3', 2), 3, true, false);
@@ -323,19 +301,17 @@ export default class gameState extends Phaser.State {
 
         //animations settings
         //JUMP
-        this.quickjumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); }, this);
-        this.quickjumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); }, this);
-
-
-        this.slowjumpRight.onStart.add(()=>{
-            this.hero.body.velocity.x = 130;
+        this.jumpRight.onStart.add(()=>{
+            this.hero.custom.isLeaping = true;
+            this.hero.body.velocity.x = 160;
         }, this);
-        this.slowjumpRight.onComplete.add(()=> { this.pointerUp(); }, this);
+        this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); this.hero.body.velocity.x = 0; }, this);
 
-        this.slowjumpLeft.onStart.add(()=>{
-            this.hero.body.velocity.x = -130;
+        this.jumpLeft.onStart.add(()=>{
+            this.hero.custom.isLeaping = true;
+            this.hero.body.velocity.x = -160;
         }, this);
-        this.slowjumpLeft.onComplete.add(()=> { this.pointerUp(); }, this);
+        this.jumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); this.hero.body.velocity.x = 0; }, this);
 
         ////LEFT-HAND ROLL
         this.rollLeft.onStart.add(()=>{
@@ -348,9 +324,9 @@ export default class gameState extends Phaser.State {
             if(this.hero.body.gravity.x < 0) {
                 this.hero.body.gravity.x = this.hero.body.gravity.x+10;
             };
-            if(this.game.physics.arcade.collide(this.hero, this.end)) {
+            if(this.game.physics.arcade.overlap(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
-            } else if(this.hero.isBlocked && this.hero.body.position.x <= this.end.body.position.x) {
+            } else if(this.hero.body.blocked.left || this.hero.body.touching.left || this.hero.body.position.x <= this.end.body.position.x) {
                 this.rollLeft.stop(false, true);
             }
         }, this);
@@ -372,18 +348,20 @@ export default class gameState extends Phaser.State {
         this.rollRight.onLoop.add(()=>{
             this.game.physics.arcade.moveToObject(this.hero, this.end);
             if(this.hero.body.gravity.x > 0) { 
-                this.hero.body.gravity.x = this.hero.body.gravity.x-10; 
+                this.hero.body.gravity.x = this.hero.body.gravity.x-10;
             };
-            if(this.game.physics.arcade.collide(this.hero, this.end)) {
+            if(this.game.physics.arcade.overlap(this.hero, this.end)) {
+                console.log("overlap")
                 this.rollRight.stop(false, true);
-            } else if(this.hero.isBlocked && this.hero.body.position.x >= this.end.body.position.x) {
-                this.rollLeft.stop(false, true);
+            } else if(this.hero.body.blocked.right || this.hero.body.touching.right || this.hero.body.position.x >= this.end.body.position.x) {
+                console.log("blocked")
+                this.rollRight.stop(false, true);
             }
         }, this);
         
         this.rollRight.onComplete.add(()=> { this.hero.animations.play('slide-right'); }, this);
         
-        this.slideRight.onComplete.add(()=>{ this.hero.body.speed = 0; this.unfreeze(); if(this.hero.body.gravity.x < 0) { this.hero.body.gravity.x = 0 }; }, this);
+        this.slideRight.onComplete.add(()=>{ this.hero.body.speed = 0; this.unfreeze(); if(this.hero.body.gravity.x > 0) { this.hero.body.gravity.x = 0 }; }, this);
         
         this.climbRight.onStart.add(()=>{
             this.tweenUp.start();
@@ -397,22 +375,23 @@ export default class gameState extends Phaser.State {
         //iterate over available entrances
         this.entrancesGroup.forEach(entrance => {
             if(this._LEVEL === 2) { //remove after testing
-                if(entrance.name === 'test2') {
+                if(entrance.name === 'test') {
                     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
             }
 
-            // if (this._NEWGAME && this._LEVEL === 1) {
-            //     //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
-            //     if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
-            //         this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            //     }
-            // } else if (!this._NEWGAME && this._LEVEL === 1) {
-            //     if (entrance.name === 'portalfromcave') {
-            //         //if returning from cave, load sprite at return pt
-            //         this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            //     }
-            // } else { //otherwise, use whatever coordinates come back when function runs
+            if (this._NEWGAME && this._LEVEL === 1) {
+                //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
+                if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
+                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                }
+            } else if (!this._NEWGAME && this._LEVEL === 1) {
+                if (entrance.name === 'portalfromcave') {
+                    //if returning from cave, load sprite at return pt
+                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                }
+            } 
+            // else { //otherwise, use whatever coordinates come back when function runs
             //     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
             // }
         });
@@ -444,7 +423,6 @@ export default class gameState extends Phaser.State {
             grabRight : false,
             isClimbing: false,
             isJumping: false,
-            isLeaping: false,
             tapped : false
         }
     }
@@ -550,6 +528,7 @@ export default class gameState extends Phaser.State {
             this.ledge.anchor.y = 0.5;
             if(ledgePt.properties) {
                 this.ledge.end = ledgePt.properties.end;
+                this.ledge.side = ledgePt.properties.side;
             }
             this.ledgesGroup.setAll('body.allowGravity', false);
         });
@@ -557,7 +536,7 @@ export default class gameState extends Phaser.State {
         //endpoints
         this.endsGroup = this.game.add.group(this.game.world, 'endsGroup', false, true, Phaser.Physics.ARCADE);
         this.map.endpoints.forEach((end)=>{
-            this.endPt = this.endsGroup.create(end.x, end.y, 'point');
+            this.endPt = this.endsGroup.create(end.x, end.y, 'portal-v');
             this.endPt.id = end.id;
             this.endPt.anchor.x = 1;
             this.endPt.anchor.y = 1;
@@ -610,7 +589,6 @@ export default class gameState extends Phaser.State {
         this.restartButton.bringToTop();
 
         this.easyButton = this.game.add.button(this.restartButton.width + 20, 0, 'easy_button', this.onEasyClick, this);
-        this.easyButton.input.priorityID = 42;
         this.easyButton.input.useHandCursor = true;
         this.easyButton.fixedToCamera = true;
         this.easyButton.hitArea = this.easyButton.width*this.easyButton.height;
@@ -680,25 +658,27 @@ export default class gameState extends Phaser.State {
         this.game.camera.resetFX();
     }
 
-    // render() {
-    //     // this.game.debug.inputInfo(0, 0, 'rgba(255,0,0,1)', true);
-    //     // this.game.input.pointers.forEach((p)=>{
-    //     //     this.game.debug.pointer(p, false, 'rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(0,0,255,1)', 'rgba(255,0,255,1)');
-    //     // }, this);
-    //     // this.game.debug.body(this.hero);
-    //     // // this.game.debug.bodyInfo(this.hero, 32, 32);
-    //     // this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
-    //     // this.ledgesGroup.forEach((ledge)=>{
-    //     //     this.game.debug.body(ledge);
-    //     //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
-    //     // })
-    //     // this.endsGroup.forEach((end)=>{
-    //     //     this.game.debug.body(end);
-    //     //     this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
-    //     // })
-    //     // this.game.debug.spriteBounds(this.easyButton, 'rgba(0,0,255,1)', false);
-    //     // this.game.debug.spriteBounds(this.restartButton, 'rgba(0,0,255,1)', false);
-    // }
+    render() {
+        // this.game.debug.inputInfo(0, 0, 'rgba(255,0,0,1)', true);
+        // this.game.input.pointers.forEach((p)=>{
+        //     this.game.debug.pointer(p, false, 'rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(0,0,255,1)', 'rgba(255,0,255,1)');
+        // }, this);
+        // this.game.debug.body(this.hero);
+        // // this.game.debug.bodyInfo(this.hero, 32, 32);
+        // this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
+        // this.ledgesGroup.forEach((ledge)=>{
+        //     this.game.debug.body(ledge);
+        //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
+        // })
+        // this.endsGroup.forEach((end)=>{
+        //     this.game.debug.body(end);
+        //     this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
+        // })
+        // this.game.debug.spriteBounds(this.easyButton, 'rgba(0,0,255,1)', false);
+        // this.game.debug.spriteBounds(this.restartButton, 'rgba(0,0,255,1)', false);
+        // this.game.debug.spriteBounds(this.portButton, 'rgba(0,0,255,1)', false);
+        // this.game.debug.spriteBounds(this.starboardButton, 'rgba(0,0,255,1)', false);
+    }
 }
 
 // // KEYBOARD CONTROLS
