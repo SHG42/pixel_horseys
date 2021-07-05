@@ -324,7 +324,7 @@ export default class gameState extends Phaser.State {
             if(this.hero.body.gravity.x < 0) {
                 this.hero.body.gravity.x = this.hero.body.gravity.x+10;
             };
-            if(this.game.physics.arcade.overlap(this.hero, this.end)) {
+            if(this.game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
             } else if(this.hero.body.blocked.left || this.hero.body.touching.left || this.hero.body.position.x <= this.end.body.position.x) {
                 this.rollLeft.stop(false, true);
@@ -350,11 +350,9 @@ export default class gameState extends Phaser.State {
             if(this.hero.body.gravity.x > 0) { 
                 this.hero.body.gravity.x = this.hero.body.gravity.x-10;
             };
-            if(this.game.physics.arcade.overlap(this.hero, this.end)) {
-                console.log("overlap")
+            if(this.game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollRight.stop(false, true);
             } else if(this.hero.body.blocked.right || this.hero.body.touching.right || this.hero.body.position.x >= this.end.body.position.x) {
-                console.log("blocked")
                 this.rollRight.stop(false, true);
             }
         }, this);
