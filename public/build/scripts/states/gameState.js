@@ -214,7 +214,6 @@ export default class gameState extends Phaser.State {
     freeze() {
         this.hero.custom.isGrabbing = true;
         this.hero.custom.isJumping = false;
-        this.hero.custom.isLeaping = false;
         this.hero.custom.tapped = false;
         this.hero.input.enabled = true;
         this.hero.body.stop(); //set speed/accel/velo to 0
@@ -302,13 +301,11 @@ export default class gameState extends Phaser.State {
         //animations settings
         //JUMP
         this.jumpRight.onStart.add(()=>{
-            this.hero.custom.isLeaping = true;
             this.hero.body.velocity.x = 160;
         }, this);
         this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); this.hero.body.velocity.x = 0; }, this);
 
         this.jumpLeft.onStart.add(()=>{
-            this.hero.custom.isLeaping = true;
             this.hero.body.velocity.x = -160;
         }, this);
         this.jumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); this.hero.body.velocity.x = 0; }, this);
