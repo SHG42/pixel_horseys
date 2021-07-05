@@ -15,7 +15,8 @@ magicdoor.addEventListener("pointerdown", ()=>{
 		antialias: false,
 		crisp: true,
 		enableDebug: false,
-		maxPointers: 1
+		maxPointers: 2,
+		clearBeforeRender: false
 	}
 	var game = new Phaser.Game(config);
 
