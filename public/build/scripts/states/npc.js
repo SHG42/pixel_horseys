@@ -8,6 +8,8 @@ export default class NPC extends Phaser.State {
         this._LEVEL = data.level;
         this._LEVELS = data.levels;
         this._NEWGAME = data.newGame;
+        this._keyboardIsActive = data.keyboardIsActive;
+        this._pointerIsActive = data.pointerIsActive;
         this.loadingLevel = false;
         //emit event to reset if game over occurs and new game starts, check to see if new game
         if(this._NEWGAME) {
@@ -146,7 +148,7 @@ export default class NPC extends Phaser.State {
     }
 
     startGame() {
-        var data = {level: 1, newGame: true, levels: this._LEVELS}
+        var data = {level: 1, newGame: true, levels: this._LEVELS, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
         this.state.start('gameState', true, false, data);
     }
 }

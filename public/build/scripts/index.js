@@ -1,5 +1,6 @@
 import Boot from '/build/scripts/states/boot.js';
 import Preloader from '/build/scripts/states/preloader.js';
+import controlConfigure from '/build/scripts/states/controlConfigure.js';
 import NPC from '/build/scripts/states/npc.js';
 import gameState from '/build/scripts/states/gameState.js';
 
@@ -22,6 +23,7 @@ magicdoor.addEventListener("pointerdown", ()=>{
 
 	game.state.add('Boot', Boot);
 	game.state.add('Preloader', Preloader);
+	game.state.add('controlConfigure', controlConfigure);
 	game.state.add('NPC', NPC);
 	game.state.add('gameState', gameState);
 
