@@ -1,4 +1,4 @@
-export default class gameState extends Phaser.State {
+export default class gameState extends Phaser.Scene {
     constructor() {
         super("gameState");
     }
@@ -8,62 +8,36 @@ export default class gameState extends Phaser.State {
         this._LEVEL = data.level;
         this._LEVELS = data.levels;
         this._NEWGAME = data.newGame;
-        this._keyboardIsActive = data.keyboardIsActive;
-        this._pointerIsActive = data.pointerIsActive;
-        this.loadingLevel = false;
+        this.events.emit('displayUI');
         //emit event to reset if game over occurs and new game starts, check to see if new game
         if(this._NEWGAME) {
-            this.newGameSignal = new Phaser.Signal();
-            this.newGameSignal.dispatch();
+            this.events.emit('newGame');
         }
     }
     
     create() {
         //set smoothing for canvas rendering
-        Phaser.Canvas.setSmoothingEnabled(this, false);
-        
-        //activate physics and plugins
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.game.plugins.add(Phaser.Plugin.ArcadeSlopes);
-    
-        // Prefer the minimum Y offset globally
-        this.game.slopes.preferY = true;
-    
-        //set gravity
-        this.game.physics.arcade.gravity.y = 1500;
+        Phaser.Display.Canvas.Smoothing.disable(this);
 
         this.configure();
     }
 
     update() {
-        //fade out and restart level if sprite falls outside world bounds y
-        if (this.hero.body.position.y > this.map.heightInPixels) {
-            this.game.camera.fade(0x000000, 2000);
-            this.game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
-        }
+        // //fade out and restart level if sprite falls outside world bounds y
+        // if (this.hero.body.position.y > this.map.heightInPixels) {
+        //     this.cameras.main.fade(2000, 0, 0, 0);
+        //     this.cameras.main.on('camerafadeoutcomplete', ()=>{
+        //         this.scene.restart({level: this._LEVEL, levels: this._LEVELS, newGame: false});
+        //     });
+        // }
 
-        //platform collider
-        this.game.physics.arcade.collide(this.hero, this.mapLayer);
-    
-        // run endgame function
-        this.game.physics.arcade.overlap(this.hero, this.goal, this.onGoal, null, this);
-    
-        // run ledge finding function
-        this.game.physics.arcade.overlap(this.hero, this.ledgesGroup, this.ledgeHit, null, this);
-    
-        //run portal function
-        this.game.physics.arcade.overlap(this.hero, this.exitsGroup, this.exitStage, null, this);
-    
-        //run loot get function
-        this.game.physics.arcade.overlap(this.hero, this.objectsGroup, this.getLoot, null, this);
+        // this.heroConditions();
 
-        this.heroConditions();
-
-        if(this._pointerIsActive && !this._keyboardIsActive) {
-            this.pointerConditions();
-        } else if(!this._pointerIsActive && this._keyboardIsActive) {
-            this.keyboardConditions();
-        }
+        // if(this._pointerIsActive && !this._keyboardIsActive) {
+        //     this.pointerConditions();
+        // } else if(!this._pointerIsActive && this._keyboardIsActive) {
+        //     this.keyboardConditions();
+        // }
     }
 
     addControls() {
@@ -447,48 +421,73 @@ export default class gameState extends Phaser.State {
 
     addHero() {
         //iterate over available entrances
-        this.entrancesGroup.forEach(entrance => {
+        this.entryPoints.objects.forEach(entry => {
             if(this._LEVEL === 2) { //remove after testing
-                if(entrance.name === 'test') {
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                if(entry.name === 'test') {
+                    this.hero = this.matter.add.sprite(entry.x, entry.y, 'hero', 'idle-right-00-1.3');
                 }
             }
 
             if (this._NEWGAME && this._LEVEL === 1) {
                 //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
-                if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                if (entry.name === 'stage1entry') { //change back to stage1entry after testing
+                    this.hero = this.matter.add.sprite(entry.x, entry.y, 'hero', 'idle-right-00-1.3');
                 }
             } else if (!this._NEWGAME && this._LEVEL === 1) {
-                if (entrance.name === 'portalfromcave') {
+                if (entry.name === 'portalfromcave') {
                     //if returning from cave, load sprite at return pt
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                    this.hero = this.matter.add.sprite(entry.x, entry.y, 'hero', 'idle-right-00-1.3');
                 }
             } 
             // else { //otherwise, use whatever coordinates come back when function runs
-            //     this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            //     this.hero = this.add.sprite(entry.x, entry.y, 'hero', 'idle-right-00-1.3');
             // }
         });
-        
-        //add hero to sorting group
-        this.sortGroup.add(this.hero);
-        this.sortGroup.sendToBack(this.hero);
-        if (this._LEVEL === 4) {
-            this.sortGroup.sendToBack(this.goal);
-        }
     
-        this.game.physics.arcade.enable(this.hero);
-        this.hero.body.bounce.y = 0.3;
-        this.hero.body.collideWorldBounds = true;
-        this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
-        this.hero.inputEnabled = true;
-        this.hero.hitArea = this.hero.body.width * this.hero.body.height;
-        //enable hero for slopes
-        this.game.slopes.enable(this.hero);
-        // Prefer the minimum Y offset for this physics body
-        this.hero.body.slopes.preferY = true;
-        // Pull the player into downwards collisions with a velocity of 50
-        this.hero.body.slopes.pullDown = 50;
+        const { Body, Bodies } = Phaser.Physics.Matter.Matter; // Native Matter modules
+        const { width: w, height: h } = this.hero;
+        var top = this.matter.bodyBounds.getTopCenter(this.hero);
+        var topLeft = this.matter.bodyBounds.getTopLeft(this.hero);
+        var topRight = this.matter.bodyBounds.getTopRight(this.hero);
+        var bottom = this.matter.bodyBounds.getBottomCenter(this.hero);        
+        var left = this.matter.bodyBounds.getLeftCenter(this.hero);        
+        var right = this.matter.bodyBounds.getRightCenter(this.hero);
+
+        //top
+        //x: 0
+        //y: 18.5
+        // bottom
+        //x: 0
+        //y: -18.5
+
+        var cx = w / 2;
+        var cy = h / 2;
+        const mainBody = Bodies.rectangle(cx, cy, w * 0.3, h-5, { chamfer: { radius: 10 } });
+        this.sensors = {
+            bottom: Bodies.rectangle(cx, h, w * 0.25, 2, { isSensor: true }),
+            top: Bodies.rectangle(cx, cy * 0.25, w * 0.25, 2, { isSensor: true }),
+            left: Bodies.rectangle(cx-(cx/3), cy, 2, h*0.75, { isSensor: true }),
+            right: Bodies.rectangle(cx+(cx/3), cy, 2, h*0.75, { isSensor: true }),
+            // leftCorner: Bodies.rectangle( { isSensor: true, label: 'leftCorner' }),
+            // rightCorner: Bodies.rectangle( { isSensor: true, label: 'rightCorner' })
+        };
+
+        const compoundBody = Body.create({
+            parts: [mainBody, this.sensors.bottom, this.sensors.top, this.sensors.left, this.sensors.right,/* this.sensors.leftCorner, this.sensors.rightCorner*/],
+            frictionStatic: 0.9, // 0-> , def. 0.5
+            frictionAir: 0.07, //0-> , def. 0.01
+            friction: 0.9, //0 - 1 , def. 0.1
+            density: 0.1, //0.001-> , def. 0.001
+            restitution: 0.05
+        });
+        this.hero
+            .setExistingBody(compoundBody)
+            .setFixedRotation() // Sets inertia to infinity so the player can't rotate
+            .setIgnoreGravity(true);
+
+
+        // this.hero.body.setSize(this.hero.body.halfWidth-10, this.hero.body.height-5, 18, 3);
+        this.hero.setDepth(3);
         //set custom properties
         this.hero.custom = {
             whichDirection : 'right',
@@ -503,16 +502,11 @@ export default class gameState extends Phaser.State {
 
 
     makeMap() {
-        this.map = this.game.add.tilemap(this._LEVELS[this._LEVEL]);
+        this.map = this.make.tilemap({ key: this._LEVELS[this._LEVEL] });
         
-        this.jsonfile = this.cache.getJSON(this.map.key);
-        this.jsonfile.layers.forEach((layer) => {
-            if(layer.name === "endpoints") {
-                this.map.endpoints = layer.objects;
-            }
-        });
+        this.jsonfile = this.cache.json.get(this._LEVELS[this._LEVEL]);
         
-        //Multi-layer test
+        //Multi-layer
         this.tilesets = this.map.tilesets;
         //establish foreground & background tilesets
         for (let i = 0; i < this.tilesets.length; i++) {
@@ -520,179 +514,109 @@ export default class gameState extends Phaser.State {
         }
         
         //render tile layers
-        this.allLayers = this.map.layers;
-        //initialize sorting group and add foregrounds to it
-        this.sortGroup = this.game.add.group();
-        for (let i = 0; i < this.allLayers.length; i++) {
-            if (this.allLayers[i].name.includes('bg')) {
-                this.backgroundLayer = this.map.createLayer(this.allLayers[i].name);
-                this.backgroundLayer.sendToBack();
-            } else if (this.allLayers[i].name.includes('platform-collides')) {
-                this.mapLayer = this.map.createLayer(this.allLayers[i].name);
-                this.mapLayer.alpha = 0;
-            } else if (this.allLayers[i].name.includes('fg')) {
-                this.foregroundLayer = this.map.createLayer(this.allLayers[i].name);
-                this.sortGroup.add(this.foregroundLayer);
-            }
-        }
-        //set collision with layer
-        this.map.setCollisionBetween(1, 38, true, this.mapLayer);
-    
-        //convert tile layer to work with slopes plugin
-        this.game.slopes.convertTilemapLayer(this.mapLayer, 'arcadeslopes');
+        this.backgroundLayer = this.map.createLayer(`${this._LEVELS[this._LEVEL]}-bg`, `${this._LEVELS[this._LEVEL]}_bg`);
+        this.backgroundLayer.setDepth(1);
+
+        this.mapLayer = this.map.createLayer(`${this._LEVELS[this._LEVEL]}-platform-collides`, 'arcade-slopes-16');
+        this.mapLayer.visible = false;
+        this.mapLayer.setDepth(2);
+        //convert collider layer to matter
+        this.mapLayer.setCollisionByProperty({collides: true});
+        this.matter.world.convertTilemapLayer(this.mapLayer);
+
+        this.foregroundLayer = this.map.createLayer(`${this._LEVELS[this._LEVEL]}-fg`, `${this._LEVELS[this._LEVEL]}_fg`);
+        this.foregroundLayer.setDepth(5);
     }
     
     parseObjectGroups() {
         //entry points
-        this.entryPoints = this.map.objects.entryPortals;
-        this.entrancesGroup = this.game.add.group(this.game.world, 'entrancesGroup', false, true, Phaser.Physics.ARCADE);
-        this.entryPoints.forEach(entryPt => {
-            if(entryPt.type === 'levelentry' || entryPt.type === 'entryportal') {
-                if (entryPt.width < entryPt.height) {
-                    this.entrance = this.game.add.sprite(entryPt.x, entryPt.y, 'portal-v');
-                } else if (entryPt.width > entryPt.height) {
-                    this.entrance = this.game.add.sprite(entryPt.x, entryPt.y, 'portal-h');
-                } else {
-                    this.entrance = this.game.add.sprite(entryPt.x, entryPt.y, 'point');
-                }
-                this.entrance.name = entryPt.name;
-                this.entrancesGroup.add(this.entrance);
-                this.entrancesGroup.setAll('body.allowGravity', false);
-            }
+        this.entryPoints = this.map.getObjectLayer('entryPortals');
+        this.entryPoints.objects.forEach(entryPt => {
+            this.entrance = this.add.zone(entryPt.x, entryPt.y, entryPt.width, entryPt.height);
+            this.entrance.name = entryPt.name;
         });
     
         //exit points
-        this.exitPoints = this.map.objects.exitPortals;
-        this.exitsGroup = this.game.add.group(this.game.world, 'exitsGroup', false, true, Phaser.Physics.ARCADE);
-        this.exitPoints.forEach(exitPt => {
+        this.exitPoints = this.map.getObjectLayer('exitPortals');
+        this.exitGroup = this.add.group();
+        this.exitPoints.objects.forEach(exitPt => { //add onCollideCallback in matter.image call
             if (exitPt.type === 'goal') {
-                this.goal = this.game.add.sprite(exitPt.x, exitPt.y, 'objects', 'house');
-                this.goal.name = exitPt.name;
-                this.game.physics.arcade.enable(this.goal);
-                this.goal.position.y = this.goal.position.y - this.goal.body.height;
-                this.goal.body.allowGravity = false;
-                this.goal.body.immovable = true;
-                this.goal.body.moves = false;
-                this.sortGroup.add(this.goal);
+                this.goal = this.matter.add.image(exitPt.x, exitPt.y, 'objects', 'house', { ignoreGravity: true, label: exitPt.name });
+                this.goal.setDepth(3);
             } else if (exitPt.type === 'exitportal') {
                 //default cases for nonspecial exits
-                if (exitPt.width < exitPt.height) {
-                    this.exit = this.game.add.sprite(exitPt.x, exitPt.y, 'portal-v');
-                    this.exitsGroup.add(this.exit);
-                    this.exit.body.width = exitPt.width;
-                    this.exit.body.height = exitPt.height;
-                    this.exit.name = exitPt.name;
-                } else if (exitPt.width > exitPt.height) {
-                    this.exit = this.game.add.sprite(exitPt.x, exitPt.y, 'portal-h');
-                    this.exitsGroup.add(this.exit);
-                    this.exit.body.width = exitPt.width;
-                    this.exit.body.height = exitPt.height;
-                    this.exit.name = exitPt.name;
-                }
+                this.exit = this.add.zone(exitPt.x, exitPt.y, exitPt.width, exitPt.height);
+                this.exitGroup.add(this.exit);
             }
-            this.exitsGroup.setAll('body.allowGravity', false);
         });
     
         //ledge points
-        this.ledgepoints = this.map.objects.ledgePoints;
-        this.ledgesGroup = this.game.add.group(this.game.world, 'ledgesGroup', false, true, Phaser.Physics.ARCADE);
-        this.ledgepoints.forEach(ledgePt => {
-            this.ledge = this.ledgesGroup.create(ledgePt.x, ledgePt.y, 'point');
-            this.ledge.anchor.x = 0.5;
-            this.ledge.anchor.y = 0.5;
-            if(ledgePt.properties) {
-                this.ledge.end = ledgePt.properties.end;
-                this.ledge.side = ledgePt.properties.side;
+        this.ledges = this.map.getObjectLayer('ledgePoints');
+        this.ledgeTargets = this.add.graphics();
+        this.ledgeTargets.visible = false;
+
+        this.ledges.objects.forEach(ledge => { //add onCollideCallback in matter.image call
+            this.ledge = this.matter.add.image(ledge.x, ledge.y, 'point', null, { isSensor: true, label: ledge.name, ignoreGravity: true });
+
+            var a = new Phaser.Geom.Point(this.ledge.x, this.ledge.y);
+            var radius = this.ledge.width;
+            this.ledgeTargets.lineStyle(3, 0xff0000, 1).strokeCircle(a.x, a.y, radius).setDepth(142);
+
+            if(ledge.properties) {
+                this.ledge.end = ledge.properties[0];
+                this.ledge.side = ledge.properties[1];
+                
+                if(this.ledge.side.value === "left") {
+                    this.ledge.originX = 0;
+                    this.ledge.originY = 0;
+                } else if(this.ledge.side.value === "right") {
+                    this.ledge.originX = 0;
+                    this.ledge.originY = 1;
+                }
             }
-            this.ledgesGroup.setAll('body.allowGravity', false);
-        });
-        this.graphics = this.game.add.graphics(0, 0);
-        this.graphics.visible = false;
-        this.ledgesGroup.forEach(ledge => {
-            this.graphics.lineStyle(3, 0xff0000).beginFill(0x000000, 0).arc(ledge.x, ledge.y, ledge.width, 0, 360, true);
-            this.graphics.endFill();
         });
 
         //endpoints
-        this.endsGroup = this.game.add.group(this.game.world, 'endsGroup', false, true, Phaser.Physics.ARCADE);
-        this.map.endpoints.forEach((end)=>{
-            this.endPt = this.endsGroup.create(end.x, end.y, 'portal-v');
+        this.ends = this.map.getObjectLayer("endpoints");
+        this.ends.objects.forEach((end)=>{
+            this.endPt = this.matter.add.image(end.x, end.y, 'point', null, { isSensor: true, label: end.name, ignoreGravity: true });
             this.endPt.id = end.id;
-            this.endPt.anchor.x = 1;
-            this.endPt.anchor.y = 1;
-            this.endsGroup.setAll('body.allowGravity', false);
+            this.endPt.originX = 1;
+            this.endPt.originY = 1;
         });
 
         //loot objects
-        this.mapObjects = this.map.objects.objects;
-        this.objectsGroup = this.game.add.group(this.game.world, 'objectsGroup', false, true, Phaser.Physics.ARCADE);
-        this.mapObjects.forEach(objectPt => {
-            if (objectPt.type === 'loot') {
-                this.map.createFromObjects('objects', objectPt.gid, 'objects', objectPt.name, true, false, this.objectsGroup);
-                this.objectsGroup.setAll('body.allowGravity', false);
-            }
+        this.loot = this.map.getObjectLayer("objects");
+        this.loot.objects.forEach(objectPt => {
+            this.frame = objectPt.name;
+            this.loot = this.matter.add.image(objectPt.x, objectPt.y, 'objects', this.frame, { isSensor: true, label: objectPt.name, ignoreGravity: true });
+            this.loot.setDepth(24);
         });
     }
     
     onGoal(hero, goal) {
-        this.game.camera.fade(0x000000, 2000);
-        this.game.camera.onFadeComplete.add(()=>{
+        this.cameras.main.fadeOut(2000, 0,0,0);
+        this.cameras.main.on("camerafadeoutcomplete", ()=>{
             //launch end cutscene
             var data = {level: 5, newGame: false, levels: this._LEVELS}
-            this.game.state.start('NPC', true, false, data);
+            this.game.scene.start('NPC', data);
         }, this);
     }
     
     getLoot(hero, loot) {
         loot.destroy();
-        var gotLootSignal = new Phaser.Signal();
-        gotLootSignal.dispatch();
     }
     
     exitStage(hero, portal) {
         if (portal.name === 'portaltocave') {
-            this.game.state.restart(true, false, { level: 2, levels: this._LEVELS, newGame: false });
+            this.scene.restart({ level: 2, levels: this._LEVELS, newGame: false });
         } else if (portal.name === 'portaltotree') {
-            this.game.state.restart(true, false, { level: 3, levels: this._LEVELS, newGame: false });
+            this.scene.restart({ level: 3, levels: this._LEVELS, newGame: false });
         } else if (portal.name === 'portaltocottage') {
-            this.game.state.restart(true, false, { level: 4, levels: this._LEVELS, newGame: false });
+            this.scene.restart({ level: 4, levels: this._LEVELS, newGame: false });
         } else if (portal.name === 'portaltobridge') {
-            this.game.state.restart(true, false, { level: 1, levels: this._LEVELS, newGame: false });
+            this.scene.restart({ level: 1, levels: this._LEVELS, newGame: false });
         }
-    }
-
-    createUI() {
-        this.UIgroup = this.game.add.group();
-
-        this.restartButton = this.game.add.button(150, 0, 'restart_button', this.onRestartClick, this, null, null, null, null, this.UIgroup);
-
-        this.easyButton = this.game.add.button(this.restartButton.x+150, 0, 'easy_button', this.onEasyClick, this, null, null, null, null, this.UIgroup);
-
-        this.formatButtons();
-    }
-
-    formatButtons() {
-        this.UIgroup.forEach((button)=>{
-            button.input.useHandCursor = true;
-            button.fixedToCamera = true;
-            button.hitArea = button.width*button.height;
-
-            if(this.game.width > this.game.height) {
-                button.height = this.game.height/6;
-                button.scale.x = button.scale.y;
-            } else if(this.game.width < this.game.height) {
-                button.width = this.game.width/5;
-                button.scale.y = button.scale.x;
-            }
-        }, this);
-    }
-
-    onRestartClick() {
-        this.game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
-    }
-
-    onEasyClick() {
-        this.graphics.visible = !this.graphics.visible;
     }
 
     configure() {
@@ -702,50 +626,42 @@ export default class gameState extends Phaser.State {
         //parse Tiled object groups
         this.parseObjectGroups();
 
-        //add hero
+        // //add hero
         this.addHero();
 
-        // //add anims
-        this.createAnims();
+        // // //add anims
+        // this.createAnims();
 
-        // Prefer the minimum Y offset globally
-        this.game.slopes.preferY = true;
-        //set world bounds
-        this.game.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels+100);
-        this.game.camera.setBoundsToWorld();
+        // //initiate keyboard controls
+        // this.addControls();
 
-        //initiate keyboard controls
-        this.addControls();
+        //initiate colliders
+        //this.addColliders();
 
-        //create UI buttons
-        this.createUI();
+        //bring UI scene above game scene
+        // this.scene.bringToTop('UI');
 
-        //start follow
-        this.game.camera.follow(this.hero, Phaser.Camera.FOLLOW_PLATFORMER);
-        this.game.camera.focusOn(this.hero);
-        //reset camera fade once complete
-        this.game.camera.onFadeComplete.add(this.resetFade, this);
+        //establish camera and bounds
+        // //set world bounds
+        this.matter.world.setBounds(this.map.widthInPixels, this.map.heightInPixels);
+        this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+        //establish camera follow
+        // this.cameras.main.startFollow(this.hero);
+
+        // if(this.cameras.main.width < this.cameras.main.height) {
+        //     this.cameras.main.setZoom(2);
+        // }
+        
+        // //reset camera fade once complete
+        // this.cameras.main.on("camerafadeoutcomplete", this.resetFade, this)
+
+        this.matter.world.createDebugGraphic();
+        this.matter.world.drawDebug = true;
+        // this.input.enableDebug(this.restartButton);
+        // this.input.enableDebug(this.easyButton);
     }
     
     resetFade() {
-        this.game.camera.resetFX();
-    }
-
-    render() {
-        // this.game.debug.body(this.hero);
-        // // this.game.debug.bodyInfo(this.hero, 32, 32);
-        // this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
-        // this.ledgesGroup.forEach((ledge)=>{
-        //     this.game.debug.body(ledge);
-        //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
-        // })
-        // this.endsGroup.forEach((end)=>{
-        //     this.game.debug.body(end);
-        //     this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
-        // })
-        // this.UIgroup.forEach((button)=>{
-        //     this.game.debug.body(button);
-        //     this.game.debug.spriteBounds(button, 'rgba(255,0,0,1)', false);
-        // })
+        this.cameras.main.resetFX();
     }
 }

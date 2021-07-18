@@ -1,4 +1,4 @@
-export default class NPC extends Phaser.State {
+export default class NPC extends Phaser.Scene {
     constructor(key) {
         super('NPC');
     }
@@ -8,61 +8,104 @@ export default class NPC extends Phaser.State {
         this._LEVEL = data.level;
         this._LEVELS = data.levels;
         this._NEWGAME = data.newGame;
-        this._keyboardIsActive = data.keyboardIsActive;
-        this._pointerIsActive = data.pointerIsActive;
         this.loadingLevel = false;
         //emit event to reset if game over occurs and new game starts, check to see if new game
         if(this._NEWGAME) {
-            this.newGameSignal = new Phaser.Signal();
-            this.newGameSignal.dispatch();
+            this.events.emit('newGame');
         }
     }
 
     create() {
-        this.addNPC();
+        this.time.delayedCall(2000, this.addNPC, [], this);
+
+        this.width = this.cameras.main.width;
+        this.height = this.cameras.main.height;
+
         //init anim
-        this.portal = this.game.add.sprite(this.camera.view.width/2, this.camera.view.height/2, 'portal', '0000');
+        this.portal = this.add.sprite(this.width/2, this.height/2, 'portal', '0000');
         this.portal.anchor = {x: 0.5, y: 0.5};
         this.portal.visible = false;
-        this.portalAnim = this.portal.animations.add('portal', Phaser.Animation.generateFrameNames('', 0, 8, '', 4), 7, true, false);
+        this.portalAnim = this.portal.anims.create({
+            key: 'portalAnim',
+            frames: this.anims.generateFrameNames('portal', {
+                start: 0,
+                end: 8,
+                zeroPad: 4
+            }),
+            frameRate: 10,
+            repeat: -1
+        });
     }
 
     addNPC() {
-		this.NPCdata = this.cache.getJSON('NPCdata');
-
+		this.NPCdata = this.cache.json.get('NPCdata');
+        
         if(this._LEVEL === 0) {
-            this.bgName = "cutscene1";
-            this.NPC_is = this.time.events.add(Phaser.Timer.SECOND * 2, function(){
-                this.sorceress = this.game.add.sprite(0, 0, 'sorceress', 'sorceress_smile');
-                this.time.events.add(Phaser.Timer.SECOND * 1, this.launch, this);
-            }, this);
+            this.bg = this.add.image(0,0, "cutscene1", null);
+            this.sorceress = this.add.image(this.bg.width/3,0, 'sorceress', 'sorceress_smile', {isStatic: true});
+            this.NPC_is = this.sorceress;
+            this.launch();
         } else if(this._LEVEL === 5) {
-            this.bgName = "cutscene2";
-            this.NPC_is = this.time.events.add(Phaser.Timer.SECOND * 2, function(){
-                this.ranger = this.game.add.image(0, 0, "forest_ranger", null);
-                this.time.events.add(Phaser.Timer.SECOND * 1, this.launch, this);
-            }, this);
+            this.bg = this.add.image(0,0, "cutscene2", null);
+            this.ranger = this.add.image(this.bg.width/3,0, "forest_ranger", null);
+            this.NPC_is = this.ranger;
+            this.launch();
         }
-
-        this.bg = this.game.add.image(0, 0, this.bgName, null);
-        if(this.game.width < this.game.height) { //portrait
-            this.bg.anchor.x = 0.5;
-        }
+        this.bg.setOrigin(0,0);
+        //  Center the sprite to the picture
+        Phaser.Display.Align.In.BottomLeft(this.NPC_is, this.bg, 0, -(this.NPC_is.height/2));
     }
 
     launch() {
-        this.bar = this.game.add.graphics();
-        this.bar.beginFill(0xffffff, 0.8);
-        this.bar.drawRect(0, this.camera.view.height-200, this.camera.view.width, 200);
+        this.bg.setDepth(0);
+        this.NPC_is.setDepth(1);
 
-        this.text = this.game.add.text(0, 0, "", { font: "bold 20px Arial", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle", wordWrap: true, wordWrapWidth: this.camera.view.width-150 });
-        this.text.setShadow(2, 2, 'rgba(0,0,0,0.8)', 2);
-        this.text.setTextBounds(0, this.camera.view.height-200, this.camera.view.width-100, 200);
+        this.graphic = this.add.graphics();
+        this.graphic.fillStyle(0xffffff, 0.8).fillRect(0,0, this.bg.width-100, this.height/4).setDepth(2);
+        
+        var style = {
+            font: "20px Arial bold",
+            color: '#000',
+            align: 'center',
+            wordWrap: { width: this.width-200 },
+            shadow: {
+                color: 'rgba(0,0,0,0.8)',
+                fill: true,
+                offsetX: 1,
+                offsetY: 1,
+                blur: 2
+            }
+        };
+        
+        this.text = this.add.text(0,0, 'Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder Placeholder', style);
+        this.text.setPadding({ x: 16, y: 16 }).setDepth(3);
 
-        this.next = this.game.add.image(this.camera.view.width-50, this.camera.view.height-50, "forward", null);
-        this.next.visible = false;
+        this.next = this.add.image(0,0, "forward");
+        this.next.setInteractive(this.next.width*this.next.height);
+        this.next.on("pointerdown", this.runLine, this);
+        this.next.input.enabled = false;
+        // this.next.visible = false;
+        this.next.setDepth(4);
 
-        this.runDialogue();
+        // this.runDialogue();
+    }
+
+    runLine() {
+        this.text.text = "";
+        this.lineIndex++;
+        if(this.lineIndex < this.dialogue.length) {
+            this.concatenate();
+        } else {
+            this.bar.destroy();
+            this.text.destroy();
+            this.next.destroy();
+            this.bg.destroy();
+            if(this.NPC_is.texture.key === "sorceress") {
+                this.runPortal();
+            } else if(this.NPC_is.texture.key === "ranger") {
+                this.runEnd();
+            }
+        }
     }
     
     runDialogue() {
@@ -72,84 +115,64 @@ export default class NPC extends Phaser.State {
         this.wordDelay = 220;
         this.lineDelay = 3000;
 
-        if(this.NPC_is.callbackContext.sorceress) {
+        if(this.NPC_is.texture.key === "sorceress") {
             this.dialogue = this.NPCdata.sorceress.dialogue;
-            this.processText();
-        } else if(this.NPC_is.callbackContext.ranger) {
+            this.concatenate(this.dialogue[0]);
+        } else if(this.NPC_is.texture.key === "ranger") {
             this.dialogue = this.NPCdata.ranger.dialogue;
-            this.processText();
+            this.concatenate(this.dialogue[0]);
         }
     }
 
-    processText() {
-        this.concatenate(this.dialogue[0])
-        this.runline = this.next.events.onInputDown.add(()=>{
-            this.text.text = "";
-            this.lineIndex++;
-            if(this.lineIndex < this.dialogue.length) {
-                this.concatenate();
-            } else {
-                this.bar.destroy();
-                this.text.destroy();
-                this.next.destroy();
-                this.bg.destroy();
-                if(this.NPC_is.callbackContext.sorceress) {
-                    this.runPortal();
-                } else if(this.NPC_is.callbackContext.ranger) {
-                    this.runEnd();
-                }
-            }
-        }, this);
-    }
-
     concatenate() {
-        if(this.NPC_is.callbackContext.sorceress) {
+        if(this.NPC_is.texture.key === "sorceress") {
             this.switchEmote();
         }
         this.words = this.dialogue[this.lineIndex].text.split(" ");
         this.words.forEach((word, i)=>{
             if(i < this.words.length) {
-                this.concatTimer = this.game.time.events.add(i * this.wordDelay, ()=>{
+                this.concatTimer = this.time.delayedCall(i * this.wordDelay, ()=>{
                     this.next.visible = false;
-                    this.next.inputEnabled = false;
+                    this.next.input.enabled = false;
                     this.wordIndex++;
                     this.text.text = this.text.text.concat(this.words[i]) + " ";
                 }, this);
             }
         })
-        this.concatTimer.timer.onComplete.addOnce(()=>{
+        
+        if (this.concatTimer.elapsed == this.concatTimer.delay) {
             this.next.visible = true;
-            this.next.inputEnabled = true;
+            this.next.input.enabled = true;
             this.runLine;
-        }, this);
+        }
     }
 
     switchEmote() {
-        this.sorceress.loadTexture('sorceress', this.dialogue[this.lineIndex].emote);
+        this.sorceress.setTexture('sorceress', this.dialogue[this.lineIndex].emote);
     }
 
     runPortal() {
         this.sorceress.destroy();
         this.portal.visible = true;
-        this.portalAnim.play('portal');
+        this.anims.play('portal');
         setTimeout(() => {
-            this.game.camera.fade(0x000000, 2000);
-            this.game.camera.onFadeComplete.add(this.startGame, this);
+            this.camera.fade(0x000000, 2000);
+            this.camera.onFadeComplete.add(this.startGame, this);
         }, 4000);
     }
 
     runEnd() {
         this.ranger.destroy();
-        this.game.camera.fade(0x000000, 2000);
-        this.game.camera.onFadeComplete.add(()=>{
-			this.game.pendingDestroy = true;
+        this.camera.fade(0x000000, 2000);
+        this.camera.onFadeComplete.add(()=>{
+			this.pendingDestroy = true;
 			win();
 		}, this);
     }
 
     startGame() {
-        var data = {level: 1, newGame: true, levels: this._LEVELS, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
-        this.state.start('gameState', true, false, data);
+        var data = {level: 1, newGame: true, levels: this._LEVELS}
+        this.state.start('gameState', data);
     }
 }
 

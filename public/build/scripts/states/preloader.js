@@ -1,43 +1,65 @@
-export default class Preloader extends Phaser.State {
+export default class Preloader extends Phaser.Scene {
     constructor(key) {
         super('Preloader');
     }
 
     init(data) {
-        this._keyboardIsActive = data.keyboardIsActive;
-        this._pointerIsActive = data.pointerIsActive;
-
+        this._assetData = data.assetData;
         this.readyCount = 0;
     }
 
     preload() {
         //time event for showing logo
-        this.timedEvent = this.time.events.add(Phaser.Timer.SECOND * 3, this.ready, this); 
+        this.timedEvent = this.time.delayedCall(1, this.ready, [], this);
 		this.createPreloader();
     }
 
     createPreloader() {
+        this.cameras.main.setViewport(0, 0, this.game.config.width, this.game.config.height);
+
         this.loadAssets();
 
-        var width = this.camera.view.width;
-        var height = this.camera.view.height;
+        var width = this.cameras.main.width;
+        var height = this.cameras.main.height;
 
-        var logo = this.game.add.image(width/2-10, height/2+50, 'sunflame_logo');
-        logo.anchor = {x: 0.5, y: 0.5};
+        var logo = this.add.image(width/2-10, height/2+50, 'sunflame_logo');
+        logo.setOrigin(0.5, 0.5);
+        logo.alpha = 0;
+
         
-        this.game.load.setPreloadSprite(logo);
+        var config1 = {
+            x: width/2,
+            y: 100,
+            text: '\nPlease Wait, Loading In Progress...\n',
+            style: {
+                font: "42px Arial bold",
+                color: '#fff',
+                align: 'center',
+                backgroundColor: 'rgba(255,255,255,0.5)',
+                wordWrap: { width: width-150 },
+                shadow: {
+                    color: 'rgba(0,0,0,0.5)',
+                    fill: true,
+                    offsetX: 4,
+                    offsetY: 4,
+                    blur: 2
+                }
+            }
+        };
+    
+        var text = this.make.text(config1);
+        text.setOrigin(0.5).setPadding({ x: 64, y: 16 });
 
-        //loading text
-        var bar = this.game.add.graphics();
-        bar.beginFill(0xffffff, 0.3);
-        bar.drawRect(0, 20, width, 100);
-        var text = this.game.add.text(0, 0, "Please Wait, Loading In Progress...", { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle", wordWrap: true, wordWrapWidth: width-100 });
-        text.setShadow(3, 3, 'rgba(255,255,255,0.5)', 2);
-        text.setTextBounds(0, 20, width, 100);
+        //reveal sprite on load progress
+        this.load.on('progress', function(value) {
+            if(logo.alpha < 1) {
+                logo.alpha = logo.alpha += 0.1;
+            }
+        });
+
         //remove progressbar when complete
-        this.game.load.onLoadComplete.add(function() {
+        this.load.on('complete', function() {
             text.destroy();
-            bar.destroy();
             this.ready();
         }, this)
     }
@@ -52,25 +74,25 @@ export default class Preloader extends Phaser.State {
             5: 'ranger'
         }
 		
-		this.assetData = this.cache.getJSON('assetData');
+		this.assetData = this.cache.json.get('assetData');
 		
         this.assetData.images.location.forEach((asset)=>{
-            this.game.load.image(asset, `./assets/images/location/${asset}.png`);
+            this.load.image(asset, `./assets/images/location/${asset}.png`);
         });
         this.assetData.images.tilesets.forEach((asset)=>{
-            this.game.load.spritesheet(asset, `./assets/images/tilesets/${asset}.png`, 16, 16);
+            this.load.spritesheet(asset, `./assets/images/tilesets/${asset}.png`, { frameWidth: 16});
         });
         this.assetData.images.utility.forEach((asset)=>{
-            this.game.load.image(asset, `./assets/images/utility/${asset}.png`);
+            this.load.image(asset, `./assets/images/utility/${asset}.png`);
         });
 
         this.assetData.spritesheets.forEach((spritesheet)=>{
-            this.game.load.atlas(spritesheet,  `./assets/spritesheets/${spritesheet}.png`, `./assets/spritesheets/${spritesheet}.json`, Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+            this.load.atlas(spritesheet, `./assets/spritesheets/${spritesheet}.png`, `./assets/spritesheets/${spritesheet}.json`);
         });
 
         this.assetData.tilemaps.forEach((tilemap)=>{
-            this.game.load.tilemap(tilemap, `./assets/tilemaps/${tilemap}.json`, null, Phaser.Tilemap.TILED_JSON);
-            this.game.load.json(tilemap, `./assets/tilemaps/${tilemap}.json`);
+            this.load.tilemapTiledJSON(tilemap, `./assets/tilemaps/${tilemap}.json`);
+            this.load.json(tilemap, `./assets/tilemaps/${tilemap}.json`);
         })
     }
 
@@ -78,17 +100,17 @@ export default class Preloader extends Phaser.State {
         this.readyCount++;
         if(this.readyCount === 1) {
             //this leaves logo on splash screen for a short interval before launching next scene
-            this.game.camera.fade(0x000000, 2000);
-            this.game.camera.onFadeComplete.add(this.startGame, this);
+            this.cameras.main.fadeOut(2000, 0,0,0);
+            this.cameras.main.on("camerafadeoutcomplete", this.startGame, this)
         }
     }
 
     startGame() {
         //use this one
-        // var data = {level: 0, newGame: true, levels: this.levels, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
-        // this.game.state.start('NPC', true, false, data);
+        // var data = {level: 0, newGame: true, levels: this.levels}
+        // this.scene.start('NPC', data);
         //testing only
-        var data = {level: 2, newGame: true, levels: this.levels, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
-        this.game.state.start('gameState', true, false, data);
+        var data = {level: 2, newGame: true, levels: this.levels}
+        this.game.scene.start('gameState', data);
     }
 }

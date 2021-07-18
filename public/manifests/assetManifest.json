@@ -16,15 +16,11 @@
             "tree_fg"
         ],
         "utility": [
-            "easy_button",
             "forest_ranger",
             "forward",
-            "keyboard_button",
             "point",
-            "pointer_button",
             "portal-h",
             "portal-v",
-            "restart_button",
             "sunflame_icon"
         ]
     },

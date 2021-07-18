@@ -43,7 +43,7 @@ app.use(function (req, res, next) {
 		res.locals.cloudname = process.env.CLOUDNAME;
       next();
     }
-  });
+});
 
 app.use(common.passport.initialize());
 app.use(common.passport.session());
