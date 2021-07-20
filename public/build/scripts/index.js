@@ -18,8 +18,8 @@ magicdoor.addEventListener("pointerdown", ()=>{
 		physics: {
 			default: 'matter',
 			matter: {
-				gravity: {y: 0}, //800
-				debug: true,
+				gravity: {y: 3},
+				debug: false,
 				plugins: {
 					attractors: true
 				}
