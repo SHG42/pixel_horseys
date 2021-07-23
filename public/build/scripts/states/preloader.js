@@ -88,7 +88,7 @@ export default class Preloader extends Phaser.State {
         // var data = {level: 0, newGame: true, levels: this.levels, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
         // this.game.state.start('NPC', true, false, data);
         //testing only
-        var data = {level: 2, newGame: true, levels: this.levels, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
+        var data = {level: 3, newGame: true, levels: this.levels, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
         this.game.state.start('gameState', true, false, data);
     }
 }
