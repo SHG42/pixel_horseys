@@ -8,9 +8,8 @@ export default class gameState extends Phaser.State {
         this._LEVEL = data.level;
         this._LEVELS = data.levels;
         this._NEWGAME = data.newGame;
-        this._keyboardIsActive = data.keyboardIsActive;
-        this._pointerIsActive = data.pointerIsActive;
-        this.loadingLevel = false;
+        // this._keyboardIsActive = data.keyboardIsActive;
+        // this._pointerIsActive = data.pointerIsActive;
         //emit event to reset if game over occurs and new game starts, check to see if new game
         if(this._NEWGAME) {
             this.newGameSignal = new Phaser.Signal();
@@ -74,6 +73,11 @@ export default class gameState extends Phaser.State {
             this.pointer = this.game.input.mousePointer;
             this.game.input.mouse.capture = true;
         }
+
+        this.game.input.onUp.add(()=>{
+            console.log("this.hero.body.velocity, this.hero.animations.currentAnim.name, this.hero.body.blocked, this.hero.body.touching, this.hero.body.onFloor(), this.hero.body.onWall(): ");
+            console.log(this.hero.body.velocity, this.hero.animations.currentAnim.name, this.hero.body.blocked, this.hero.body.touching, this.hero.body.onFloor(), this.hero.body.onWall());
+        })
     }
 
     pointerConditions() {
@@ -160,14 +164,14 @@ export default class gameState extends Phaser.State {
         this.hero.body.velocity.y = -150;
         if(this.hero.custom.whichDirection === "left") {
             this.hero.animations.play('jump-left');
-            if(!this.hero.body.blocked.left && !this.hero.body.touching.left) {
-                this.hero.body.position.x-=3;
-            }
+            // if(!this.hero.body.blocked.left && !this.hero.body.touching.left) {
+            //     this.hero.body.position.x-=3;
+            // }
         } else if(this.hero.custom.whichDirection === "right") {
             this.hero.animations.play('jump-right');
-            if(!this.hero.body.blocked.left && !this.hero.body.touching.left) {
-                this.hero.body.position.x+=3;
-            }
+            // if(!this.hero.body.blocked.left && !this.hero.body.touching.left) {
+            //     this.hero.body.position.x+=3;
+            // }
         }
     }
 
@@ -296,15 +300,15 @@ export default class gameState extends Phaser.State {
 
         //animations settings
         //JUMP
-        this.jumpRight.onStart.add(()=>{
-            this.hero.body.velocity.x = 160;
-        }, this);
-        this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); this.hero.body.velocity.x = 0; }, this);
+        // this.jumpRight.onStart.add(()=>{
+        //     this.hero.body.velocity.x = 160;
+        // }, this);
+        // this.jumpRight.onComplete.add(()=> { this.hero.animations.play('idle-right'); this.hero.body.velocity.x = 0; }, this);
 
-        this.jumpLeft.onStart.add(()=>{
-            this.hero.body.velocity.x = -160;
-        }, this);
-        this.jumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); this.hero.body.velocity.x = 0; }, this);
+        // this.jumpLeft.onStart.add(()=>{
+        //     this.hero.body.velocity.x = -160;
+        // }, this);
+        // this.jumpLeft.onComplete.add(()=> { this.hero.animations.play('idle-left'); this.hero.body.velocity.x = 0; }, this);
 
         ////LEFT-HAND ROLL
         this.rollLeft.onStart.add(()=>{
@@ -365,10 +369,8 @@ export default class gameState extends Phaser.State {
     addHero() {
         //iterate over available entrances
         this.entrancesGroup.forEach(entrance => {
-            if(this._LEVEL === 2) { //remove after testing
-                if(entrance.name === 'test') {
-                    this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-                }
+            if(entrance.name === 'test') {
+                this.hero = this.game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
             }
 
             if (this._NEWGAME && this._LEVEL === 1) {
@@ -403,9 +405,9 @@ export default class gameState extends Phaser.State {
         //enable hero for slopes
         this.game.slopes.enable(this.hero);
         // Prefer the minimum Y offset for this physics body
-        this.hero.body.slopes.preferY = true;
+        // this.hero.body.slopes.preferY = true;
         // Pull the player into downwards collisions with a velocity of 50
-        this.hero.body.slopes.pullDown = 50;
+        // this.hero.body.slopes.pullDown = 50;
         //set custom properties
         this.hero.custom = {
             whichDirection : 'right',
@@ -446,7 +448,7 @@ export default class gameState extends Phaser.State {
                 this.backgroundLayer.sendToBack();
             } else if (this.allLayers[i].name.includes('platform-collides')) {
                 this.mapLayer = this.map.createLayer(this.allLayers[i].name);
-                this.mapLayer.alpha = 0;
+                // this.mapLayer.alpha = 0;
             } else if (this.allLayers[i].name.includes('fg')) {
                 this.foregroundLayer = this.map.createLayer(this.allLayers[i].name);
                 this.sortGroup.add(this.foregroundLayer);
