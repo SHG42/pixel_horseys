@@ -118,6 +118,18 @@
                  "width":47,
                  "x":3,
                  "y":25
+                }, 
+                {
+                 "height":0,
+                 "id":81,
+                 "name":"test",
+                 "point":true,
+                 "rotation":0,
+                 "type":"entryportal",
+                 "visible":true,
+                 "width":0,
+                 "x":508,
+                 "y":482
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -646,7 +658,7 @@
          "y":0
         }],
  "nextlayerid":13,
- "nextobjectid":81,
+ "nextobjectid":82,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.1",
