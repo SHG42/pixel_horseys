@@ -307,10 +307,6 @@ export default class gameState_pointer extends Phaser.State {
             this.game.state.restart(true, false, { level: 1, levels: this._LEVELS, newGame: false });
         }
     }
-    
-    resetFade() {
-        this.game.camera.resetFX();
-    }
 
     render() {
         this.game.debug.body(this.hero);
