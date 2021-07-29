@@ -1,3 +1,5 @@
+import makeMap from "./configurators/makeMap.js";
+
 export default class Configurator {
     constructor(game, Phaser) {
         //set smoothing for canvas rendering
@@ -13,42 +15,42 @@ export default class Configurator {
         //set gravity
         game.physics.arcade.gravity.y = 1500;
 
-        this.configure();
+        this.configure(game, Phaser);
     }
 
-    configure() {
+    configure(game, Phaser) {
         //create tilemap
-        this.makeMap();
+        this.map = new makeMap(game, Phaser);
             
-        //parse Tiled object groups
-        this.parseObjectGroups();
+        // //parse Tiled object groups
+        // this.parseObjectGroups(game, Phaser);
 
-        //add hero
-        this.addHero();
+        // //add hero
+        // this.addHero(game, Phaser);
 
-        // //add anims
-        this.createAnims();
+        // // //add anims
+        // this.createAnims(game, Phaser);
 
-        // Prefer the minimum Y offset globally
-        this.game.slopes.preferY = true;
-        //set world bounds
-        this.game.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels+100);
-        this.game.camera.setBoundsToWorld();
+        // // Prefer the minimum Y offset globally
+        // game.slopes.preferY = true;
+        // //set world bounds
+        // game.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels+100);
+        // game.camera.setBoundsToWorld();
 
-        //initiate keyboard controls
-        this.addControls();
+        // //initiate keyboard controls
+        // this.addControls(game, Phaser);
 
-        //create UI buttons
-        this.createUI();
+        // //create UI buttons
+        // this.createUI(game, Phaser);
 
-        //start follow
-        this.game.camera.follow(this.hero, Phaser.Camera.FOLLOW_PLATFORMER);
-        this.game.camera.focusOn(this.hero);
-        //reset camera fade once complete
-        this.game.camera.onFadeComplete.add(this.resetFade, this);
+        // //start follow
+        // game.camera.follow(this.hero, Phaser.Camera.FOLLOW_PLATFORMER);
+        // game.camera.focusOn(this.hero);
+        // //reset camera fade once complete
+        // game.camera.onFadeComplete.add(this.resetFade, this);
     }
 
-    createAnims() {
+    createAnims(game, Phaser) {
         //idle
         this.idleRight = this.hero.animations.add('idle-right', Phaser.Animation.generateFrameNames('idle-right-', 0, 3, '-1.3', 2), 2, true, false);
         this.idleLeft = this.hero.animations.add('idle-left', Phaser.Animation.generateFrameNames('idle-left-', 0, 3, '-1.3', 2), 2, true, false);
@@ -134,7 +136,7 @@ export default class Configurator {
         this.hero.animations.play('idle-right');
     }
 
-    addHero() {
+    addHero(game, Phaser) {
         //iterate over available entrances
         this.entrancesGroup.forEach(entrance => {
             if(entrance.name === 'test') {
@@ -187,50 +189,8 @@ export default class Configurator {
             tapped : false
         }
     }
-
-
-    makeMap() {
-        this.map = this.game.add.tilemap(this._LEVELS[this._LEVEL]);
-        
-        this.jsonfile = this.cache.getJSON(this.map.key);
-        this.jsonfile.layers.forEach((layer) => {
-            if(layer.name === "endpoints") {
-                this.map.endpoints = layer.objects;
-            }
-        });
-        
-        //Multi-layer test
-        this.tilesets = this.map.tilesets;
-        //establish foreground & background tilesets
-        for (let i = 0; i < this.tilesets.length; i++) {
-            this.map.addTilesetImage(this.tilesets[i].name);
-        }
-        
-        //render tile layers
-        this.allLayers = this.map.layers;
-        //initialize sorting group and add foregrounds to it
-        this.sortGroup = this.game.add.group();
-        for (let i = 0; i < this.allLayers.length; i++) {
-            if (this.allLayers[i].name.includes('bg')) {
-                this.backgroundLayer = this.map.createLayer(this.allLayers[i].name);
-                this.backgroundLayer.sendToBack();
-            } else if (this.allLayers[i].name.includes('platform-collides')) {
-                this.mapLayer = this.map.createLayer(this.allLayers[i].name);
-                // this.mapLayer.alpha = 0;
-            } else if (this.allLayers[i].name.includes('fg')) {
-                this.foregroundLayer = this.map.createLayer(this.allLayers[i].name);
-                this.sortGroup.add(this.foregroundLayer);
-            }
-        }
-        //set collision with layer
-        this.map.setCollisionBetween(1, 38, true, this.mapLayer);
     
-        //convert tile layer to work with slopes plugin
-        this.game.slopes.convertTilemapLayer(this.mapLayer, 'arcadeslopes');
-        // this.mapLayer.debug = true;
-    }
-    
-    parseObjectGroups() {
+    parseObjectGroups(game, Phaser) {
         //entry points
         this.entryPoints = this.map.objects.entryPortals;
         this.entrancesGroup = this.game.add.group(this.game.world, 'entrancesGroup', false, true, Phaser.Physics.ARCADE);
@@ -322,7 +282,7 @@ export default class Configurator {
         });
     }
 
-    createUI() {
+    createUI(game, Phaser) {
         this.UIgroup = this.game.add.group();
 
         this.restartButton = this.game.add.button(150, 0, 'restart_button', this.onRestartClick, this, null, null, null, null, this.UIgroup);
@@ -332,7 +292,7 @@ export default class Configurator {
         this.formatButtons();
     }
 
-    formatButtons() {
+    formatButtons(game, Phaser) {
         this.UIgroup.forEach((button)=>{
             button.input.useHandCursor = true;
             button.fixedToCamera = true;
@@ -348,11 +308,11 @@ export default class Configurator {
         }, this);
     }
 
-    onRestartClick() {
-        this.game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
+    onRestartClick(game, Phaser) {
+        game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
     }
 
-    onEasyClick() {
+    onEasyClick(game, Phaser) {
         this.graphics.visible = !this.graphics.visible;
     }
 }
