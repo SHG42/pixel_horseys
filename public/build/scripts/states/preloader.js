@@ -4,8 +4,8 @@ export default class Preloader extends Phaser.State {
     }
 
     init(data) {
-        // this._keyboardIsActive = data.keyboardIsActive;
-        // this._pointerIsActive = data.pointerIsActive;
+        this._keyboardIsActive = data.keyboardIsActive;
+        this._pointerIsActive = data.pointerIsActive;
 
         this.readyCount = 0;
     }
@@ -88,7 +88,11 @@ export default class Preloader extends Phaser.State {
         // var data = {level: 0, newGame: true, levels: this.levels, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
         // this.game.state.start('NPC', true, false, data);
         //testing only
-        var data = {level: 2, newGame: true, levels: this.levels, /*keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive*/}
-        this.game.state.start('gameState', true, false, data);
+        var data = {level: 2, newGame: true, levels: this._LEVELS}
+        if(this._pointerIsActive) {
+            this.state.start('gameState_pointer', true, false, data);
+        } else if(this._keyboardIsActive) {
+            this.state.start('gameState_keyboard', true, false, data);
+        }
     }
 }

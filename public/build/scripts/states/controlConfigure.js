@@ -13,9 +13,9 @@ export default class controlConfigure extends Phaser.State {
     }
 
     start() {
-        // var data = {keyboardIsActive: this.keyboardIsActive, pointerIsActive: this.pointerIsActive};
-        // this.state.start('Preloader', true, false, data);
-        this.state.start('Preloader', true, false);
+        var data = {keyboardIsActive: this.keyboardIsActive, pointerIsActive: this.pointerIsActive};
+        this.state.start('Preloader', true, false, data);
+        // this.state.start('Preloader', true, false);
     }
 
     controlConfigure() {
@@ -90,20 +90,20 @@ export default class controlConfigure extends Phaser.State {
     }
 
     activateKeyboard() {
-        // this.keyboardIsActive = true;
-        // this.pointerIsActive = false;
-        // this.game.input.keyboard.enabled = true;
-        // this.game.input.mouse.enabled = false;
-        // this.game.input.touch.enabled = false;
+        this.keyboardIsActive = true;
+        this.pointerIsActive = false;
+        this.game.input.keyboard.enabled = true;
+        this.game.input.mouse.enabled = false;
+        this.game.input.touch.enabled = false;
         this.start();
     }
 
     activatePointer() {
-        // this.keyboardIsActive = false;
-        // this.pointerIsActive = true;
-        // this.game.input.keyboard.enabled = false;
-        // this.game.input.mouse.enabled = true;
-        // this.game.input.touch.enabled = true;
+        this.keyboardIsActive = false;
+        this.pointerIsActive = true;
+        this.game.input.keyboard.enabled = false;
+        this.game.input.mouse.enabled = true;
+        this.game.input.touch.enabled = true;
         this.start();
     }
 }

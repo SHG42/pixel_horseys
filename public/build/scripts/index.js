@@ -2,7 +2,8 @@ import Boot from '/build/scripts/states/boot.js';
 import Preloader from '/build/scripts/states/preloader.js';
 import controlConfigure from '/build/scripts/states/controlConfigure.js';
 import NPC from '/build/scripts/states/npc.js';
-import gameState from '/build/scripts/states/gameState.js';
+import gameState_pointer from '/build/scripts/states/gameState_pointer.js';
+import gameState_keyboard from '/build/scripts/states/gameState_keyboard.js';
 
 var gamedoor = document.getElementById('gamedoor');
 var magicdoor = document.getElementById('magicdoor');
@@ -25,7 +26,9 @@ magicdoor.addEventListener("pointerdown", ()=>{
 	game.state.add('Preloader', Preloader);
 	game.state.add('controlConfigure', controlConfigure);
 	game.state.add('NPC', NPC);
-	game.state.add('gameState', gameState);
+	game.state.add('gameState_pointer', gameState_pointer);
+	game.state.add('gameState_pointer', gameState_pointer);
+	game.state.add('gameState_keyboard', gameState_keyboard);
 
 	//	Now start the Boot state.
 	game.state.start('Boot');

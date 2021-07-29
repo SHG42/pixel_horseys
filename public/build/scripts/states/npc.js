@@ -148,8 +148,12 @@ export default class NPC extends Phaser.State {
     }
 
     startGame() {
-        var data = {level: 1, newGame: true, levels: this._LEVELS, keyboardIsActive: this._keyboardIsActive, pointerIsActive: this._pointerIsActive}
-        this.state.start('gameState', true, false, data);
+        var data = {level: 1, newGame: true, levels: this._LEVELS}
+        if(this._pointerIsActive) {
+            this.state.start('gameState_pointer', true, false, data);
+        } else if(this._keyboardIsActive) {
+            this.state.start('gameState_keyboard', true, false, data);
+        }
     }
 }
 
