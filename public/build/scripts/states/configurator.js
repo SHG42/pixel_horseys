@@ -41,8 +41,8 @@ export default class Configurator {
         this.createUI = new createUI(game, Phaser, this.mapObjects);
 
         //start follow
-        game.camera.follow(this.hero, Phaser.Camera.FOLLOW_PLATFORMER);
-        game.camera.focusOn(this.hero);
+        game.camera.follow(this.hero.hero, Phaser.Camera.FOLLOW_PLATFORMER);
+        game.camera.focusOn(this.hero.hero);
         //reset camera fade once complete
         game.camera.onFadeComplete.add(this.resetFade, this);
     }

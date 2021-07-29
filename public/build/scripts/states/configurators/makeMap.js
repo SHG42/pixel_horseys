@@ -9,6 +9,7 @@ export default class makeMap {
         this.jsonfile.layers.forEach((layer) => {
             if (layer.name === "endpoints") {
                 this.map.endpoints = layer.objects;
+                return this.map.endpoints;
             }
         });
 

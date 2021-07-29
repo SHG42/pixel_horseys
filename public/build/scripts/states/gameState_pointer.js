@@ -18,7 +18,14 @@ export default class gameState_pointer extends Phaser.State {
     }
     
     create() {
-        new Configurator(this.game, Phaser);
+        this.Configurator = new Configurator(this.game, Phaser);
+        console.log(this.Configurator);
+
+        this.hero = this.Configurator.hero.hero;
+        this.map = this.Configurator.map;
+        this.mapObjects = this.Configurator.mapObjects;
+
+        this.addControls();
     }
 
     update() {
@@ -29,19 +36,19 @@ export default class gameState_pointer extends Phaser.State {
         }
 
         //platform collider
-        this.game.physics.arcade.collide(this.hero, this.mapLayer);
+        this.game.physics.arcade.collide(this.hero, this.map.mapLayer);
     
         // run endgame function
-        this.game.physics.arcade.overlap(this.hero, this.goal, this.onGoal, null, this);
+        this.game.physics.arcade.overlap(this.hero, this.mapObjects.goal, this.onGoal, null, this);
     
         // run ledge finding function
-        this.game.physics.arcade.overlap(this.hero, this.ledgesGroup, this.ledgeHit, null, this);
+        this.game.physics.arcade.overlap(this.hero, this.mapObjects.ledgesGroup, this.ledgeHit, null, this);
     
         //run portal function
-        this.game.physics.arcade.overlap(this.hero, this.exitsGroup, this.exitStage, null, this);
+        this.game.physics.arcade.overlap(this.hero, this.mapObjects.exitsGroup, this.exitStage, null, this);
     
         //run loot get function
-        this.game.physics.arcade.overlap(this.hero, this.objectsGroup, this.getLoot, null, this);
+        this.game.physics.arcade.overlap(this.hero, this.mapObjects.objectsGroup, this.getLoot, null, this);
 
         this.heroConditions();
 
@@ -217,9 +224,10 @@ export default class gameState_pointer extends Phaser.State {
     }
 
     getEndpoint(ledge) {
-        this.endsGroup.forEach((end)=>{
+        this.mapObjects.endsGroup.forEach((end)=>{
             if(end.id === ledge.end) {
                 this.end = end;
+                return this.end;
             }
         });
     }
@@ -312,17 +320,13 @@ export default class gameState_pointer extends Phaser.State {
         this.game.debug.body(this.hero);
         // // this.game.debug.bodyInfo(this.hero, 32, 32);
         // this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
-        // this.ledgesGroup.forEach((ledge)=>{
+        // this.mapObjects.ledgesGroup.forEach((ledge)=>{
         //     this.game.debug.body(ledge);
         //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
         // })
-        // this.endsGroup.forEach((end)=>{
-        //     this.game.debug.body(end);
-        //     this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
-        // })
-        // this.UIgroup.forEach((button)=>{
-        //     this.game.debug.body(button);
-        //     this.game.debug.spriteBounds(button, 'rgba(255,0,0,1)', false);
-        // })
+        this.mapObjects.endsGroup.forEach((end)=>{
+            this.game.debug.body(end);
+            this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
+        })
     }
 }

@@ -69,7 +69,7 @@ export default class parseObjectGroups {
 
         //endpoints
         this.endsGroup = game.add.group(game.world, 'endsGroup', false, true, Phaser.Physics.ARCADE);
-        map.map.objects.endpoints.forEach((end) => {
+        map.map.endpoints.forEach((end) => {
             this.endPt = this.endsGroup.create(end.x, end.y, 'portal-v');
             this.endPt.id = end.id;
             this.endPt.anchor.x = 1;

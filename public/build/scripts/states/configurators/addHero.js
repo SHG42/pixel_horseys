@@ -3,21 +3,21 @@ export default class addHero {
         //iterate over available entrances
         mapObjects.entrancesGroup.forEach(entrance => {
             if (entrance.name === 'test') {
-                this.hero = game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
             }
 
             if (this._NEWGAME && this._LEVEL === 1) {
                 //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
                 if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
-                    this.hero = game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                    this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
             } else if (!this._NEWGAME && this._LEVEL === 1) {
                 if (entrance.name === 'portalfromcave') {
                     //if returning from cave, load sprite at return pt
-                    this.hero = game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                    this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
             } else { //otherwise, use whatever coordinates come back when function runs
-                this.hero = game.add.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+                this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
             }
         });
 
@@ -83,20 +83,24 @@ export default class addHero {
         //up from roll
         this.slideLeft = this.hero.animations.add('slide-left', Phaser.Animation.generateFrameNames('slide-left-', 0, 4, '-1.3', 2), 10, false, false);
         this.slideRight = this.hero.animations.add('slide-right', Phaser.Animation.generateFrameNames('slide-right-', 0, 4, '-1.3', 2), 10, false, false);
+        
+        //play 'idle-right' by default
+        this.hero.animations.play('idle-right');
 
-        //animations settings
         ////LEFT-HAND ROLL
         this.rollLeft.onStart.add(()=>{
-            this.unfreeze0();
+            this.end = game.state.callbackContext.end;
+            console.log(this.end)
+            game.state.callbackContext.unfreeze0();
             this.hero.body.gravity.x = -500;
         }, this);
 
         this.rollLeft.onLoop.add(()=>{
-            this.game.physics.arcade.moveToObject(this.hero, this.end);
+            game.physics.arcade.moveToObject(this.hero, this.end);
             if(this.hero.body.gravity.x < 0) {
                 this.hero.body.gravity.x = this.hero.body.gravity.x+10;
             };
-            if(this.game.physics.arcade.collide(this.hero, this.end)) {
+            if(game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
             } else if(this.hero.body.blocked.left || this.hero.body.touching.left || this.hero.body.position.x <= this.end.body.position.x) {
                 this.rollLeft.stop(false, true);
@@ -105,15 +109,17 @@ export default class addHero {
 
         this.rollLeft.onComplete.add(()=> { this.hero.animations.play('slide-left'); }, this);
 
-        this.slideLeft.onComplete.add(()=>{ this.hero.body.speed = 0; this.unfreeze(); if(this.hero.body.gravity.x < 0) { this.hero.body.gravity.x =  0 }; }, this);
+        this.slideLeft.onComplete.add(()=>{ this.hero.body.speed = 0; game.state.callbackContext.unfreeze(); if(this.hero.body.gravity.x < 0) { this.hero.body.gravity.x =  0 }; }, this);
 
         this.climbLeft.onStart.add(()=>{ 
-            this.tweenUp.start();
+            game.state.callbackContext.tweenUp.start();
         }, this);
 
         ////RIGHT-HAND ROLL
         this.rollRight.onStart.add(()=>{
-            this.unfreeze0();
+            this.end = game.state.callbackContext.end;
+            console.log(this.end)
+            game.state.callbackContext.unfreeze0();
             this.hero.body.gravity.x = 500;
         }, this);
         
@@ -122,7 +128,7 @@ export default class addHero {
             if(this.hero.body.gravity.x > 0) { 
                 this.hero.body.gravity.x = this.hero.body.gravity.x-10;
             };
-            if(this.game.physics.arcade.collide(this.hero, this.end)) {
+            if(game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollRight.stop(false, true);
             } else if(this.hero.body.blocked.right || this.hero.body.touching.right || this.hero.body.position.x >= this.end.body.position.x) {
                 this.rollRight.stop(false, true);
@@ -131,13 +137,10 @@ export default class addHero {
         
         this.rollRight.onComplete.add(()=> { this.hero.animations.play('slide-right'); }, this);
         
-        this.slideRight.onComplete.add(()=>{ this.hero.body.speed = 0; this.unfreeze(); if(this.hero.body.gravity.x > 0) { this.hero.body.gravity.x = 0 }; }, this);
+        this.slideRight.onComplete.add(()=>{ this.hero.body.speed = 0; game.state.callbackContext.unfreeze(); if(this.hero.body.gravity.x > 0) { this.hero.body.gravity.x = 0 }; }, this);
         
         this.climbRight.onStart.add(()=>{
-            this.tweenUp.start();
+            game.state.callbackContext.tweenUp.start();
         }, this);
-        
-        //play 'idle-right' by default
-        this.hero.animations.play('idle-right');
     }
 }
