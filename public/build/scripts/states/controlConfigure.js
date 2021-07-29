@@ -24,13 +24,13 @@ export default class controlConfigure extends Phaser.State {
         this.height = this.camera.view.height;
         
         this.bar = this.game.add.graphics();
-        this.bar.lineStyle(3, 0xff0000).beginFill(0xffffff, 0.3).drawRect(0, 20, this.width-50, 100).endFill();
+        this.bar.lineStyle(3, 0xffffff, 0).beginFill(0xffffff, 0.3).drawRect(0, 20, this.width-50, 100).endFill();
         var text = this.game.add.text(0, 0, "Please Select a Control Scheme:", { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle", wordWrap: true, wordWrapWidth: this.width-100 });
         text.setShadow(3, 3, 'rgba(255,255,255,0.5)', 2);
         text.setTextBounds(0, 20, this.width, 100);
 
         this.UIBox = this.game.add.graphics();
-        this.UIBox.lineStyle(3, 0x00ff00).beginFill(0xffffff, 0.5).drawRect(0, this.bar.bottom+20, this.width-50, this.height-this.bar.height-100);
+        this.UIBox.lineStyle(3, 0xffffff, 0).beginFill(0xffffff, 0.5).drawRect(0, this.bar.bottom+20, this.width-50, this.height-this.bar.height-100);
 
         this.UIgroup = this.game.add.group(this.UIBox);
         this.UIgroup.alignIn(this.UIBox, Phaser.LEFT_CENTER);
