@@ -87,6 +87,10 @@ export default class addHero {
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
 
+        //jump 
+        this.jumpLeft.onComplete.add(()=>{ this.hero.custom.isJumping = true; this.hero.animations.play('idle-left'); });
+        this.jumpRight.onComplete.add(()=>{ this.hero.custom.isJumping = true; this.hero.animations.play('idle-right'); });
+
         ////LEFT-HAND ROLL
         this.rollLeft.onStart.add(()=>{
             this.end = game.state.callbackContext.end;
