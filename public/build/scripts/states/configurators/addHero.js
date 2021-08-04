@@ -2,9 +2,9 @@ export default class addHero {
     constructor(game, Phaser, map, mapObjects) {
         //iterate over available entrances
         mapObjects.entrancesGroup.forEach(entrance => {
-            if (entrance.name === 'test') {
-                this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            }
+            // if (entrance.name === 'test') {
+            //     this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            // }
 
             if (this._NEWGAME && this._LEVEL === 1) {
                 //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
@@ -83,27 +83,33 @@ export default class addHero {
         //up from roll
         this.slideLeft = this.hero.animations.add('slide-left', Phaser.Animation.generateFrameNames('slide-left-', 0, 4, '-1.3', 2), 10, false, false);
         this.slideRight = this.hero.animations.add('slide-right', Phaser.Animation.generateFrameNames('slide-right-', 0, 4, '-1.3', 2), 10, false, false);
-        
+
+        //drop vertically
+        this.fallLeft = this.hero.animations.add('fall-left', Phaser.Animation.generateFrameNames('fall-left-', 0, 1, '-1.3', 2), 10, false, false);
+        this.fallRight = this.hero.animations.add('fall-right', Phaser.Animation.generateFrameNames('fall-right-', 0, 1, '-1.3', 2), 10, false, false);
+                
         //play 'idle-right' by default
         this.hero.animations.play('idle-right');
 
         //jump 
-        this.jumpLeft.onComplete.add(()=>{ this.hero.custom.isJumping = true; this.hero.animations.play('idle-left'); });
-        this.jumpRight.onComplete.add(()=>{ this.hero.custom.isJumping = true; this.hero.animations.play('idle-right'); });
+        this.jumpLeft.onComplete.add(()=>{ this.hero.custom.isJumping = false; this.hero.animations.play('idle-left'); });
+        this.jumpRight.onComplete.add(()=>{ this.hero.custom.isJumping = false; this.hero.animations.play('idle-right'); });
 
         ////LEFT-HAND ROLL
         this.rollLeft.onStart.add(()=>{
             this.end = game.state.callbackContext.end;
-            console.log(this.end)
+            this.gravity = game.state.callbackContext.gravity;
+            this.increment = game.state.callbackContext.increment;
             game.state.callbackContext.unfreeze0();
-            this.hero.body.gravity.x = -500;
+            this.hero.body.gravity.x = -this.gravity;
         }, this);
 
         this.rollLeft.onLoop.add(()=>{
             game.physics.arcade.moveToObject(this.hero, this.end);
             if(this.hero.body.gravity.x < 0) {
-                this.hero.body.gravity.x = this.hero.body.gravity.x+10;
+                this.hero.body.gravity.x = this.hero.body.gravity.x+this.increment;
             };
+            console.log("loop");
             if(game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
             } else if(this.hero.body.blocked.left || this.hero.body.touching.left || this.hero.body.position.x <= this.end.body.position.x) {
@@ -122,15 +128,16 @@ export default class addHero {
         ////RIGHT-HAND ROLL
         this.rollRight.onStart.add(()=>{
             this.end = game.state.callbackContext.end;
-            console.log(this.end)
+            this.gravity = game.state.callbackContext.gravity;
+            this.increment = game.state.callbackContext.increment;
             game.state.callbackContext.unfreeze0();
-            this.hero.body.gravity.x = 500;
+            this.hero.body.gravity.x = this.gravity;
         }, this);
         
         this.rollRight.onLoop.add(()=>{
-            this.game.physics.arcade.moveToObject(this.hero, this.end);
+            game.physics.arcade.moveToObject(this.hero, this.end);
             if(this.hero.body.gravity.x > 0) { 
-                this.hero.body.gravity.x = this.hero.body.gravity.x-10;
+                this.hero.body.gravity.x = this.hero.body.gravity.x-this.increment;
             };
             if(game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollRight.stop(false, true);

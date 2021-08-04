@@ -30,7 +30,7 @@ export default class gameState_pointer extends Phaser.State {
 
     update() {
         //fade out and restart level if sprite falls outside world bounds y
-        if (this.hero.body.position.y > this.map.heightInPixels) {
+        if (this.hero.body.position.y > this.map.map.heightInPixels) {
             this.game.camera.fade(0x000000, 2000);
             this.game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
         }
@@ -266,6 +266,8 @@ export default class gameState_pointer extends Phaser.State {
         this.hero.body.moves = false; //physics system does not move body, but can be moved manually 
         this.hero.body.enable = false; //won't be checked for any form of collision or overlap or have its pre/post updates run.
         this.hero.body.allowGravity = false; //body's local gravity disabled
+        this.gravity = 500;
+        this.increment = 10;
     }
 
     unfreeze0() {

@@ -81,10 +81,8 @@ export default class parseObjectGroups {
         this.mapObjects = map.map.objects.objects;
         this.objectsGroup = game.add.group(game.world, 'objectsGroup', false, true, Phaser.Physics.ARCADE);
         this.mapObjects.forEach(objectPt => {
-            if (objectPt.type === 'loot') {
-                map.map.createFromObjects('objects', objectPt.gid, 'objects', objectPt.name, true, false, this.objectsGroup);
-                this.objectsGroup.setAll('body.allowGravity', false);
-            }
+            map.map.createFromObjects('objects', objectPt.name, 'objects', objectPt.name, true, false, this.objectsGroup);
+            this.objectsGroup.setAll('body.allowGravity', false);
         });
     }
 }

@@ -30,7 +30,7 @@ export default class gameState_keyboard extends Phaser.State {
 
     update() {
         //fade out and restart level if sprite falls outside world bounds y
-        if (this.hero.body.position.y > this.map.heightInPixels) {
+        if (this.hero.body.position.y > this.map.map.heightInPixels) {
             this.game.camera.fade(0x000000, 2000);
             this.game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
         }
@@ -50,12 +50,11 @@ export default class gameState_keyboard extends Phaser.State {
         //run loot get function
         this.game.physics.arcade.overlap(this.hero, this.mapObjects.objectsGroup, this.getLoot, null, this);
 
-        this.heroConditions();
-
         this.keyboardConditions();
     }
 
     addControls() {
+        this.hero.input.enabled = false;
         //establish keyboard
         //initiate cursor keys
         this.controls = this.game.input.keyboard.createCursorKeys();
@@ -72,17 +71,13 @@ export default class gameState_keyboard extends Phaser.State {
 
         this.controls.left.onDown.add(()=> { this.hero.custom.whichDirection = 'left' }, this);
         this.controls.right.onDown.add(()=> { this.hero.custom.whichDirection = 'right' }, this);
-
-        this.climbKey.onDown.add(()=> {
-            if (this.hero.custom.whichDirection == 'left' && this.hero.custom.isGrabbing) {
-                this.climbingLeft();
-            } else if (this.hero.custom.whichDirection == 'right' && this.hero.custom.isGrabbing) {
-                this.climbingRight();
-            }
-        })
     }
 
     keyboardConditions() {
+        this.hero.isOnGround = (this.hero.body.touching.down || this.hero.body.onFloor());
+		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.custom.isGrabbing && !this.hero.custom.isClimbing);
+
+        this.hero.body.velocity.x = 0;
         //Running anims
         if(this.controls.up.isUp && this.hero.isOnGround) {
             if (this.controls.left.isDown && this.controls.right.isUp) {
@@ -101,64 +96,37 @@ export default class gameState_keyboard extends Phaser.State {
         //Jumping
         if (this.controls.up.justDown && this.hero.isOnGround) {
             this.hero.custom.isJumping = true;
-            this.hero.body.velocity.y = -325;
-            if(this.hero.body.velocity.y < -325) {
-                this.hero.body.velocity.y = -325;
+            this.hero.body.velocity.y = -390;
+            if(this.hero.body.velocity.y < -390) {
+                this.hero.body.velocity.y = -390;
             }
         }
 
         if(this.controls.left.isUp && this.controls.right.isUp) {
-            if (this.hero.isAirborne && this.hero.custom.whichDirection == "left") {
+            if (this.hero.custom.isJumping && this.hero.custom.whichDirection == "left") {
                 this.hero.body.velocity.x = 0;
                 this.hero.animations.play('jump-left');
-            } else if (this.hero.isAirborne && this.hero.custom.whichDirection == "right") {
+            } else if (this.hero.custom.isJumping && this.hero.custom.whichDirection == "right") {
                 this.hero.body.velocity.x = 0;
                 this.hero.animations.play('jump-right');
             }
         }
 
-        if(this.hero.custom.whichDirection == "left" && this.hero.isAirborne && this.controls.left.isDown && this.controls.right.isUp) {
+        if(this.hero.custom.whichDirection == "left" && this.hero.custom.isJumping && this.controls.left.isDown && this.controls.right.isUp) {
             this.hero.body.velocity.x = -180;
             this.hero.animations.play('jump-left');
-        } else if(this.hero.custom.whichDirection == "right" && this.hero.isAirborne && this.controls.right.isDown && this.controls.left.isUp) {
+        } else if(this.hero.custom.whichDirection == "right" && this.hero.custom.isJumping && this.controls.right.isDown && this.controls.left.isUp) {
             this.hero.body.velocity.x = 180;
             this.hero.animations.play('jump-right');
         }
 
-        //ledge release
-        if(this.controls.down.isDown && (this.hero.body.immovable || !this.hero.body.moves || this.hero.custom.isGrabbing)) {
-            this.hero.body.immovable = false;
-            this.hero.body.moves = true;
-            this.hero.custom.isGrabbing = false;
-            this.hero.body.enable = true;
-            this.controls.left.enabled = true;
-            this.controls.right.enabled = true;
-        }
-    }
-
-    heroConditions() {
-        this.hero.isOnGround = (this.hero.body.blocked.down || this.hero.body.touching.down || this.hero.body.onFloor());
-        this.hero.isBlocked = (this.hero.body.blocked.left || this.hero.body.blocked.right || this.hero.body.touching.left || this.hero.body.touching.right || this.hero.body.onWall());
-		this.hero.isAirborne = (!this.hero.isOnGround && !this.hero.custom.isGrabbing && !this.hero.custom.isClimbing);
-
-        if(this.hero.custom.isGrabbing) {
+        if(this.climbKey.justDown && this.hero.custom.isGrabbing) {
             this.hero.custom.isClimbing = true;
             if(this.hero.custom.whichDirection === "left" && this.hero.custom.grabLeft) {
                 this.climbingLeft();
             } else if(this.hero.custom.whichDirection === "right" && this.hero.custom.grabRight) {
                 this.climbingRight();
             }
-        }
-
-        if(this.hero.isOnGround && this.hero.custom.isJumping) {
-            this.hero.custom.isJumping = false;
-        }
-
-        if(this.hero.isAirborne && (this.hero.animations.currentAnim.name.includes("idle") || this.hero.animations.currentAnim.name.includes("run"))) {
-            this.hero.animations.currentAnim.stop(false, true);
-        }
-        if(this.hero.isOnGround && this.hero.animations.currentAnim.name.includes("jump")) {
-            this.hero.animations.currentAnim.stop(false, true);
         }
     }
 
@@ -207,8 +175,8 @@ export default class gameState_keyboard extends Phaser.State {
 
     addTweenUp() {
         this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut');
-        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; this.hero.input.enabled = false; }, this);
-        this.tweenUp.onComplete.add(()=>{ 
+        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; this.game.input.keyboard.enabled = false; }, this);
+        this.tweenUp.onComplete.add(()=>{
             if(this.hero.custom.whichDirection === "left") {
                 this.hero.animations.play('roll-left');
             } else if(this.hero.custom.whichDirection === "right") {
@@ -220,13 +188,13 @@ export default class gameState_keyboard extends Phaser.State {
     freeze() {
         this.hero.custom.isGrabbing = true;
         this.hero.custom.isJumping = false;
-        this.hero.custom.tapped = false;
-        this.hero.input.enabled = true;
         this.hero.body.stop(); //set speed/accel/velo to 0
         this.hero.body.immovable = true; //no impact from other bodies
         this.hero.body.moves = false; //physics system does not move body, but can be moved manually 
         this.hero.body.enable = false; //won't be checked for any form of collision or overlap or have its pre/post updates run.
         this.hero.body.allowGravity = false; //body's local gravity disabled
+        this.gravity = 8742;
+        this.increment = 500;
     }
 
     unfreeze0() {
@@ -237,11 +205,10 @@ export default class gameState_keyboard extends Phaser.State {
     }
 
     unfreeze() {
+        this.game.input.keyboard.enabled = true;
         this.hero.body.reset();
-        this.hero.custom.tapped = false;
         this.hero.custom.isGrabbing = false;
         this.hero.custom.isClimbing = false;
-        this.hero.input.enabled = true;
         this.hero.body.velocity.x = 0;
         if(this.hero.custom.whichDirection === "left") {
             this.hero.animations.play('idle-left');
@@ -289,7 +256,7 @@ export default class gameState_keyboard extends Phaser.State {
         //     this.game.debug.body(ledge);
         //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
         // })
-        // this.endsGroup.forEach((end)=>{
+        // this.mapObjects.endsGroup.forEach((end)=>{
         //     this.game.debug.body(end);
         //     this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
         // })

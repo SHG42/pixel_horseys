@@ -30,7 +30,7 @@ export default class makeMap {
                 this.backgroundLayer.sendToBack();
             } else if (this.allLayers[i].name.includes('platform-collides')) {
                 this.mapLayer = this.map.createLayer(this.allLayers[i].name);
-                // this.mapLayer.alpha = 0;
+                this.mapLayer.alpha = 0;
             } else if (this.allLayers[i].name.includes('fg')) {
                 this.foregroundLayer = this.map.createLayer(this.allLayers[i].name);
                 this.sortGroup.add(this.foregroundLayer);

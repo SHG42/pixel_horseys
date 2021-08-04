@@ -118,18 +118,6 @@
                  "width":47,
                  "x":3,
                  "y":25
-                }, 
-                {
-                 "height":0,
-                 "id":81,
-                 "name":"test",
-                 "point":true,
-                 "rotation":0,
-                 "type":"entryportal",
-                 "visible":true,
-                 "width":0,
-                 "x":689,
-                 "y":662
                 }],
          "opacity":1,
          "type":"objectgroup",

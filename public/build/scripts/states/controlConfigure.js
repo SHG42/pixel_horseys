@@ -92,18 +92,12 @@ export default class controlConfigure extends Phaser.State {
     activateKeyboard() {
         this.keyboardIsActive = true;
         this.pointerIsActive = false;
-        this.game.input.keyboard.enabled = true;
-        this.game.input.mouse.enabled = false;
-        this.game.input.touch.enabled = false;
         this.start();
     }
 
     activatePointer() {
         this.keyboardIsActive = false;
         this.pointerIsActive = true;
-        this.game.input.keyboard.enabled = false;
-        this.game.input.mouse.enabled = true;
-        this.game.input.touch.enabled = true;
         this.start();
     }
 }

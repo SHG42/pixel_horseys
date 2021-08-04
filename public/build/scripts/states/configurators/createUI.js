@@ -3,6 +3,9 @@ export default class createUI {
         this._LEVEL = game.state.callbackContext._LEVEL;
         this._LEVELS = game.state.callbackContext._LEVELS;
 
+        this.game = game;
+        this.mapObjects = mapObjects;
+
         this.UIgroup = game.add.group();
 
         this.restartButton = game.add.button(150, 0, 'restart_button', this.onRestartClick, this, null, null, null, null, this.UIgroup);
@@ -28,11 +31,11 @@ export default class createUI {
         }, this);
     }
     
-    onRestartClick(game, Phaser) {
-        game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
+    onRestartClick() {
+        this.game.state.restart(true, false, { level: this._LEVEL, levels: this._LEVELS, newGame: false });
     }
     
-    onEasyClick(game, Phaser) {
-        mapObjects.graphics.visible = !mapObjects.graphics.visible;
+    onEasyClick() {
+        this.mapObjects.graphics.visible = !this.mapObjects.graphics.visible;
     }
 }
