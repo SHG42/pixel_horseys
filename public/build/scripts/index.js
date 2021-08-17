@@ -16,7 +16,7 @@ magicdoor.addEventListener("pointerdown", ()=>{
 		transparent: false,
 		antialias: false,
 		crisp: true,
-		enableDebug: true,
+		enableDebug: false,
 		maxPointers: 2,
 		clearBeforeRender: false
 	}

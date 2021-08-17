@@ -1,14 +1,18 @@
 export default class addHero {
     constructor(game, Phaser, map, mapObjects) {
+        this._LEVEL = game.state.callbackContext._LEVEL;
+        this._LEVELS = game.state.callbackContext._LEVELS;
+        this._NEWGAME = game.state.callbackContext._NEWGAME;
+
         //iterate over available entrances
         mapObjects.entrancesGroup.forEach(entrance => {
-            // if (entrance.name === 'test') {
-            //     this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            // }
+            if (entrance.name === 'test') {
+                this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            }
 
             if (this._NEWGAME && this._LEVEL === 1) {
                 //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
-                if (entrance.name === 'stage1entry') { //change back to stage1entry after testing
+                if (entrance.name === 'stage1entry') {
                     this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
             } else if (!this._NEWGAME && this._LEVEL === 1) {
@@ -16,9 +20,10 @@ export default class addHero {
                     //if returning from cave, load sprite at return pt
                     this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
-            } else { //otherwise, use whatever coordinates come back when function runs
-                this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            }
+            } 
+            // else { //otherwise, use whatever coordinates come back when function runs
+            //     this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            // }
         });
 
         //add hero to sorting group
@@ -109,7 +114,6 @@ export default class addHero {
             if(this.hero.body.gravity.x < 0) {
                 this.hero.body.gravity.x = this.hero.body.gravity.x+this.increment;
             };
-            console.log("loop");
             if(game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
             } else if(this.hero.body.blocked.left || this.hero.body.touching.left || this.hero.body.position.x <= this.end.body.position.x) {

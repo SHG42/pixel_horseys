@@ -19,7 +19,6 @@ export default class gameState_pointer extends Phaser.State {
     
     create() {
         this.Configurator = new Configurator(this.game, Phaser);
-        console.log(this.Configurator);
 
         this.hero = this.Configurator.hero.hero;
         this.map = this.Configurator.map;
@@ -64,12 +63,10 @@ export default class gameState_pointer extends Phaser.State {
         if(this.game.device.touch) {
             this.pointer = this.game.input.pointer1;
             this.pointer2 = this.game.input.pointer2;
-            console.log("touch active");
         } else {
             this.pointer = this.game.input.mousePointer;
             this.pointer2 = this.game.input.mousePointer.rightButton;
             this.game.input.mouse.capture = true;
-            console.log("mouse active");
         }
     }
 
@@ -157,7 +154,7 @@ export default class gameState_pointer extends Phaser.State {
     }
 
     pointerLeap() {
-        if(!this.hero.custom.tapped) {
+        if(!this.hero.custom.tapped && !this.hero.custom.isGrabbing) {
             this.hero.custom.isJumping = true;
             this.hero.body.velocity.y = -100;
             if(this.hero.custom.whichDirection === 'left') {
@@ -165,16 +162,17 @@ export default class gameState_pointer extends Phaser.State {
             } else if(this.hero.custom.whichDirection === 'right') {
                 this.hero.animations.play('jump-right');
             }
+            this.unblock();
         }
-        this.unblock();
     }
 
     unblock() {
         if(this.hero.body.newVelocity.x === 0) {
+            this.hero.body.velocity.y-=50;
             if(this.hero.custom.whichDirection === 'left') {
-                this.hero.body.position.x-=5;
+                this.hero.body.velocity.x-=50;
             } else if(this.hero.custom.whichDirection === 'right') {
-                this.hero.body.position.x+=5;
+                this.hero.body.velocity.x+=50;
             }
         }
     }
@@ -202,7 +200,8 @@ export default class gameState_pointer extends Phaser.State {
     }
 
     ledgeHit(hero, ledge) {
-        if(hero.custom.tapped && hero.body.velocity.y < 0) {
+        if(!hero.custom.isGrabbing && hero.body.velocity.y < 0) {
+            this.hero.animations.currentAnim.stop(false, true);
             this.goUpBy = ledge.body.y - 13;
             this.getEndpoint(ledge);
 
@@ -266,7 +265,7 @@ export default class gameState_pointer extends Phaser.State {
         this.hero.body.moves = false; //physics system does not move body, but can be moved manually 
         this.hero.body.enable = false; //won't be checked for any form of collision or overlap or have its pre/post updates run.
         this.hero.body.allowGravity = false; //body's local gravity disabled
-        this.gravity = 500;
+        this.gravity = 666;
         this.increment = 10;
     }
 
