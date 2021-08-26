@@ -133,10 +133,13 @@ export default class gameState_pointer extends Phaser.State {
         if(this.hero.isOnGround && this.hero.animations.currentAnim.name.includes("jump")) {
             this.hero.animations.currentAnim.stop(false, true);
         }
+        if(this.hero.custom.isGrabbing && (this.hero.animations.currentAnim.name.includes("idle") || this.hero.animations.currentAnim.name.includes("run") || this.hero.animations.currentAnim.name.includes("jump"))) {
+            this.hero.animations.currentAnim.stop(false, true);
+        }
     }
 
     pointerInput() {
-        if(!this.hero.custom.tapped && this.hero.isOnGround) {
+        if(!this.hero.custom.tapped && !this.hero.custom.isGrabbing && !this.hero.custom.isClimbing && this.hero.isOnGround) {
             if(!this.angleAbove && !this.angleBelow && this.pointerDistanceIsCorrect) {
                 if(this.pointerLeft && !this.pointerRight) {
                     this.hero.custom.whichDirection = 'left';
@@ -154,7 +157,7 @@ export default class gameState_pointer extends Phaser.State {
     }
 
     pointerLeap() {
-        if(!this.hero.custom.tapped && !this.hero.custom.isGrabbing) {
+        if(!this.hero.custom.tapped && !this.hero.custom.isGrabbing && !this.hero.custom.isClimbing) {
             this.hero.custom.isJumping = true;
             this.hero.body.velocity.y = -100;
             if(this.hero.custom.whichDirection === 'left') {
@@ -201,6 +204,7 @@ export default class gameState_pointer extends Phaser.State {
 
     ledgeHit(hero, ledge) {
         if(!hero.custom.isGrabbing && hero.body.velocity.y < 0) {
+            this.hero.custom.isGrabbing = true;
             this.hero.animations.currentAnim.stop(false, true);
             this.goUpBy = ledge.body.y - 13;
             this.getEndpoint(ledge);
@@ -245,8 +249,8 @@ export default class gameState_pointer extends Phaser.State {
 
     addTweenUp() {
         this.tweenUp = this.game.add.tween(this.hero).to({ y: this.goUpBy }, 1000, 'Circ.easeOut');
-        this.tweenUp.onStart.add(()=>{ this.hero.anchor.y = 0.5; this.hero.input.enabled = false; }, this);
-        this.tweenUp.onComplete.add(()=>{ 
+        this.tweenUp.onStart.add(()=>{ this.hero.input.enabled = false; }, this);
+        this.tweenUp.onComplete.add(()=>{
             if(this.hero.custom.whichDirection === "left") {
                 this.hero.animations.play('roll-left');
             } else if(this.hero.custom.whichDirection === "right") {
@@ -256,7 +260,6 @@ export default class gameState_pointer extends Phaser.State {
     }
 
     freeze() {
-        this.hero.custom.isGrabbing = true;
         this.hero.custom.isJumping = false;
         this.hero.custom.tapped = false;
         this.hero.input.enabled = true;
@@ -265,24 +268,23 @@ export default class gameState_pointer extends Phaser.State {
         this.hero.body.moves = false; //physics system does not move body, but can be moved manually 
         this.hero.body.enable = false; //won't be checked for any form of collision or overlap or have its pre/post updates run.
         this.hero.body.allowGravity = false; //body's local gravity disabled
-        this.gravity = 666;
-        this.increment = 10;
+        this.gravity = 815;
     }
 
     unfreeze0() {
         this.hero.body.immovable = false;
         this.hero.body.enable = true;
-        this.hero.body.moves = true;  
+        this.hero.body.moves = true;
         this.hero.body.allowGravity = true;
     }
 
     unfreeze() {
         this.hero.body.reset();
+        this.hero.body.stop();
         this.hero.custom.tapped = false;
         this.hero.custom.isGrabbing = false;
         this.hero.custom.isClimbing = false;
         this.hero.input.enabled = true;
-        this.hero.body.velocity.x = 0;
         if(this.hero.custom.whichDirection === "left") {
             this.hero.animations.play('idle-left');
         } else if(this.hero.custom.whichDirection === "right") {

@@ -6,10 +6,6 @@ export default class addHero {
 
         //iterate over available entrances
         mapObjects.entrancesGroup.forEach(entrance => {
-            if (entrance.name === 'test') {
-                this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            }
-
             if (this._NEWGAME && this._LEVEL === 1) {
                 //if newGame = true and loaded level is lvl1, load character at lvl1 starting pt
                 if (entrance.name === 'stage1entry') {
@@ -20,10 +16,9 @@ export default class addHero {
                     //if returning from cave, load sprite at return pt
                     this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
                 }
-            } 
-            // else { //otherwise, use whatever coordinates come back when function runs
-            //     this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
-            // }
+            } else { //otherwise, use whatever coordinates come back when function runs
+                this.hero = game.make.sprite(entrance.x, entrance.y, 'hero', 'idle-right-00-1.3');
+            }
         });
 
         //add hero to sorting group
@@ -33,6 +28,7 @@ export default class addHero {
             map.sortGroup.sendToBack(mapObjects.goal);
         }
 
+        this.hero.anchor.y = 0.5;
         game.physics.arcade.enable(this.hero);
         this.hero.body.bounce.y = 0.3;
         this.hero.body.collideWorldBounds = true;
@@ -104,16 +100,12 @@ export default class addHero {
         this.rollLeft.onStart.add(()=>{
             this.end = game.state.callbackContext.end;
             this.gravity = game.state.callbackContext.gravity;
-            this.increment = game.state.callbackContext.increment;
             game.state.callbackContext.unfreeze0();
             this.hero.body.gravity.x = -this.gravity;
         }, this);
 
         this.rollLeft.onLoop.add(()=>{
             game.physics.arcade.moveToObject(this.hero, this.end);
-            if(this.hero.body.gravity.x < 0) {
-                this.hero.body.gravity.x = this.hero.body.gravity.x+this.increment;
-            };
             if(game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollLeft.stop(false, true);
             } else if(this.hero.body.blocked.left || this.hero.body.touching.left || this.hero.body.position.x <= this.end.body.position.x) {
@@ -123,7 +115,7 @@ export default class addHero {
 
         this.rollLeft.onComplete.add(()=> { this.hero.animations.play('slide-left'); }, this);
 
-        this.slideLeft.onComplete.add(()=>{ this.hero.body.speed = 0; game.state.callbackContext.unfreeze(); if(this.hero.body.gravity.x < 0) { this.hero.body.gravity.x =  0 }; }, this);
+        this.slideLeft.onComplete.add(()=>{ this.hero.body.speed = 0; game.state.callbackContext.unfreeze(); this.hero.body.gravity.x = 0; }, this);
 
         this.climbLeft.onStart.add(()=>{ 
             game.state.callbackContext.tweenUp.start();
@@ -133,16 +125,12 @@ export default class addHero {
         this.rollRight.onStart.add(()=>{
             this.end = game.state.callbackContext.end;
             this.gravity = game.state.callbackContext.gravity;
-            this.increment = game.state.callbackContext.increment;
             game.state.callbackContext.unfreeze0();
             this.hero.body.gravity.x = this.gravity;
         }, this);
         
         this.rollRight.onLoop.add(()=>{
             game.physics.arcade.moveToObject(this.hero, this.end);
-            if(this.hero.body.gravity.x > 0) { 
-                this.hero.body.gravity.x = this.hero.body.gravity.x-this.increment;
-            };
             if(game.physics.arcade.collide(this.hero, this.end)) {
                 this.rollRight.stop(false, true);
             } else if(this.hero.body.blocked.right || this.hero.body.touching.right || this.hero.body.position.x >= this.end.body.position.x) {
@@ -152,7 +140,7 @@ export default class addHero {
         
         this.rollRight.onComplete.add(()=> { this.hero.animations.play('slide-right'); }, this);
         
-        this.slideRight.onComplete.add(()=>{ this.hero.body.speed = 0; game.state.callbackContext.unfreeze(); if(this.hero.body.gravity.x > 0) { this.hero.body.gravity.x = 0 }; }, this);
+        this.slideRight.onComplete.add(()=>{ this.hero.body.speed = 0; game.state.callbackContext.unfreeze(); this.hero.body.gravity.x = 0; }, this);
         
         this.climbRight.onStart.add(()=>{
             game.state.callbackContext.tweenUp.start();

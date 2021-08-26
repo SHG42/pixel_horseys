@@ -48,6 +48,6 @@ export default class Configurator {
     }
 
     resetFade() {
-        this.game.camera.resetFX();
+        game.camera.resetFX();
     }
 }

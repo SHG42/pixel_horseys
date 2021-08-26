@@ -38,7 +38,7 @@ var exampleModal = document.getElementById('helpModal')
 			var bodytext = [`How to use the Equipper:`, 
 `Select one of your Unicorns from the dropdown menu (labeled 'choose a unicorn' for users with screen readers).`, 
 `In the inventory menu, click an item thumbnail to add it to the equipper display. All items and your Unicorns are draggable; place them wherever you want! (TIP: do not drag items or Unicorns entirely out of the display window, as you will not be able to bring them back! In the event that your item is dragged off the display, please refresh the page or add the item again. If your Unicorn is dragged off the display, you will need to refresh the page to start over.)`, `When an item loads to the display, it will have a boundary box with handles, which are the white squares on the corners and in the middle of each side, as well as one handle that will be above the item. The handles allow you to resize and rotate items. The corner handles can make an item smaller by clicking and dragging inward. Make an item wider or narrower by clicking the right or left side handles and dragging inward or outward. Make an item taller or shorter by clicking the top or bottom side handles and dragging up or down. To rotate an item, click the upper handle and drag clockwise or counterclockwise.`, `TIP: items will load in the top left corner. The upper handle may not be visible till you drag the item away from the corner.`,
-`Use the tool buttons to adjust the items to your liking. You can put them behind or in front of the Unicorn, and you can change the layering of items over or behind each other as well. If you resize or rotate an item and want to undo it, the reset button will return it to its original size and rotation.`, `TIP: You can flip an item by clicking any of the boundary box handles and dragging all the way left, right, up, or down.`, `TIP: For items placed behind the Unicorn, changes to item size or rotation will not show up automatically. Please click on or next to the item after changing it to update the image. In addition, items behind the Unicorn will need to be moved in front of the Unicorn for resetting or removal.`, `TIP: To preserve image quality, resizing an item larger than its actual size is not permitted. You can, however, stretch images length-wise or width-wise, which is permitted mostly because it's funny.`,
+`Use the tool buttons to adjust the items to your liking. You can put them behind or in front of the Unicorn, and you can change the layering of items over or behind each other as well. If you resize or rotate an item and want to undo it, the reset button will return it to its original size and rotation.`, `TIP: You can flip an item by clicking any of the boundary box handles and dragging all the way left, right, up, or down.`, `TIP: For items placed behind the Unicorn, changes to item size or rotation will not show up automatically. Please click on or next to the item after changing it to update the image. In addition, items behind the Unicorn will need to be moved in front of the Unicorn for resetting or removal.`, `TIP: To preserve image quality, increasing the size of an item beyond its actual size is not permitted. You can, however, stretch images length-wise or width-wise, which is permitted mostly because it's funny.`,
 `Click the Save button anytime to save your progress.`];
 			setContent(titletext, bodytext);
 		} else if(origin === "explore"){
@@ -50,15 +50,22 @@ var exampleModal = document.getElementById('helpModal')
 			var titletext = "Help: Explore";
 			var bodytext = [`How to Play:`, 
 `Navigate around the map and collect items. Use your device's keyboard or touchscreen.`, 
-`RUN LEFT: Left Arrow <-`,
-`RUN RIGHT: Right Arrow ->`, 
-`JUMP STRAIGHT UP: Up Arrow ^`, 							
-`KEY COMBO-- LEAP: Hit LEFT ARROW <- + UP ARROW ^ or RIGHT ARROW -> + UP ARROW ^ to jump forward while running.`,
-`LEDGE GRAB: Up Arrow ^ + 'G'`, 
-`LEDGE CLIMB: 'C' (While sprite is holding onto a ledge)`,
-`LEDGE RELEASE: Down Arrow`,
-`HINT: You can leap and grab (G) a ledge! Try Left/Right Arrow <-/-> + UP Arrow ^ + Grab (G)`,
-`TIP: Having trouble with a ledge? Some are more challenging than others, but none are impossible! Try moving slightly closer or further from the base of the ledge before jumping Up ^ to grab (G) it, and make sure you're facing towards the ledge you want to grab. Let go of ledges while grabbing by hitting the Left < or Right > arrows.`,`Still having ledge trouble? Click the Easy Mode button to toggle targets that will show you where the ledges are.`];
+`KEYBOARD CONTROLS:`,
+`To RUN LEFT, use the Left Arrow Key <-`,
+`To RUN RIGHT, use the Right Arrow  Key ->`, 
+`To JUMP STRAIGHT UP, use the Up Arrow  Key ^`, 							
+`To LEAP FORWARD, hold the LEFT ARROW <- or RIGHT ARROW -> and hit the UP ARROW ^. This will allow you to jump over small obstacles or leap across gaps`,
+`Can't jump high enough? You've found a LEDGE. Jump and grab ledges by pressing the Up Arrow ^ and the 'G' Key. You can also LEAP TOWARDS LEDGES by simultaneously pressing Up Arrow ^ AND the 'G' Key along with the LEFT ARROW <- or RIGHT ARROW ->`, 
+`Once you're grabbing a ledge, climb up onto it by pressing the 'C' key.`,
+`TIP: Having trouble with a ledge? Some are more challenging than others, but none are impossible! Try moving slightly closer or further from the base of the ledge before jumping to grab it, and make sure you're facing towards the ledge you want to grab.`,`Still having ledge trouble? Click the Easy Mode button to toggle targets that will show you exactly where the ledges are.`,
+`POINTER CONTROLS:`,
+`To RUN LEFT or RUN RIGHT, place your cursor or fingertip in front of the sprite or behind it, and hold down your fingertip or the left-hand mouse button`,
+`TIP: you're leading the sprite around the map with your fingertip or cursor. It won't work if you're clicking or touching too far away!`,
+`To JUMP STRAIGHT UP, tap once on the sprite.`, 
+`To LEAP FORWARD, right-click with the right-hand mouse button, or tap with two fingers. This will allow you to jump over small obstacles or leap across gaps`,
+`Can't jump high enough? You've found a LEDGE. You can reach ledges by jumping: for ledges directly above you, single-tap the sprite to jump straight up; to reach a ledge above and in front of you, right-click or two-finger tap to leap forward.`, 
+`Once you're grabbing a ledge, climb up onto it by tapping once on the sprite.`,
+`TIP: Having trouble with a ledge? Some are more challenging than others, but none are impossible! Try moving slightly closer or further from the base of the ledge before jumping to grab it, and make sure you're facing towards the ledge you want to grab.`,`Still having ledge trouble? Click the Easy Mode button to toggle targets that will show you exactly where the ledges are.`,];
 			setContent(titletext, bodytext);
 		}
 	}
