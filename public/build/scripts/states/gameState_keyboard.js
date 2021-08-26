@@ -103,9 +103,9 @@ export default class gameState_keyboard extends Phaser.State {
         //Jumping
         if (this.controls.up.justDown && this.hero.isOnGround && !this.hero.custom.isGrabbing) {
             this.hero.custom.isJumping = true;
-            this.hero.body.velocity.y = -350;
-            if(this.hero.body.velocity.y < -350) {
-                this.hero.body.velocity.y = -350;
+            this.hero.body.velocity.y = -365;
+            if(this.hero.body.velocity.y < -365) {
+                this.hero.body.velocity.y = -365;
             }
         }
 
