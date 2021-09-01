@@ -220,7 +220,7 @@ hr {
 	padding: 0.5rem;
 	display: inline;
 }
-.yourinventory .nav-item .active, .yourequip .nav-item .active {
+.yourinventory .nav-item .active, .yourequip .nav-item .active, #instructiontabs .nav-item .active {
 	background-color: darkcyan;
 	font-weight: bold;
 }
@@ -230,6 +230,10 @@ hr {
 	padding: 0.2rem;
 	margin: 0.2rem;
 	text-transform: capitalize;
+}
+#instructiontabs-content .tab-pane > p {
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 .tab-pane img {
 	background-color: burlywood;

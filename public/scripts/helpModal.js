@@ -5,6 +5,7 @@ var exampleModal = document.getElementById('helpModal');
 var modalTitle = document.querySelector(".modal-title");
 var modalBody = document.querySelector(".modal-body");
 var instructiontabs = document.querySelector("#instructiontabs");
+var instructiontabsContent = document.querySelector("#instructiontabs-content");
 var tab1 = document.querySelector("#tab1");
 var tab1Tab = document.querySelector("#tab1-tab");
 var tab2 = document.querySelector("#tab2");
@@ -31,31 +32,38 @@ function setContent(titletext, bodytext, origin) {
 		modalBody.prepend(h6);
 
 		instructiontabs.classList.replace("d-none", "d-flex");
+		instructiontabsContent.classList.replace("d-none", "d-flex");
 		initTabs();
 	} else {
+		var ul = document.createElement("ul");
+		modalBody.append(ul);
 		bodytext.forEach((entry, i)=>{
-			let p = document.createElement("p");
-			p.textContent = entry;
-			modalBody.append(p);
+			let li = document.createElement("li");
+			li.textContent = entry;
+			ul.append(li);
 		})
 	}
-	
 }
 
 function initTabs() {
 	tab1Tab.innerText = json.explore.tabheader_keyboard;
 	tab2Tab.innerText = json.explore.tabheader_pointer;
 
+	var ul1 = document.createElement("ul");
+	var ul2 = document.createElement("ul");
+	tab1.append(ul1);
+	tab2.append(ul2);
+
 	json.explore.tabtext_keyboard.forEach((entry)=>{
-		let p = document.createElement("p");
-		p.textContent = entry;
-		tab1.append(p);
+		let li = document.createElement("li");
+		li.textContent = entry;
+		ul1.append(li);
 	})
 
 	json.explore.tabtext_pointer.forEach((entry)=>{
-		let p = document.createElement("p");
-		p.textContent = entry;
-		tab2.append(p);
+		let li = document.createElement("li");
+		li.textContent = entry;
+		ul2.append(li);
 	})
 }
 
