@@ -170,11 +170,6 @@ hr {
     min-height: 100vh;
 }
 
-#helpModal p:first-child {
-	text-decoration: underline;
-	font-weight: bold;
-}
-
 .uniSlot-img {
 	height: 150px;
 	width: auto;
