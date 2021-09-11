@@ -17,10 +17,12 @@ router.route("/register")
     common.User.register(newUser, req.body.password, function(err, createdUser){
        if(err) {
            console.log(err);
+		   req.flash('error', "Something went wrong with creating a new account...");
            return res.render("register");
        } 
        common.passport.authenticate("local")(req, res, function(){
-           res.redirect("/firstlogin");
+			req.flash("success", "Account Creation successful. Welcome!");
+           	res.redirect("/firstlogin");
        });
     });
 });
@@ -38,9 +40,19 @@ router.route("/firstlogin")
 router.route("/founder")
 .get(isLoggedIn, function(req, res) {
 	common.Breed.find({}, function(err, foundAllBreeds){
-		if (err) return console.error('Uhoh, there was an error (/founder Breed.find GET)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Can't load Breeds list...");
+			console.error('Uhoh, there was an error (/founder Breed.find GET)', err)
+			return res.redirect('/index');
+		}
+		
 		common.Gene.find({}, function(err, foundAllGenes){
-			if (err) return console.error('Uhoh, there was an error (/founder Gene.find GET)', err)
+			if (err) {
+				req.flash('error', "Something's not right here... Can't load Genes list...");
+				console.error('Uhoh, there was an error (/founder Gene.find GET)', err)
+				return res.redirect('/index');
+			}
+			
 			res.render("founder", {currentUser: req.user, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 		});
 	});
@@ -53,17 +65,31 @@ router.route("/founder")
 router.route("/region")
 .get(isLoggedIn, function(req, res) {
 	common.Region.find({}, function(err, foundAllRegions){
-		if (err) return console.error('Uhoh, there was an error (/region Region.find GET)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Regions list not found...");
+			console.error('Uhoh, there was an error (/region Region.find GET)', err)
+			return res.redirect('/index');
+		}
+		
 		res.render("region", {currentUser: req.user, Regions: foundAllRegions}); 
 	})
 })
 .put(isLoggedIn, function(req, res) {
    	//find user by id and update
 	common.Region.findOne({name: req.body.selectedName}, function(err, foundRegion){
-		if (err) return console.error('Uhoh, there was an error (/region Region.findOne PUT)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Region not found...");
+			console.error('Uhoh, there was an error (/region Region.findOne PUT)', err)
+			return res.redirect('/index');
+		}
 		var foundARegion = foundRegion;
 		common.User.findByIdAndUpdate(req.user._id, {region: foundARegion}, function(err, foundUser){
-		    if (err) return console.error('Uhoh, there was an error (/region User.findByIdAndUpdate PUT)', err)
+			if (err) {
+				req.flash('error', "Something's not right here... Can't find that user...");
+				console.error('Uhoh, there was an error (/region User.findByIdAndUpdate PUT)', err)
+				return res.redirect('/index');
+			}
+		    
 			res.redirect("/index");
 	   });
 	});

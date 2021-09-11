@@ -1,0 +1,23 @@
+<% include ./partials/header %>
+<!-- Step 1: button that sends email when clicked
+Step 2: button sends reset token
+Step 3: actual reset functionality -->
+<div class="introbox container-fluid">
+    <div class="my-5">
+        <h1 class="headertext display-4">Forgot Your Login Info?</h1>
+        <div class="textboxes lead">
+            <p>Recover Password: Enter your email address and we will send you a reset token.</p>
+            <p>Recover Username: Enter your email address and we will send you a reminder.</p>
+        </div>
+        <form action="/accountrecovery" method="POST" class="entryform m-4" name="accountrecoveryform">
+            <div class="form-group formgroup">
+              <label for="email">Email</label>
+              <input type="text" class="form-control" id="email" name="email">
+            </div>
+            <button type="button" id="passwordRecovery" name="passwordRecovery" class="btn btn-light m-1 border border-dark border-2">Send Me a Password Reset Token</button>
+            <button type="button" id="usernameRecovery" name="usernameRecovery" class="btn btn-dark m-1 border border-light border-2">Send Me a Username Reminder</button>
+        </form>
+    </div>
+</div>
+
+<% include ./partials/footer %>

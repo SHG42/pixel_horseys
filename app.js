@@ -2,8 +2,8 @@ var
 dotenv = require('dotenv').config(),
 express = require("express"),
 app = express(),
-flash = require('connect-flash'),
-common = require('./common');	
+common = require('./common'),
+flash = require('connect-flash');
 // //ROUTE REQUIRES
 var newPlayerRoutes = require("./routes/newplayer"),
 	  homeRoutes    = require("./routes/homepages"),
@@ -22,28 +22,35 @@ app.use(common.session({
     secret: process.env.EXPRESS_SECRET,
     resave: false,
     saveUninitialized: false,
-	store: common.MongoStore.create({
-		mongoUrl: process.env.DB_CONN,
-		secret: process.env.EXPRESS_SECRET,
-		touchAfter: 24 * 60 * 60
-	})
+    cookie: {
+      httpOnly: true,
+      expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7
+    },
+	  store: common.MongoStore.create({
+      mongoUrl: process.env.DB_CONN,
+      secret: process.env.EXPRESS_SECRET,
+      touchAfter: 24 * 60 * 60
+	  })
 }));
 
 app.use(flash());
 
-app.use(function (req, res, next) {
-    res.locals.req = req;
-    res.locals.res = res;
+app.use((req, res, next) => {
+  res.locals.req = req;
+  res.locals.res = res;
 
-    if (typeof (process.env.CLOUDINARY_URL) === 'undefined') {
-      throw new Error('Missing CLOUDINARY_URL environment variable');
-    } else {
-		// Expose cloudinary package to view
-		res.locals.cloudinary = common.cloudinary;
-		res.locals.cloudname = process.env.CLOUDNAME;
-      next();
-    }
-  });
+  if (typeof (process.env.CLOUDINARY_URL) === 'undefined') {
+    throw new Error('Missing CLOUDINARY_URL environment variable');
+  } else {
+    // Expose cloudinary package to view
+    res.locals.cloudinary = common.cloudinary;
+    res.locals.cloudname = process.env.CLOUDNAME;
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+  }
+});
 
 app.use(common.passport.initialize());
 app.use(common.passport.session());
@@ -54,6 +61,13 @@ common.passport.deserializeUser(common.User.deserializeUser());
 app.use(newPlayerRoutes);
 app.use(homeRoutes);
 app.use(indexRoutes);
+
+//LOGOUT
+app.get("/logout", function(req, res) {
+  req.logout();
+  req.flash("success", "See you later!");
+  res.redirect("/login");
+});
 
 app.listen(process.env.PORT, () => {
 	console.log("Welcome to unicorn hell");

@@ -3,10 +3,10 @@ var passportLocalMongoose = require("passport-local-mongoose");
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 var userSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    email: String,
-    join: {type: Date, default: Date.now},
+  username: {type: String, unique: true, required: true},
+  password: {type: String, required: true},
+  email: {type: String, unique: true, required: true},
+  join: {type: Date, default: Date.now},
 	region: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Region"

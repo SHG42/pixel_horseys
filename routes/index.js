@@ -1,7 +1,9 @@
 var common = require("../common");
 var express = require("express");
 var router 	= express.Router({mergeParams: true});
-
+var async = require("async");
+var nodemailer = require("nodemailer");
+var crypto = require("crypto");
 var mstorage = common.multer.memoryStorage();
 var upload = common.multer({ storage: mstorage });
 
@@ -19,6 +21,11 @@ router.route("/login")
     }), function(req, res) {
 });
 
+router.route("/accountrecovery")
+.get(function(req, res){
+	res.render("accountrecovery");
+})
+
 router.get("/credits", function(req, res){
    res.render("credits"); 
 });
@@ -26,7 +33,11 @@ router.get("/credits", function(req, res){
 //INDEX, SITE HOMEPAGE
 router.get("/index", [isLoggedIn, finishedRegistration], function(req, res) {
 	common.User.findById(req.user._id).populate("region").exec(function(err, foundLoggedInUser){
-		if (err) return console.error('Uhoh, there was an error (/index User.findById GET)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Can't find an Index page for that user...");
+			console.error('Uhoh, there was an error (/index User.findById GET)', err);
+			return res.redirect('/login');
+		}
 		res.render("index", {loggedInUser: foundLoggedInUser});
 	});
 });
@@ -34,7 +45,12 @@ router.get("/index", [isLoggedIn, finishedRegistration], function(req, res) {
 // SHOW inventory
 router.get("/inventory", isLoggedIn, function(req, res){
 	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		if (err) return console.error('Uhoh, there was an error (/inventory User.findById GET)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Error loading the inventory...");
+			console.error('Uhoh, there was an error (/inventory User.findById GET)', err)
+			return res.redirect('/index');
+		}
+
 		let sort = common.Helpers.sortInventory();
 		sort.then((result)=>{
 			res.render("inventory", {
@@ -54,10 +70,19 @@ router.get("/inventory", isLoggedIn, function(req, res){
 // SHOW directory
 router.get("/directory", isLoggedIn, function(req, res){
 	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		if (err) return console.error('Uhoh, there was an error (/directory User.findById GET)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Can't find that user...");
+			console.error('Uhoh, there was an error (/directory User.findById GET)', err)
+			return res.redirect('/index');
+		}
+		
 		//retrieve all users from database
 		common.User.find({}, function(err, foundUsers){
-			if (err) return console.error('Uhoh, there was an error (/directory User.find({}) GET)', err)
+			if (err) {
+				req.flash('error', "Something's not right here... Can't load user list...");
+				console.error('Uhoh, there was an error (/directory User.find GET)', err)
+				return res.redirect('/index');
+			}
 			res.render("directory", {loggedInUser: foundLoggedInUser, registeredUsers: foundUsers});
 		});
 	});
@@ -72,9 +97,15 @@ router.route("/explore")
 })
 .put(isLoggedIn, function(req, res){
 	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		if (err) return console.error('Uhoh, there was an error (/explore User.findByIdAndUpdate PUT)', err);
+		if (err) {
+			req.flash('error', "Something's not right here... Can't find that user...");
+			console.error('Uhoh, there was an error (/explore User.findById PUT)', err)
+			return res.redirect('/index');
+		}
+		
 		foundLoggedInUser.tokens++;
 		foundLoggedInUser.save();
+		req.flash("success", "Quest completed successfully! Welcome home, explorer!");
 		res.redirect(303, "/index");
 	})
 })
@@ -83,11 +114,25 @@ router.route("/explore")
 router.route("/build")
 .get(isLoggedIn, function(req, res){
 	common.Breed.find({}, function(err, foundAllBreeds){
-		if (err) return console.error('Uhoh, there was an error (/build Breed.find GET)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Can't load Breeds list...");
+			console.error('Uhoh, there was an error (/build Breed.find GET)', err)
+			return res.redirect('/index');
+		}
+		
 		common.Gene.find({}, function(err, foundAllGenes){
-			if (err) return console.error('Uhoh, there was an error (/build Gene.find GET)', err)
+			if (err) {
+				req.flash('error', "Something's not right here... Can't load Genes list...");
+				console.error('Uhoh, there was an error (/build Gene.find GET)', err)
+				return res.redirect('/index');
+			}
+
 			common.User.findById(req.user._id).populate("unicorns").exec(function(err, foundLoggedInUser){
-				if (err) return console.error('Uhoh, there was an error (/build User.findById GET)', err)
+				if (err) {
+					req.flash('error', "Something's not right here... Can't find that user...");
+					console.error('Uhoh, there was an error (/build User.findById GET)', err)
+					return res.redirect('/index');
+				}
 				res.render("build", {loggedInUser: foundLoggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 			});
 		});
@@ -161,18 +206,28 @@ router.route("/build")
 	.then((newUnicorn)=> createImage(newUnicorn))
 	.then((res1)=> runUpload(res1.newImage, buffer, res1.newUnicorn))
 	.catch((err)=>{
-		console.error(err);
+		if (err) {
+			req.flash('error', "Something's not right here... Something went wrong creating this Unicorn...");
+			console.error('Uhoh, there was an error (/build POST)', err);
+			return res.redirect('/index');
+		}
 	})
 	
 	unicornCreate.then(()=>{
 		if(req.headers.referer.includes("/founder")){
+			req.flash("success", "Unicorn successfully created! You may proceed to region selection.");
 			res.redirect(303, "/region");
 		} else if (req.headers.referer.includes("/build")){
+			req.flash("success", "Unicorn successfully created!");
 			res.redirect(303, "/index");
 		}
 	})
 	.catch((err)=>{
-		console.error(err);
+		if (err) {
+			req.flash('error', "Something's not right here...");
+			console.error('Uhoh, there was an error (/build POST)', err);
+			return res.redirect('/index');
+		}
 	})
 })
 .put([isLoggedIn, upload.any()], function(req, res){
@@ -233,14 +288,23 @@ router.route("/build")
 		return res3
 	})
 	.catch((err)=>{
-		console.error(err);
+		if (err) {
+			req.flash('error', "Something's not right here... Something went wrong updating this Unicorn...");
+			console.error('Uhoh, there was an error (/build PUT)', err)
+			return res.redirect('/index');
+		}
 	})
 	
 	unicornUpdate.then(()=>{
+		req.flash("success", "Unicorn successfully updated!");
 		res.redirect(303, "/index");
 	})
 	.catch((err)=>{
-		console.error(err);
+		if (err) {
+			req.flash('error', "Something's not right here...");
+			console.error('Uhoh, there was an error (/build PUT)', err)
+			return res.redirect('/index');
+		}
 	})
 })
 
@@ -248,7 +312,12 @@ router.route("/build")
 router.route("/equip")
 .get(isLoggedIn, function(req, res){
 	common.User.findById(req.user._id).populate({ path: 'unicorns', populate: { path: 'imgs.baseImg', model: 'Image' }}).exec(function(err, foundLoggedInUser){
-		if (err) return console.error('Uhoh, there was an error (/equip User.findById GET)', err)
+		if (err) {
+			req.flash('error', "Something's not right here... Couldn't find that user...");
+			console.error('Uhoh, there was an error (/equip User.findById GET)', err)
+			return res.redirect('/index');
+		}
+		
 		let sort = common.Helpers.sortInventory();
 		sort.then((result)=>{
 			res.render("equip", {
@@ -338,9 +407,14 @@ router.route("/equip")
 		return res5
 	})
 	.catch((err)=>{
-		console.error(err);
+		if (err) {
+			req.flash('error', "Something's not right here... Something went wrong updating this Unicorn's equips...");
+			console.error('Uhoh, there was an error (/equip PUT)', err)
+			return res.redirect('/index');
+		}
 	})
 	unicornUpdate.then((output)=>{
+		req.flash("success", "Equips successfully updated!");
 		res.redirect(303, "/equip");
 	})
 })
@@ -358,6 +432,7 @@ function isLoggedIn(req, res, next){
 function finishedRegistration(req, res, next) {
 	common.User.findById(req.user._id).populate({path: "region"}).populate({path: "unicorns"}).exec(function(err, foundUser){
 		if(!foundUser.region || foundUser.unicorns.length === 0) {
+			req.flash("error", "You haven't finished registration yet! Please create your founder and then proceed to selecting your home region.");
 			res.redirect("/founder");
 		} else {
 			return next();
@@ -365,10 +440,5 @@ function finishedRegistration(req, res, next) {
 	});
 }
 
-//LOGOUT
-router.get("/logout", function(req, res) {
-    req.logout();
-    res.redirect("/login");
-});
 
 module.exports = router;

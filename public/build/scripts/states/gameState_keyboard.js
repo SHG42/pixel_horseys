@@ -258,18 +258,4 @@ export default class gameState_keyboard extends Phaser.State {
     resetFade() {
         this.game.camera.resetFX();
     }
-
-    render() {
-        // this.game.debug.body(this.hero);
-        // // this.game.debug.bodyInfo(this.hero, 32, 32);
-        // this.game.debug.spriteBounds(this.hero, 'rgba(0,0,255,1)', false);
-        // this.mapObjects.ledgesGroup.forEach((ledge)=>{
-        //     this.game.debug.body(ledge);
-        //     this.game.debug.spriteBounds(ledge, 'rgba(255,0,0,1)', false);
-        // })
-        // this.mapObjects.endsGroup.forEach((end)=>{
-        //     this.game.debug.body(end);
-        //     this.game.debug.spriteBounds(end, 'rgba(255,0,0,1)', false);
-        // })
-    }
 }

@@ -9,10 +9,18 @@ router.route("/home/:userid")
 .get([isLoggedIn, finishedRegistration], function(req, res){
 	//get LOGGEDINUSER
 	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		if (err) return console.error('Uhoh, there was an error', err);
+		if (err) {
+			req.flash('error', "Something's not right here...");
+			console.error('Uhoh, there was an error (/home/:userid findById GET)', err)
+			return res.redirect('/index');
+		}
 		//get info and unicorns of PAGE-OWNER
 		common.User.findOne({userid: req.params.userid}).populate({path: "region"}).populate({path: "unicorns", populate: { path: 'imgs.img', model: 'Image' }}).exec(function(err, foundPageOwner){
-			if (err) return console.error('Uhoh, there was an error', err)
+			if (err) {
+				req.flash('error', "Something's not right here...");
+				console.error('Uhoh, there was an error (/home/:userid findOne GET)', err);
+				return res.redirect('/index');
+			}
 			res.render("home", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser});
 		});
 	});
@@ -21,7 +29,13 @@ router.route("/home/:userid")
 	req.body.newName = req.sanitize(req.body.newName);
 	var newName = req.body.newName;
 	common.Unicorn.findByIdAndUpdate(req.body.unicornid, {$set: {name: newName}}, {new: true}, function(err, foundUnicorn){
-		if (err) return console.error('Uhoh, there was an error Unicorn.findByIdAndUpdate{$set: {name: newName}} PUT', err)
+		if (err) {
+			req.flash('error', "Something's not right here...");
+			console.error('Uhoh, there was an error Unicorn.findByIdAndUpdate{$set: {name: newName}} PUT', err)
+			return res.redirect('/index');
+		}
+		
+		req.flash("success", "Name successfully updated!");
 		res.redirect("/home/" + req.params.userid);
 	});
 });
@@ -35,8 +49,12 @@ router.route("/home/:userid/unicorn/:uniid")
 		common.User.findOne({userid: req.params.userid}).populate("region").populate("unicorns").exec(function(err, foundPageOwner){
 			if (err) return console.error('Uhoh, there was an error', err)
 			common.Unicorn.findOne({uniid: req.params.uniid}).populate({path: "imgs.img", model: "Image"}).exec(function(err, foundUnicorn){
-				if (err) return console.error('Uhoh, there was an error', err)
-				console.log(foundUnicorn.imgs.img);
+				if (err) {
+					req.flash('error', "Something's not right here...");
+					console.error(err)
+					return res.redirect('/index');
+				}
+				
 				res.render("bio", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser, unicorn: foundUnicorn});
 			});
 		});
@@ -48,7 +66,12 @@ router.route("/home/:userid/unicorn/:uniid")
 	// var newLore = req.sanitize(req.body.unicorn.lore);
 	var newLore = req.body.lore;
 	common.Unicorn.findOneAndUpdate({uniid: req.params.uniid}, {$set: {lore: newLore}}, {new: true}, function(err, foundUnicorn){
-	   	if (err) return console.error('Uhoh, there was an error', err) 
+		if (err) {
+			req.flash('error', "Something's not right here...");
+			console.error('Uhoh, there was an error Unicorn.findOneAndUpdate{$set: {lore: newLore}} PUT', err)
+			return res.redirect('/index');
+		}
+		req.flash("success", "Bio successfully updated!");   
 		res.redirect("/home/" + req.params.userid + "/unicorn/" + req.params.uniid);
 	});
 });
@@ -66,17 +89,12 @@ function isLoggedIn(req, res, next){
 function finishedRegistration(req, res, next) {
 	common.User.findById(req.user._id).populate({path: "region"}).populate({path: "unicorns"}).exec(function(err, foundUser){
 		if(!foundUser.region || foundUser.unicorns.length === 0) {
+			req.flash("error", "You haven't finished registration yet! Please create your founder and then proceed to selecting your home region.");
 			res.redirect("/founder");
 		} else {
 			return next();
 		}
 	});
 }
-
-//LOGOUT
-router.get("/logout", function(req, res) {
-    req.logout();
-    res.redirect("/login");
-});
 
 module.exports = router;
