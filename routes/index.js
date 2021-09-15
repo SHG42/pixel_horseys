@@ -414,7 +414,6 @@ router.route("/equip")
 		}
 	})
 	unicornUpdate.then((output)=>{
-		req.flash("success", "Equips successfully updated!");
 		res.redirect(303, "/equip");
 	})
 })

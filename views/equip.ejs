@@ -57,6 +57,18 @@
 	observer.observe();
 	
 	var yourUnicorns = <%- JSON.stringify(loggedInUser.unicorns) %>;
+
+	//collapsible tabs behavior:
+	var toggle = document.querySelector("#toggle");
+	toggle.addEventListener("click", (event)=>{
+		var activePane = document.querySelector(".active.show");
+		if(!activePane) {
+			return
+		} else {
+			activePane.classList.remove("active", "show");
+		}
+	});
+	
 </script>
 <script src="../../scripts/equippersetup.js"></script>
 <script src="../../scripts/equipper.js"></script>

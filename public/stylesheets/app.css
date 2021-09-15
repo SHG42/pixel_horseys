@@ -220,11 +220,11 @@ hr {
 	padding: 0.5rem;
 	display: inline;
 }
-.yourinventory .nav-item .active, #instructiontabs .nav-item .active,  {
+.yourinventory .nav-item .active, #instructiontabs .nav-item .active, .yourequip .nav-item .active, #instructiontabs .nav-item .active {
 	background-color: darkcyan;
 	font-weight: bold;
 }
-.inventorybox .tab-pane div, .equipbox .collapse div {
+.inventorybox .tab-pane div, .equipbox .tab-pane div {
 	background-color: burlywood;
 	border: 1px solid wheat;
 	padding: 0.2rem;
