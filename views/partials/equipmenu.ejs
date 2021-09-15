@@ -1,30 +1,30 @@
  <div class="equipbox">
 	<ul class="yourequip nav nav-tabs nav-fill justify-content-center bg-dark bg-gradient border border-2 border-light rounded-1 my-2" id="myTab" role="tablist">
 		<li class="nav-item">
-			<button class="nav-link btn btn-dark" id="backdrops-tab" data-bs-toggle="tab" data-bs-target="#backdrops" role="tab" aria-controls="backdrops" aria-selected="false"><i class="far fa-image"></i> Backdrops</button>
+			<button class="nav-link btn btn-dark" id="backdrops-tab" data-bs-toggle="collapse" data-bs-target="#backdrops" role="tab" aria-controls="backdrops" aria-selected="false"><i class="far fa-image"></i> Backdrops</button>
 		</li>
 		<li class="nav-item">
-			<button class="nav-link btn btn-dark" id="companions-tab" data-bs-toggle="tab" data-bs-target="#companions" role="tab" aria-controls="companions" aria-selected="false"><i class="fas fa-dog"></i> Companions</button>
+			<button class="nav-link btn btn-dark" id="companions-tab" data-bs-toggle="collapse" data-bs-target="#companions" role="tab" aria-controls="companions" aria-selected="false"><i class="fas fa-dog"></i> Companions</button>
 		</li>
 		<li class="nav-item">
-			<button class="nav-link btn btn-dark" id="decorative-tab" data-bs-toggle="tab" data-bs-target="#decorative" role="tab" aria-controls="decorative" aria-selected="true"><i class="fas fa-hat-wizard"></i> Decorative</button>
+			<button class="nav-link btn btn-dark" id="decorative-tab" data-bs-toggle="collapse" data-bs-target="#decorative" role="tab" aria-controls="decorative" aria-selected="true"><i class="fas fa-hat-wizard"></i> Decorative</button>
 		</li>	
 		<li class="nav-item">
-			<button class="nav-link btn btn-dark" id="environment-tab" data-bs-toggle="tab" data-bs-target="#environment" role="tab" aria-controls="environment" aria-selected="false"><i class="fas fa-tree"></i> Environment</button>
+			<button class="nav-link btn btn-dark" id="environment-tab" data-bs-toggle="collapse" data-bs-target="#environment" role="tab" aria-controls="environment" aria-selected="false"><i class="fas fa-tree"></i> Environment</button>
 		</li>
 		<li class="nav-item">
-			<button class="nav-link btn btn-dark" id="gems-tab" data-bs-toggle="tab" data-bs-target="#gems" role="tab" aria-controls="gems" aria-selected="false"><i class="far fa-gem"></i> Flat Gems</button>
+			<button class="nav-link btn btn-dark" id="gems-tab" data-bs-toggle="collapse" data-bs-target="#gems" role="tab" aria-controls="gems" aria-selected="false"><i class="far fa-gem"></i> Flat Gems</button>
 		</li>
 		<li class="nav-item">
-			<button class="nav-link btn btn-dark" id="tech-tab" data-bs-toggle="tab" data-bs-target="#tech" role="tab" aria-controls="tech" aria-selected="false"><i class="fas fa-power-off"></i> Tech Pieces</button>
+			<button class="nav-link btn btn-dark" id="tech-tab" data-bs-toggle="collapse" data-bs-target="#tech" role="tab" aria-controls="tech" aria-selected="false"><i class="fas fa-power-off"></i> Tech Pieces</button>
 		</li>
 		<li class="nav-item">
-			<button class="nav-link btn btn-dark" id="tiles-tab" data-bs-toggle="tab" data-bs-target="#tiles" role="tab" aria-controls="tiles" aria-selected="false"><i class="fas fa-shapes"></i> Buildable Tiles</button>
+			<button class="nav-link btn btn-dark" id="tiles-tab" data-bs-toggle="collapse" data-bs-target="#tiles" role="tab" aria-controls="tiles" aria-selected="false"><i class="fas fa-shapes"></i> Buildable Tiles</button>
 		</li>
 	</ul>
 
 	<div class="tab-content equip-tabs">
-		<div class="tab-pane fade" id="backdrops" role="tabpanel" aria-labelledby="backdrops-tab">
+		<div class="collapse fade" id="backdrops" role="tabpanel" aria-labelledby="backdrops-tab">
 			<% inventoryBackdrops.sort((a, b) => a.name.localeCompare(b.name)) %>
 			<% inventoryBackdrops.forEach((item)=>{ %>
 			<div class="d-inline-block">
@@ -33,7 +33,7 @@
 			</div>
 			<% }) %>
 		</div>
-		<div class="tab-pane fade" id="companions" role="tabpanel" aria-labelledby="companions-tab">
+		<div class="collapse fade" id="companions" role="tabpanel" aria-labelledby="companions-tab">
 			<% inventoryCompanions.sort((a, b) => a.name.localeCompare(b.name)) %>
 			<% inventoryCompanions.forEach((item)=>{ %>
 			<div class="d-inline-block">
@@ -42,7 +42,7 @@
 			</div>
 			<% }) %>
 		</div>
-		<div class="tab-pane fade" id="decorative" role="tabpanel" aria-labelledby="decorative-tab">
+		<div class="collapse fade" id="decorative" role="tabpanel" aria-labelledby="decorative-tab">
 			<% inventoryDecorative.sort((a, b) => a.name.localeCompare(b.name)) %>
 			<% inventoryDecorative.forEach((item)=>{ %>
 			<div class="d-inline-block">
@@ -51,7 +51,7 @@
 			</div>
 			<% }) %>
 		</div>
-		<div class="tab-pane fade" id="environment" role="tabpanel" aria-labelledby="environment-tab">
+		<div class="collapse fade" id="environment" role="tabpanel" aria-labelledby="environment-tab">
 			<% inventoryEnvironment.sort((a, b) => a.name.localeCompare(b.name)) %>
 			<% inventoryEnvironment.forEach((item)=>{ %>
 			<div class="d-inline-block">
@@ -60,7 +60,7 @@
 			</div>
 			<% }) %>
 		</div>
-		<div class="tab-pane fade" id="gems" role="tabpanel" aria-labelledby="gems-tab">
+		<div class="collapse fade" id="gems" role="tabpanel" aria-labelledby="gems-tab">
 			<% inventoryGems.sort((a, b) => a.name.localeCompare(b.name)) %>
 			<% inventoryGems.forEach((item)=>{ %>
 			<div class="d-inline-block">
@@ -69,7 +69,7 @@
 			</div>
 			<% }) %>
 		</div>
-		<div class="tab-pane fade" id="tech" role="tabpanel" aria-labelledby="tech-tab">
+		<div class="collapse fade" id="tech" role="tabpanel" aria-labelledby="tech-tab">
 			<% inventoryTech.sort((a, b) => a.name.localeCompare(b.name)) %>
 			<% inventoryTech.forEach((item)=>{ %>
 			<div class="d-inline-block">
@@ -78,7 +78,7 @@
 			</div>
 			<% }) %>
 		</div>
-		<div class="tab-pane fade" id="tiles" role="tabpanel" aria-labelledby="tiles-tab">
+		<div class="collapse fade" id="tiles" role="tabpanel" aria-labelledby="tiles-tab">
 			<% inventoryTiles.sort((a, b) => a.name.localeCompare(b.name)) %>
 			<% inventoryTiles.forEach((item)=>{ %>
 			<div class="d-inline-block">

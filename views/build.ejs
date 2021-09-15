@@ -26,12 +26,12 @@
 			<div id="submits" class="m-2">
 				<div class="builderForm">
 					<form action="/unicornbuilder" method="POST" enctype="multipart/form-data" name="submitForm">
-						<button type="button" id="builderSubmit" class="btn btn-success m-1" name="builderButton" value="" disabled="true">Create New Unicorn (You have <%= loggedInUser.tokens %> tokens)</button>
+						<button type="button" id="builderSubmit" class="btn btn-success m-1" name="builderButton" value="" disabled="true" data-bs-toggle="modal" data-bs-target="#progressPopup">Create New Unicorn (You have <%= loggedInUser.tokens %> tokens)</button>
 					</form>
 				</div>
 				<div class="customizerForm">
 					<form action="/unicornbuilder?_method=PUT" method="POST" enctype="multipart/form-data" name="submitForm">
-						<button type="button" id="customizerSubmit" class="btn btn-danger m-1" name="customizerButton" value="" disabled="true">Customize Unicorn</button>
+						<button type="button" id="customizerSubmit" class="btn btn-danger m-1" name="customizerButton" value="" disabled="true" data-bs-toggle="modal" data-bs-target="#progressPopup">Customize Unicorn</button>
 					</form>
 				</div>
 			</div>
@@ -39,6 +39,7 @@
     </div>
 </div>
 <% include ./partials/helpModal %>
+<% include ./partials/progressPopup %>
 <script>
 	var yourUnicorns = <%- JSON.stringify(loggedInUser.unicorns) %>;
 	var yourTokens = <%- JSON.stringify(loggedInUser.tokens) %>;

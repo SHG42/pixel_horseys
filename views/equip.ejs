@@ -38,7 +38,7 @@
 				</div>
 				<div class="equipperForm">
 					<form action="/equip?_method=PUT" method="POST" enctype="multipart/form-data" name="submitForm">
-						<button type="button" id="equipperSubmit" class="btn btn-success m-1" name="equipperButton" value="">Save Equips</button>
+						<button type="button" id="equipperSubmit" class="btn btn-success m-1" name="equipperButton" value="" data-bs-toggle="modal" data-bs-target="#progressPopup">Save Equips</button>
 					</form>
 				</div>
 			</div>
@@ -46,6 +46,7 @@
     </div>
 </div>
 <% include ./partials/helpModal %>
+<% include ./partials/progressPopup %>
 <script>
 	const el = document.querySelector('img');
 	const observer = window.lozad('.lozad', {

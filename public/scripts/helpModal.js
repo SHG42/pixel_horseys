@@ -1,5 +1,4 @@
 var json = JSON.parse(document.getElementById("instructionsManifest").text);
-console.log(json);
 
 var exampleModal = document.getElementById('helpModal');
 var modalTitle = document.querySelector(".modal-title");

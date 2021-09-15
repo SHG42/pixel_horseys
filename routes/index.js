@@ -431,9 +431,12 @@ function isLoggedIn(req, res, next){
 //middleware for checking if loggedIn user finished registration
 function finishedRegistration(req, res, next) {
 	common.User.findById(req.user._id).populate({path: "region"}).populate({path: "unicorns"}).exec(function(err, foundUser){
-		if(!foundUser.region || foundUser.unicorns.length === 0) {
-			req.flash("error", "You haven't finished registration yet! Please create your founder and then proceed to selecting your home region.");
+		if(foundUser.unicorns.length === 0) {
+			req.flash("error", "You haven't finished registration yet! Please create your founder.");
 			res.redirect("/founder");
+		} else if(!foundUser.region) {
+			req.flash("error", "You haven't finished registration yet! Please select a region.");
+			res.redirect("/region");
 		} else {
 			return next();
 		}

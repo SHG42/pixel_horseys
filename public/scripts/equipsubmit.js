@@ -1,3 +1,6 @@
+//loading progress popup
+var modal = new bootstrap.Modal(document.querySelector('#progressPopup'))
+
 submitButton.addEventListener("click", sendData);
 async function sendData() {
 	tr.destroy();
@@ -56,6 +59,6 @@ async function sendData() {
 	});
 	let result = await response;
 	if(result.ok) {
-		window.location = "/equip";
+		modal.hide();	
 	}
 }
