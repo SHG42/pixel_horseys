@@ -48,6 +48,10 @@ app.use((req, res, next) => {
     res.locals.cloudname = process.env.CLOUDNAME;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+
+    if(!["/login", "/"].includes(req.originalUrl)) {
+      req.session.returnTo = req.originalUrl;
+    }
     next();
   }
 });

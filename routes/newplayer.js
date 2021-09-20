@@ -13,17 +13,15 @@ router.route("/register")
 })
 .post(function(req, res){
     //get data from reg form and store in user data
-    var newUser = new common.User({username: req.body.username, email: req.body.email});
-    common.User.register(newUser, req.body.password, function(err, createdUser){
-       if(err) {
-           console.log(err);
-		   req.flash('error', "Something went wrong with creating a new account...");
-           return res.render("register");
-       } 
-       common.passport.authenticate("local")(req, res, function(){
-			req.flash("success", "Account Creation successful. Welcome!");
-           	res.redirect("/firstlogin");
-       });
+    common.User.register(new common.User({username: req.body.username, email: req.body.email}), req.body.password, function(err, createdUser){
+		if(err){
+            console.log(err);
+            return res.render("register", {error: err.message});
+        }
+        common.passport.authenticate("local")(req, res, function(){
+           req.flash("success", "Successfully Signed Up! Nice to meet you " + req.body.username);
+           res.redirect("/firstlogin"); 
+        });
     });
 });
 
@@ -33,7 +31,9 @@ router.route("/firstlogin")
 })
 .post(common.passport.authenticate("local", {
         successRedirect: "/founder",
-        failureRedirect: "/firstlogin"
+		successFlash: true,
+        failureRedirect: "/firstlogin",
+		failureFlash: true
     }), function(req, res) {
 });
 

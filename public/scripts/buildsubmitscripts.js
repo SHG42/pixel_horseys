@@ -1,4 +1,3 @@
-
 //SUBMIT FUNCTION
 submitButton.addEventListener("click", submitData);
 async function submitData() {

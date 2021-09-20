@@ -43,7 +43,7 @@
 					<div class="builderbox" id="targetbox">
 						<div class="builderForm">
 							<form action="/founder" method="POST" enctype="multipart/form-data" name="submitForm" id="submitform">
-								<button type="button" id="founderSubmit" class="btn btn-success w-75" name="builderButton" value="" disabled="true">Build</button>
+								<button type="button" id="founderSubmit" class="btn btn-success w-75" name="builderButton" value="" disabled="true" data-bs-toggle="modal" data-bs-target="#progressPopup">Build</button>
 							</form>
 						</div>
 					</div>
@@ -51,6 +51,7 @@
 			</div>
 		</div>
 	</div>
+	<% include ./partials/progressPopup %>
 	<% include ./partials/helpModal %>
 	<% include ./partials/imageModal %>
 </div>

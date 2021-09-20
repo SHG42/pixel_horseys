@@ -3,15 +3,17 @@ var passportLocalMongoose = require("passport-local-mongoose");
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 var userSchema = new mongoose.Schema({
-  username: {type: String, unique: true, required: true},
-  password: {type: String, required: true},
-  email: {type: String, unique: true, required: true},
+  username: String,
+  password: String,
+  email: String,
   join: {type: Date, default: Date.now},
 	region: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Region"
             },
-	tokens: { type: Number, default: 0 }
+	tokens: { type: Number, default: 0 },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 userSchema.virtual('unicorns', {
@@ -25,6 +27,6 @@ userSchema.set('toJSON', { virtuals: true });
 
 userSchema.plugin(AutoIncrement, {inc_field: 'userid'});
 
-userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(passportLocalMongoose, { usernameUnique: false });
 
 module.exports = mongoose.model("User", userSchema);

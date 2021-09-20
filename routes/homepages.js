@@ -82,6 +82,7 @@ function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
         return next();
     }
+	req.flash("error", "You're not logged in!");
     res.redirect("/login");
 }
 

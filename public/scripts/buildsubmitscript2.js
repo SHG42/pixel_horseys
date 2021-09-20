@@ -1,3 +1,6 @@
+//loading progress popup
+var modal = new bootstrap.Modal(document.querySelector('#progressPopup'))
+
 submitButton2.addEventListener("click", submitData2);
 async function submitData2() {
 	// convert stage to dataURL to condense canvases to single file, then to blob for server transfer
@@ -38,7 +41,7 @@ async function submitData2() {
 	});
 	let result = await response;
 	if(result.ok) {
-		window.location = "/index";
+		modal.hide();
 	}
 }
 

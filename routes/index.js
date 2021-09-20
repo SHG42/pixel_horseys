@@ -15,19 +15,179 @@ router.route("/login")
 .get(function(req, res){
   res.render("login"); 
 })
-.post(common.passport.authenticate("local", {
-        successRedirect: "/index",
-        failureRedirect: "/login"
-    }), function(req, res) {
+.post(common.passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), function(req, res) {
+	req.flash("success", "Welcome back!");
+	const redirectUrl = req.session.returnTo || "/index";
+	res.redirect(redirectUrl);
 });
 
 router.route("/accountrecovery")
 .get(function(req, res){
 	res.render("accountrecovery");
 })
+.post(function(req, res, next) {
+	if(req.body.recover === "password") {
+		async.waterfall([
+			function(done) {
+				crypto.randomBytes(20, function(err, buf) {
+				var token = buf.toString('hex');
+				done(err, token);
+				});
+			},
+			function(token, done) {
+				common.User.findOne({ email: req.body.email }, function(err, user) {
+				if (!user) {
+					req.flash('error', 'No account with that email address exists.');
+					return res.redirect('/accountrecovery');
+				}
+		
+				user.resetPasswordToken = token;
+				user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+		
+				user.save(function(err) {
+					done(err, token, user);
+				});
+				});
+			},
+			function(token, user, done) {
+				if(req.hostname.includes("heroku")){
+					var host = process.env.HOST;
+				} else if(req.hostname.includes("localhost")){
+					var host = process.env.LOCALHOST;
+				}
+				var smtpTransport = nodemailer.createTransport({
+				service: 'Gmail', 
+				auth: {
+					user: 'sunflame.mountain.devteam@gmail.com',
+					pass: process.env.GMAILPW
+				}
+				});
+				var mailOptions = {
+				to: user.email,
+				from: 'sunflame.mountain.devteam@gmail.com',
+				subject: 'Sunflame Mountain Password Reset',
+				text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+					'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+					host + '/reset/' + token + '\n\n' +
+					'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+				};
+				smtpTransport.sendMail(mailOptions, function(err) {
+				console.log('mail sent');
+				req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+				done(err, 'done');
+				});
+			}
+		], function(err) {
+			if (err) return next(err);
+			return res.redirect('/accountrecovery');
+		});
+	} else if(req.body.recover === "username") {
+		async.waterfall([
+			function(done) {
+				common.User.findOne({ email: req.body.email }, function(err, user) {
+					if (!user) {
+						req.flash('error', 'No account with that email address exists.');
+						return res.redirect('/accountrecovery');
+					}
+					done(err, user);
+				});
+			},
+			function(user, done) {
+				var smtpTransport = nodemailer.createTransport({
+					service: 'Gmail', 
+					auth: {
+						user: 'sunflame.mountain.devteam@gmail.com',
+						pass: process.env.GMAILPW
+					}
+				});
+				var mailOptions = {
+					to: user.email,
+					from: 'sunflame.mountain.devteam@gmail.com',
+					subject: 'Sunflame Mountain Username Recovery',
+					text: 'You are receiving this because you (or someone else) have requested a reminder of your username.\n\n' +
+					'Your username is: ' + user.username + '\n\n' +
+					'If you did not request this, please ignore this email.\n'
+				};
+				smtpTransport.sendMail(mailOptions, function(err) {
+					console.log('mail sent');
+					req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further information.');
+					done(err, 'done');
+				});
+			}
+		], function(err) {
+			if (err) return next(err);
+			return res.redirect('/accountrecovery');
+		});
+	}
+});
+
+router.route("/reset/:token")
+.get(function(req, res){
+	common.User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+		if (!user) {
+		  req.flash('error', 'Password reset token is invalid or has expired.');
+		  return res.redirect('/accountrecovery');
+		}
+		res.render('reset', {token: req.params.token});
+	});
+})
+.post(function(req, res) {
+	async.waterfall([
+	    function(done) {
+			common.User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+				if (!user) {
+					req.flash('error', 'Password reset token is invalid or has expired.');
+					return res.redirect('/reset');
+				}
+				if(req.body.password === req.body.confirm) {
+					user.setPassword(req.body.password, function(err) {
+					user.resetPasswordToken = undefined;
+					user.resetPasswordExpires = undefined;
+		
+					user.save(function(err) {
+						req.logIn(user, function(err) {
+						done(err, user);
+						});
+					});
+					})
+				} else {
+					req.flash("error", "Passwords do not match.");
+					return res.redirect('/reset');
+				}
+			});
+	  	},
+	  	function(user, done) {
+			if(req.hostname.includes("heroku")){
+				var host = process.env.HOST;
+			} else if(req.hostname.includes("localhost")){
+				var host = process.env.LOCALHOST;
+			}
+			var smtpTransport = nodemailer.createTransport({
+				service: 'Gmail', 
+				auth: {
+					user: 'sunflame.mountain.devteam@gmail.com',
+					pass: process.env.GMAILPW
+				}
+			});
+			var mailOptions = {
+				to: user.email,
+				from: 'sunflame.mountain.devteam@gmail.com',
+				subject: 'Your password has been changed',
+				text: 'Hello,\n\n' +
+					'This is a confirmation that the password for your account under the email ' + user.email + ' has just been changed. If you did not change it yourself, please visit ' + host + '/accountrecovery' + ' and reset your password again to make sure your account stays yours!\n'
+			};
+			smtpTransport.sendMail(mailOptions, function(err) {
+				req.flash('success', 'Success! Your password has been changed.');
+				done(err);
+			});
+		}
+	], 	function(err) {
+	  	res.redirect('/index');
+	});
+});
 
 router.get("/credits", function(req, res){
-   res.render("credits"); 
+   res.render("credits");
 });
 
 //INDEX, SITE HOMEPAGE
@@ -424,6 +584,7 @@ function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
         return next();
     }
+	req.flash("error", "You're not logged in!");
     res.redirect("/login");
 }
 
