@@ -35,11 +35,14 @@ async function submitData() {
 		});
 		let result = await response;
 		if(result.ok) {
-			if(document.URL.includes("/build")){
-				window.location = "/index";
-			} else if(document.URL.includes("/founder")){
+			if(document.URL.includes("/founder")){
 				window.location = "/region";
 			}
+			// if(document.URL.includes("/build")){
+			// 	// window.location = "/index";
+			// } else if(document.URL.includes("/founder")){
+			// 	window.location = "/region";
+			// }
 		}
 	} else if(yourTokens === 0 && document.URL.includes("/build")) {
 		alert("You're out of tokens!");

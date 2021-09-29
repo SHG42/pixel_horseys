@@ -17,7 +17,7 @@ router.route("/login")
 })
 .post(common.passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), function(req, res) {
 	req.flash("success", "Welcome back!");
-	const redirectUrl = req.session.returnTo || "/index";
+	const redirectUrl = "/index" || req.session.returnTo;
 	res.redirect(redirectUrl);
 });
 
@@ -368,24 +368,24 @@ router.route("/build")
 	.catch((err)=>{
 		if (err) {
 			req.flash('error', "Something's not right here... Something went wrong creating this Unicorn...");
-			console.error('Uhoh, there was an error (/build POST)', err);
+			console.log('Uhoh, there was an error in (/build POST)', err);
 			return res.redirect('/index');
 		}
 	})
 	
-	unicornCreate.then(()=>{
+	unicornCreate.then((result)=>{
 		if(req.headers.referer.includes("/founder")){
 			req.flash("success", "Unicorn successfully created! You may proceed to region selection.");
-			res.redirect(303, "/region");
+			return res.redirect(303, "/region");
 		} else if (req.headers.referer.includes("/build")){
 			req.flash("success", "Unicorn successfully created!");
-			res.redirect(303, "/index");
+			return res.redirect("/home/" + loggedInUser._id + "/unicorn/" + result.newUnicorn._id);
 		}
 	})
 	.catch((err)=>{
 		if (err) {
 			req.flash('error', "Something's not right here...");
-			console.error('Uhoh, there was an error (/build POST)', err);
+			console.error('Uhoh, there was an error at the end of the create route (/build POST)', err);
 			return res.redirect('/index');
 		}
 	})
@@ -457,7 +457,7 @@ router.route("/build")
 	
 	unicornUpdate.then(()=>{
 		req.flash("success", "Unicorn successfully updated!");
-		res.redirect(303, "/index");
+		res.redirect(303, "/build");
 	})
 	.catch((err)=>{
 		if (err) {
