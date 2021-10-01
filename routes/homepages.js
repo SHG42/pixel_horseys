@@ -12,14 +12,14 @@ router.route("/home/:userid")
 		if (err) {
 			req.flash('error', "Something's not right here...");
 			console.error('Uhoh, there was an error (/home/:userid findById GET)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		//get info and unicorns of PAGE-OWNER
 		common.User.findOne({userid: req.params.userid}).populate({path: "region"}).populate({path: "unicorns", populate: { path: 'imgs.img', model: 'Image' }}).exec(function(err, foundPageOwner){
 			if (err) {
 				req.flash('error', "Something's not right here...");
 				console.error('Uhoh, there was an error (/home/:userid findOne GET)', err);
-				return res.redirect('/index');
+				res.redirect('/index');
 			}
 			res.render("home", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser});
 		});
@@ -32,7 +32,7 @@ router.route("/home/:userid")
 		if (err) {
 			req.flash('error', "Something's not right here...");
 			console.error('Uhoh, there was an error Unicorn.findByIdAndUpdate{$set: {name: newName}} PUT', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		
 		req.flash("success", "Name successfully updated!");
@@ -44,32 +44,30 @@ router.route("/home/:userid")
 router.route("/home/:userid/unicorn/:uniid")
 .get(isLoggedIn, function(req, res){
 	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		if (err) return console.error('Uhoh, there was an error', err);
+		if (err) return console.error('Uhoh, there was an error finding the loggedIn User (/home/userid/unicorn/uniid GET findById)', err);
 		//get info and unicorns of PAGE-OWNER
 		common.User.findOne({userid: req.params.userid}).populate("region").populate("unicorns").exec(function(err, foundPageOwner){
-			if (err) return console.error('Uhoh, there was an error', err)
+			if (err) return console.error('Uhoh, there was an error finding the User that owns this page (/home/userid/unicorn/uniid GET findOne)', err)
 			common.Unicorn.findOne({uniid: req.params.uniid}).populate({path: "imgs.img", model: "Image"}).exec(function(err, foundUnicorn){
 				if (err) {
-					req.flash('error', "Something's not right here...");
-					console.error(err)
+					req.flash('error', "Something's not right here... Can't find that unicorn...");
+					console.error("error in bio route at Unicorn.findOne", err)
 					return res.redirect('/index');
 				}
 				
-				res.render("bio", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser, unicorn: foundUnicorn});
+				return res.render("bio", {currentPageOwner: foundPageOwner, loggedInUser: foundLoggedInUser, unicorn: foundUnicorn});
 			});
 		});
 	});
 })
 .put(isLoggedIn, function(req,res){
-	console.log(req.body);
-	console.log(req.params);
 	// var newLore = req.sanitize(req.body.unicorn.lore);
 	var newLore = req.body.lore;
 	common.Unicorn.findOneAndUpdate({uniid: req.params.uniid}, {$set: {lore: newLore}}, {new: true}, function(err, foundUnicorn){
 		if (err) {
 			req.flash('error', "Something's not right here...");
 			console.error('Uhoh, there was an error Unicorn.findOneAndUpdate{$set: {lore: newLore}} PUT', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		req.flash("success", "Bio successfully updated!");   
 		res.redirect("/home/" + req.params.userid + "/unicorn/" + req.params.uniid);

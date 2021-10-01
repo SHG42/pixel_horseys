@@ -24,7 +24,7 @@ async function submitData() {
 								colors: colorDataPackage,
 							};
 		let dataString = JSON.stringify(dataPackage);
-
+				
 		let formData = new FormData();
 		formData.append("image", blob, "image.png");
 		formData.append("userChoices", dataString);
@@ -35,18 +35,13 @@ async function submitData() {
 		});
 		let result = await response;
 		if(result.ok) {
-			if(document.URL.includes("/founder")){
+			if(document.URL.includes("/build")){
+				window.location = `/home/${user}/`;
+			} else if(document.URL.includes("/founder")){
 				window.location = "/region";
 			}
-			// if(document.URL.includes("/build")){
-			// 	// window.location = "/index";
-			// } else if(document.URL.includes("/founder")){
-			// 	window.location = "/region";
-			// }
 		}
 	} else if(yourTokens === 0 && document.URL.includes("/build")) {
 		alert("You're out of tokens!");
-	}
-	
+	}	
 }
-// Headers: Referer: https://pixel-horseys-ygjlr.run.goorm.io/founder

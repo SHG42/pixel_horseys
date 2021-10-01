@@ -16,7 +16,7 @@ router.route("/register")
     common.User.register(new common.User({username: req.body.username, email: req.body.email}), req.body.password, function(err, createdUser){
 		if(err){
             console.log(err);
-            return res.render("register", {error: err.message});
+            res.render("register", {error: err.message});
         }
         common.passport.authenticate("local")(req, res, function(){
            req.flash("success", "Successfully Signed Up! Nice to meet you " + req.body.username);
@@ -43,14 +43,14 @@ router.route("/founder")
 		if (err) {
 			req.flash('error', "Something's not right here... Can't load Breeds list...");
 			console.error('Uhoh, there was an error (/founder Breed.find GET)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		
 		common.Gene.find({}, function(err, foundAllGenes){
 			if (err) {
 				req.flash('error', "Something's not right here... Can't load Genes list...");
 				console.error('Uhoh, there was an error (/founder Gene.find GET)', err)
-				return res.redirect('/index');
+				res.redirect('/index');
 			}
 			
 			res.render("founder", {currentUser: req.user, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
@@ -68,7 +68,7 @@ router.route("/region")
 		if (err) {
 			req.flash('error', "Something's not right here... Regions list not found...");
 			console.error('Uhoh, there was an error (/region Region.find GET)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		
 		res.render("region", {currentUser: req.user, Regions: foundAllRegions}); 
@@ -80,14 +80,14 @@ router.route("/region")
 		if (err) {
 			req.flash('error', "Something's not right here... Region not found...");
 			console.error('Uhoh, there was an error (/region Region.findOne PUT)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		var foundARegion = foundRegion;
 		common.User.findByIdAndUpdate(req.user._id, {region: foundARegion}, function(err, foundUser){
 			if (err) {
 				req.flash('error', "Something's not right here... Can't find that user...");
 				console.error('Uhoh, there was an error (/region User.findByIdAndUpdate PUT)', err)
-				return res.redirect('/index');
+				res.redirect('/index');
 			}
 		    
 			res.redirect("/index");

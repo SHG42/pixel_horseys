@@ -41,6 +41,7 @@
 <% include ./partials/helpModal %>
 <% include ./partials/progressPopup %>
 <script>
+	var user = <%- JSON.stringify(loggedInUser.userid) %>;
 	var yourUnicorns = <%- JSON.stringify(loggedInUser.unicorns) %>;
 	var yourTokens = <%- JSON.stringify(loggedInUser.tokens) %>;
 	

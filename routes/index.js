@@ -38,7 +38,7 @@ router.route("/accountrecovery")
 				common.User.findOne({ email: req.body.email }, function(err, user) {
 				if (!user) {
 					req.flash('error', 'No account with that email address exists.');
-					return res.redirect('/accountrecovery');
+					res.redirect('/accountrecovery');
 				}
 		
 				user.resetPasswordToken = token;
@@ -79,7 +79,7 @@ router.route("/accountrecovery")
 			}
 		], function(err) {
 			if (err) return next(err);
-			return res.redirect('/accountrecovery');
+			res.redirect('/accountrecovery');
 		});
 	} else if(req.body.recover === "username") {
 		async.waterfall([
@@ -87,7 +87,7 @@ router.route("/accountrecovery")
 				common.User.findOne({ email: req.body.email }, function(err, user) {
 					if (!user) {
 						req.flash('error', 'No account with that email address exists.');
-						return res.redirect('/accountrecovery');
+						res.redirect('/accountrecovery');
 					}
 					done(err, user);
 				});
@@ -116,7 +116,7 @@ router.route("/accountrecovery")
 			}
 		], function(err) {
 			if (err) return next(err);
-			return res.redirect('/accountrecovery');
+			res.redirect('/accountrecovery');
 		});
 	}
 });
@@ -126,7 +126,7 @@ router.route("/reset/:token")
 	common.User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
 		if (!user) {
 		  req.flash('error', 'Password reset token is invalid or has expired.');
-		  return res.redirect('/accountrecovery');
+		  res.redirect('/accountrecovery');
 		}
 		res.render('reset', {token: req.params.token});
 	});
@@ -137,7 +137,7 @@ router.route("/reset/:token")
 			common.User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
 				if (!user) {
 					req.flash('error', 'Password reset token is invalid or has expired.');
-					return res.redirect('/reset');
+					res.redirect('/reset');
 				}
 				if(req.body.password === req.body.confirm) {
 					user.setPassword(req.body.password, function(err) {
@@ -152,7 +152,7 @@ router.route("/reset/:token")
 					})
 				} else {
 					req.flash("error", "Passwords do not match.");
-					return res.redirect('/reset');
+					res.redirect('/reset');
 				}
 			});
 	  	},
@@ -196,7 +196,7 @@ router.get("/index", [isLoggedIn, finishedRegistration], function(req, res) {
 		if (err) {
 			req.flash('error', "Something's not right here... Can't find an Index page for that user...");
 			console.error('Uhoh, there was an error (/index User.findById GET)', err);
-			return res.redirect('/login');
+			res.redirect('/login');
 		}
 		res.render("index", {loggedInUser: foundLoggedInUser});
 	});
@@ -208,7 +208,7 @@ router.get("/inventory", isLoggedIn, function(req, res){
 		if (err) {
 			req.flash('error', "Something's not right here... Error loading the inventory...");
 			console.error('Uhoh, there was an error (/inventory User.findById GET)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 
 		let sort = common.Helpers.sortInventory();
@@ -233,7 +233,7 @@ router.get("/directory", isLoggedIn, function(req, res){
 		if (err) {
 			req.flash('error', "Something's not right here... Can't find that user...");
 			console.error('Uhoh, there was an error (/directory User.findById GET)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		
 		//retrieve all users from database
@@ -241,7 +241,7 @@ router.get("/directory", isLoggedIn, function(req, res){
 			if (err) {
 				req.flash('error', "Something's not right here... Can't load user list...");
 				console.error('Uhoh, there was an error (/directory User.find GET)', err)
-				return res.redirect('/index');
+				res.redirect('/index');
 			}
 			res.render("directory", {loggedInUser: foundLoggedInUser, registeredUsers: foundUsers});
 		});
@@ -260,7 +260,7 @@ router.route("/explore")
 		if (err) {
 			req.flash('error', "Something's not right here... Can't find that user...");
 			console.error('Uhoh, there was an error (/explore User.findById PUT)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		
 		foundLoggedInUser.tokens++;
@@ -277,21 +277,21 @@ router.route("/build")
 		if (err) {
 			req.flash('error', "Something's not right here... Can't load Breeds list...");
 			console.error('Uhoh, there was an error (/build Breed.find GET)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		
 		common.Gene.find({}, function(err, foundAllGenes){
 			if (err) {
 				req.flash('error', "Something's not right here... Can't load Genes list...");
 				console.error('Uhoh, there was an error (/build Gene.find GET)', err)
-				return res.redirect('/index');
+				res.redirect('/index');
 			}
 
 			common.User.findById(req.user._id).populate("unicorns").exec(function(err, foundLoggedInUser){
 				if (err) {
 					req.flash('error', "Something's not right here... Can't find that user...");
 					console.error('Uhoh, there was an error (/build User.findById GET)', err)
-					return res.redirect('/index');
+					res.redirect('/index');
 				}
 				res.render("build", {loggedInUser: foundLoggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 			});
@@ -318,8 +318,7 @@ router.route("/build")
 		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer));
 		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
-			console.log("output from newUnicorn cloudinary upload: ");
-			console.log(error, result);
+			console.log("cloudinary upload error: ", error);
 			newImage.public_id = result.public_id;
 			newImage.etag = result.etag;
 			newImage.version = result.version;
@@ -346,47 +345,50 @@ router.route("/build")
 			newImage: newImage
 		};
 	}
+
+	async function assignOwner(result) {
+		var user = await common.User.findById(loggedInUser).populate("unicorns").exec()
+		result.newUnicorn.owner = user._id;
+		result.newUnicorn.save();
+		if(user.unicorns.length === 0) {
+			result.newUnicorn.founder = true;
+		} else {
+			result.newUnicorn.founder = false;
+			user.tokens--;
+			user.save();
+		}
+		return {
+			user: user,
+			newUnicorn: result.newUnicorn
+		}
+	}
 	
 	var unicornCreate = common.Unicorn.create(unicornData)
-	.then((newUnicorn)=> {
-		var hasUnicorns = common.User.findById(loggedInUser).populate("unicorns").exec()
-		hasUnicorns.then((res)=>{
-			if(res.unicorns.length === 0) {
-				newUnicorn.founder = true;
-			} else {
-				newUnicorn.founder = false;
-				res.tokens--;
-				res.save();
+		.then((newUnicorn)=> createImage(newUnicorn))
+		.then((res1)=> runUpload(res1.newImage, buffer, res1.newUnicorn))
+		.catch((err)=>{
+			if (err) {
+				req.flash('error', "Something's not right here... Something went wrong creating this Unicorn...");
+				console.log('Uhoh, there was an error in (/build POST)', err);
+				res.redirect('/index');
 			}
-			return res;
 		})
-		newUnicorn.owner = loggedInUser;
-		return newUnicorn
-	})
-	.then((newUnicorn)=> createImage(newUnicorn))
-	.then((res1)=> runUpload(res1.newImage, buffer, res1.newUnicorn))
-	.catch((err)=>{
-		if (err) {
-			req.flash('error', "Something's not right here... Something went wrong creating this Unicorn...");
-			console.log('Uhoh, there was an error in (/build POST)', err);
-			return res.redirect('/index');
-		}
-	})
 	
-	unicornCreate.then((result)=>{
-		if(req.headers.referer.includes("/founder")){
+	unicornCreate.then((result)=> assignOwner(result))
+	.then((result)=>{
+		if(req.url.includes("/founder")){
 			req.flash("success", "Unicorn successfully created! You may proceed to region selection.");
-			return res.redirect(303, "/region");
-		} else if (req.headers.referer.includes("/build")){
+			res.redirect("/region");
+		} else if (req.url.includes("/build")){
 			req.flash("success", "Unicorn successfully created!");
-			return res.redirect("/home/" + loggedInUser._id + "/unicorn/" + result.newUnicorn._id);
+			res.redirect(`/home/${result.user.userid}/unicorn/${result.newUnicorn.uniid}`);
 		}
 	})
 	.catch((err)=>{
 		if (err) {
 			req.flash('error', "Something's not right here...");
 			console.error('Uhoh, there was an error at the end of the create route (/build POST)', err);
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 	})
 })
@@ -410,8 +412,7 @@ router.route("/build")
 		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer));
 		var upload = bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function (error, result) {
-			console.log("cloudinary output in /build .put");
-			console.log(error, result);
+			console.log("cloudinary output in /build .put", error);
 			foundImage.version = result.version;
 			foundImage.save();
 			return foundImage;
@@ -451,7 +452,7 @@ router.route("/build")
 		if (err) {
 			req.flash('error', "Something's not right here... Something went wrong updating this Unicorn...");
 			console.error('Uhoh, there was an error (/build PUT)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 	})
 	
@@ -463,7 +464,7 @@ router.route("/build")
 		if (err) {
 			req.flash('error', "Something's not right here...");
 			console.error('Uhoh, there was an error (/build PUT)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 	})
 })
@@ -475,7 +476,7 @@ router.route("/equip")
 		if (err) {
 			req.flash('error', "Something's not right here... Couldn't find that user...");
 			console.error('Uhoh, there was an error (/equip User.findById GET)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 		
 		let sort = common.Helpers.sortInventory();
@@ -519,8 +520,7 @@ router.route("/equip")
 		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer.buffer));
 		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
-			// console.log("output from cloudinary upload: ");
-			// console.log(error, result);
+			// console.log("output from cloudinary upload: ", error);
 			foundImage.public_id = result.public_id;
 			foundImage.etag = result.etag;
 			foundImage.version = result.version;
@@ -570,7 +570,7 @@ router.route("/equip")
 		if (err) {
 			req.flash('error', "Something's not right here... Something went wrong updating this Unicorn's equips...");
 			console.error('Uhoh, there was an error (/equip PUT)', err)
-			return res.redirect('/index');
+			res.redirect('/index');
 		}
 	})
 	unicornUpdate.then((output)=>{

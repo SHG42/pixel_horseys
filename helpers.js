@@ -82,8 +82,7 @@ function runComposite(foundUnicorn) {
 		var bufferStream = new stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer.buffer));
 		bufferStream.pipe(cloudinary.uploader.upload_stream(options, function(error, result) {
-			console.log("cloudinary output in helpers");
-			console.log(error, result);
+			console.log("cloudinary output in helpers: ", error);
 			foundImage.public_id = result.public_id;
 			foundImage.etag = result.etag;
 			foundImage.version = result.version;
