@@ -28,19 +28,23 @@ async function submitData() {
 		let formData = new FormData();
 		formData.append("image", blob, "image.png");
 		formData.append("userChoices", dataString);
-		let response = await fetch('/build', {
+		fetch('/build', {
 			method: 'POST',
 			redirect: "follow",
 			body: formData
-		});
-		let result = await response;
-		if(result.ok) {
+		})
+		.then((response)=>{
+			console.log(response);
 			if(document.URL.includes("/build")){
-				window.location = `/home/${user}/`;
+				window.location.href = response.url;
 			} else if(document.URL.includes("/founder")){
 				window.location = "/region";
 			}
-		}
+		})
+		.catch((err)=>{
+			console.info(err);
+		})
+		
 	} else if(yourTokens === 0 && document.URL.includes("/build")) {
 		alert("You're out of tokens!");
 	}	

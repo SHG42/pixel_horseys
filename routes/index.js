@@ -7,6 +7,9 @@ var crypto = require("crypto");
 var mstorage = common.multer.memoryStorage();
 var upload = common.multer({ storage: mstorage });
 
+var router2 = require("../routes/homepages.js");
+// console.log(router2);
+
 router.get("/", function(req, res){
    res.render("landing"); 
 });
@@ -192,87 +195,54 @@ router.get("/credits", function(req, res){
 
 //INDEX, SITE HOMEPAGE
 router.get("/index", [isLoggedIn, finishedRegistration], function(req, res) {
-	common.User.findById(req.user._id).populate("region").exec(function(err, foundLoggedInUser){
-		if (err) {
-			req.flash('error', "Something's not right here... Can't find an Index page for that user...");
-			console.error('Uhoh, there was an error (/index User.findById GET)', err);
-			res.redirect('/login');
-		}
-		res.render("index", {loggedInUser: foundLoggedInUser});
-	});
+	res.render("index", {loggedInUser: req.loggedInUser});
 });
 
 // SHOW inventory
-router.get("/inventory", isLoggedIn, function(req, res){
-	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		if (err) {
-			req.flash('error', "Something's not right here... Error loading the inventory...");
-			console.error('Uhoh, there was an error (/inventory User.findById GET)', err)
-			res.redirect('/index');
-		}
-
-		let sort = common.Helpers.sortInventory();
-		sort.then((result)=>{
-			res.render("inventory", {
-				loggedInUser: foundLoggedInUser,
-				inventoryBackdrops: result.inventoryBackdrops,
-				inventoryCompanions: result.inventoryCompanions,
-				inventoryDecorative: result.inventoryDecorative,
-				inventoryEnvironment: result.inventoryEnvironment,
-				inventoryGems: result.inventoryGems,
-				inventoryTech: result.inventoryTech,
-				inventoryTiles: result.inventoryTiles
-			});
-		})
-	});
+router.get("/inventory", [isLoggedIn, finishedRegistration], function(req, res){
+	let sort = common.Helpers.sortInventory();
+	sort.then((result)=>{
+		res.render("inventory", {
+			loggedInUser: req.loggedInUser,
+			inventoryBackdrops: result.inventoryBackdrops,
+			inventoryCompanions: result.inventoryCompanions,
+			inventoryDecorative: result.inventoryDecorative,
+			inventoryEnvironment: result.inventoryEnvironment,
+			inventoryGems: result.inventoryGems,
+			inventoryTech: result.inventoryTech,
+			inventoryTiles: result.inventoryTiles
+		});
+	})
 });
 
 // SHOW directory
-router.get("/directory", isLoggedIn, function(req, res){
-	common.User.findById(req.user._id, function(err, foundLoggedInUser){
+router.get("/directory", [isLoggedIn, finishedRegistration], function(req, res){
+	//retrieve all users from database
+	common.User.find({}, function(err, foundUsers){
 		if (err) {
-			req.flash('error', "Something's not right here... Can't find that user...");
-			console.error('Uhoh, there was an error (/directory User.findById GET)', err)
+			req.flash('error', "Something's not right here... Can't load user list...");
+			console.error('Uhoh, there was an error (/directory User.find GET)', err)
 			res.redirect('/index');
 		}
-		
-		//retrieve all users from database
-		common.User.find({}, function(err, foundUsers){
-			if (err) {
-				req.flash('error', "Something's not right here... Can't load user list...");
-				console.error('Uhoh, there was an error (/directory User.find GET)', err)
-				res.redirect('/index');
-			}
-			res.render("directory", {loggedInUser: foundLoggedInUser, registeredUsers: foundUsers});
-		});
+		res.render("directory", {loggedInUser: req.loggedInUser, registeredUsers: foundUsers});
 	});
 });
 
 //SHOW game
 router.route("/explore")
-.get(isLoggedIn, function(req, res){
-	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		res.render("explore", {loggedInUser: foundLoggedInUser}); 
-	});
+.get([isLoggedIn, finishedRegistration], function(req, res){
+	res.render("explore", {loggedInUser: req.loggedInUser});
 })
-.put(isLoggedIn, function(req, res){
-	common.User.findById(req.user._id, function(err, foundLoggedInUser){
-		if (err) {
-			req.flash('error', "Something's not right here... Can't find that user...");
-			console.error('Uhoh, there was an error (/explore User.findById PUT)', err)
-			res.redirect('/index');
-		}
-		
-		foundLoggedInUser.tokens++;
-		foundLoggedInUser.save();
-		req.flash("success", "Quest completed successfully! Welcome home, explorer!");
-		res.redirect(303, "/index");
-	})
+.put([isLoggedIn, finishedRegistration], function(req, res){
+	req.loggedInUser.tokens++;
+	req.loggedInUser.save();
+	req.flash("success", "Quest completed successfully! Welcome home, explorer!");
+	res.redirect(303, "/index");
 })
 
 // SHOW customize
 router.route("/build")
-.get(isLoggedIn, function(req, res){
+.get([isLoggedIn, finishedRegistration], function(req, res){
 	common.Breed.find({}, function(err, foundAllBreeds){
 		if (err) {
 			req.flash('error', "Something's not right here... Can't load Breeds list...");
@@ -287,14 +257,7 @@ router.route("/build")
 				res.redirect('/index');
 			}
 
-			common.User.findById(req.user._id).populate("unicorns").exec(function(err, foundLoggedInUser){
-				if (err) {
-					req.flash('error', "Something's not right here... Can't find that user...");
-					console.error('Uhoh, there was an error (/build User.findById GET)', err)
-					res.redirect('/index');
-				}
-				res.render("build", {loggedInUser: foundLoggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
-			});
+			res.render("build", {loggedInUser: req.loggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 		});
 	});
 })
@@ -305,7 +268,7 @@ router.route("/build")
 	let loggedInUser = req.user._id;
 	let buffer = req.files[0].buffer;
 
-	function runUpload(newImage, buffer, newUnicorn) {
+	async function runUpload(newImage, buffer, newUnicorn) {
 		var path = newImage.filename;
 		var folder = `Unicorns/${newUnicorn._id}/baseImg`;
 		let options = {
@@ -392,7 +355,7 @@ router.route("/build")
 		}
 	})
 })
-.put([isLoggedIn, upload.any()], function(req, res){
+.put([isLoggedIn, finishedRegistration, upload.any()], function(req, res){
 	console.log("Incoming PUT user data in /build route: ");
 	let userChoices = JSON.parse(req.body.userChoices);
 	let unicornData = common.Helpers.setData(userChoices);
@@ -471,7 +434,7 @@ router.route("/build")
 
 // SHOW equip
 router.route("/equip")
-.get(isLoggedIn, function(req, res){
+.get([isLoggedIn], function(req, res){
 	common.User.findById(req.user._id).populate({ path: 'unicorns', populate: { path: 'imgs.baseImg', model: 'Image' }}).exec(function(err, foundLoggedInUser){
 		if (err) {
 			req.flash('error', "Something's not right here... Couldn't find that user...");
@@ -598,7 +561,8 @@ function finishedRegistration(req, res, next) {
 			req.flash("error", "You haven't finished registration yet! Please select a region.");
 			res.redirect("/region");
 		} else {
-			return next();
+			req.loggedInUser = foundUser;
+			next();
 		}
 	});
 }
