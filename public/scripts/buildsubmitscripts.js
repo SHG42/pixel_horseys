@@ -42,7 +42,7 @@ async function submitData() {
 			}
 		})
 		.catch((err)=>{
-			console.info(err);
+			console.error("error:", err);
 		})
 		
 	} else if(yourTokens === 0 && document.URL.includes("/build")) {

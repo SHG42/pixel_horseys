@@ -249,14 +249,12 @@ router.route("/build")
 			console.error('Uhoh, there was an error (/build Breed.find GET)', err)
 			res.redirect('/index');
 		}
-		
 		common.Gene.find({}, function(err, foundAllGenes){
 			if (err) {
 				req.flash('error', "Something's not right here... Can't load Genes list...");
 				console.error('Uhoh, there was an error (/build Gene.find GET)', err)
 				res.redirect('/index');
 			}
-
 			res.render("build", {loggedInUser: req.loggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 		});
 	});
@@ -269,7 +267,7 @@ router.route("/build")
 	let buffer = req.files[0].buffer;
 
 	async.waterfall([
-		function(done) {
+		function(callback) {
 			common.Unicorn.create(unicornData, (err, newUnicorn)=>{
 				if (err) {
 					console.error('Uhoh, there was an error (/build Unicorn.create POST)', err)
@@ -278,11 +276,11 @@ router.route("/build")
 				}
 				newUnicorn.owner = loggedInUser;
 				newUnicorn.save((err)=> {
-					done(err, newUnicorn);
+					callback(null, newUnicorn);
 				});
 			});
 		},
-		function(newUnicorn, done) {
+		function(newUnicorn, callback) {
 			common.Image.create(buffer, (err, newImage)=>{
 				if (err) {
 					console.error('Uhoh, there was an error (/build Image.create POST)', err)
@@ -290,12 +288,12 @@ router.route("/build")
 					return res.redirect('/index');
 				}
 				newImage.filename = newUnicorn._id.valueOf();
-				newImage.save((err)=> {
-					done(err, newUnicorn, newImage);
+				newImage.save(()=> {
+					callback(null, newImage, newUnicorn);
 				});
 			});
 		},
-		function(newUnicorn, newImage, done) {
+		function(newImage, newUnicorn, callback) {
 			var path = newImage.filename;
 			var folder = `Unicorns/${newUnicorn._id}/baseImg`;
 			let options = {
@@ -320,45 +318,43 @@ router.route("/build")
 				newUnicorn.imgs.baseImg = newImage;
 				newUnicorn.imgs.img = newImage;
 				newImage.save();
-				newUnicorn.save((err)=>{
-					done(err, newUnicorn);
+				newUnicorn.save(()=>{
+					callback(null, newUnicorn);
 				});
 			}))
 		},
-		function(newUnicorn, done) {
+		function(newUnicorn, callback) {
 			common.User.findById(loggedInUser).populate("unicorns").exec((err, user)=>{
 				newUnicorn.owner = user._id;
-				newUnicorn.save();
 				if(user.unicorns.length === 0) {
 					newUnicorn.founder = true;
 					newUnicorn.save((err)=>{
-						done(err, user, newUnicorn);
+						callback(null, newUnicorn, user);
 					});
 				} else {
 					newUnicorn.founder = false;
+					newUnicorn.save();
 					user.tokens--;
-					user.save((err)=>{
-						done(err, user, newUnicorn);
+					user.save(()=>{
+						callback(null, newUnicorn, user);
 					});
 				}
 			})
 		},
-		function(user, newUnicorn, done) {
+		function(newUnicorn, user, callback) {
 			if(req.url.includes("/founder")){
 				req.flash("success", "Unicorn successfully created! You may proceed to region selection.");
 				res.redirect("/region");
-				done('done');
+				callback(null, 'done');
 			} else if (req.url.includes("/build")){
 				req.flash("success", "Unicorn successfully created!");
 				res.redirect(`/home/${user.userid}/unicorn/${newUnicorn.uniid}`);
-				done('done');
+				callback(null, 'done');
 			}
 		}
-	], function(err) {
-		if (err) return next(err);
+	], function (err, result) {
 		req.flash('error', "Something's not right here...");
-		console.error('Uhoh, there was an error at the end of the create route (/build POST)', err);
-    	res.redirect('/index');
+		console.log('End of the create route (/build POST)', err, result);
 	});
 })
 .put([isLoggedIn, finishedRegistration, upload.any()], function(req, res){
