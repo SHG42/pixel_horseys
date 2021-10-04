@@ -261,99 +261,105 @@ router.route("/build")
 		});
 	});
 })
-.post([isLoggedIn, upload.any()], function(req, res){
+.post([isLoggedIn, finishedRegistration, upload.any()], function(req, res, next){
 	console.log("Incoming POST user data in /build route: ");
 	let userChoices = JSON.parse(req.body.userChoices);
 	let unicornData = common.Helpers.setData(userChoices);
 	let loggedInUser = req.user._id;
 	let buffer = req.files[0].buffer;
 
-	async function runUpload(newImage, buffer, newUnicorn) {
-		var path = newImage.filename;
-		var folder = `Unicorns/${newUnicorn._id}/baseImg`;
-		let options = {
-			upload_preset: 'unicornBaseImgSave',
-			resource_type: 'image',
-			format: 'png',
-			public_id: newImage.filename,
-			folder: folder
-		}
-		var bufferStream = new common.stream.PassThrough();
-		bufferStream.end(Buffer.from(buffer));
-		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
-			console.log("cloudinary upload error: ", error);
-			newImage.public_id = result.public_id;
-			newImage.etag = result.etag;
-			newImage.version = result.version;
-			newImage.img.data = buffer;
-			newUnicorn.imgs.baseImg = newImage;
-			newUnicorn.imgs.img = newImage;
-			newImage.save();
-			newUnicorn.save();
-			return {
-				newImage: newImage,
-				newUnicorn: newUnicorn
+	async.waterfall([
+		function(done) {
+			common.Unicorn.create(unicornData, (err, newUnicorn)=>{
+				if (err) {
+					console.error('Uhoh, there was an error (/build Unicorn.create POST)', err)
+					req.flash('error', "Something's not right... something went wrong creating this Unicorn...");
+					return res.redirect('/index');
+				}
+				newUnicorn.owner = loggedInUser;
+				newUnicorn.save((err)=> {
+					done(err, newUnicorn);
+				});
+			});
+		},
+		function(newUnicorn, done) {
+			common.Image.create(buffer, (err, newImage)=>{
+				if (err) {
+					console.error('Uhoh, there was an error (/build Image.create POST)', err)
+					req.flash('error', "Something's not right... something went wrong creating this Unicorn...");
+					return res.redirect('/index');
+				}
+				newImage.filename = newUnicorn._id.valueOf();
+				newImage.save((err)=> {
+					done(err, newUnicorn, newImage);
+				});
+			});
+		},
+		function(newUnicorn, newImage, done) {
+			var path = newImage.filename;
+			var folder = `Unicorns/${newUnicorn._id}/baseImg`;
+			let options = {
+				upload_preset: 'unicornBaseImgSave',
+				resource_type: 'image',
+				format: 'png',
+				public_id: newImage.filename,
+				folder: folder
 			}
-		}))
-		return {
-			newUnicorn: newUnicorn
-		}
-	}
-	
-	async function createImage(newUnicorn) {
-		const newImage = await common.Image.create(buffer);
-		newImage.filename = newUnicorn._id.valueOf();
-		return {
-			newUnicorn: newUnicorn,
-			newImage: newImage
-		};
-	}
-
-	async function assignOwner(result) {
-		var user = await common.User.findById(loggedInUser).populate("unicorns").exec()
-		result.newUnicorn.owner = user._id;
-		result.newUnicorn.save();
-		if(user.unicorns.length === 0) {
-			result.newUnicorn.founder = true;
-		} else {
-			result.newUnicorn.founder = false;
-			user.tokens--;
-			user.save();
-		}
-		return {
-			user: user,
-			newUnicorn: result.newUnicorn
-		}
-	}
-	
-	var unicornCreate = common.Unicorn.create(unicornData)
-		.then((newUnicorn)=> createImage(newUnicorn))
-		.then((res1)=> runUpload(res1.newImage, buffer, res1.newUnicorn))
-		.catch((err)=>{
-			if (err) {
-				req.flash('error', "Something's not right here... Something went wrong creating this Unicorn...");
-				console.log('Uhoh, there was an error in (/build POST)', err);
-				res.redirect('/index');
+			var bufferStream = new common.stream.PassThrough();
+			bufferStream.end(Buffer.from(buffer));
+			bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, (error, result)=> {
+				if (error) {
+					console.error('Uhoh, there was an error (/build upload POST)', err)
+					req.flash('error', "Something's not right... something went wrong creating this Unicorn...");
+					return res.redirect('/index');
+				}
+				newImage.public_id = result.public_id;
+				newImage.etag = result.etag;
+				newImage.version = result.version;
+				newImage.img.data = buffer;
+				newUnicorn.imgs.baseImg = newImage;
+				newUnicorn.imgs.img = newImage;
+				newImage.save();
+				newUnicorn.save((err)=>{
+					done(err, newUnicorn);
+				});
+			}))
+		},
+		function(newUnicorn, done) {
+			common.User.findById(loggedInUser).populate("unicorns").exec((err, user)=>{
+				newUnicorn.owner = user._id;
+				newUnicorn.save();
+				if(user.unicorns.length === 0) {
+					newUnicorn.founder = true;
+					newUnicorn.save((err)=>{
+						done(err, user, newUnicorn);
+					});
+				} else {
+					newUnicorn.founder = false;
+					user.tokens--;
+					user.save((err)=>{
+						done(err, user, newUnicorn);
+					});
+				}
+			})
+		},
+		function(user, newUnicorn, done) {
+			if(req.url.includes("/founder")){
+				req.flash("success", "Unicorn successfully created! You may proceed to region selection.");
+				res.redirect("/region");
+				done('done');
+			} else if (req.url.includes("/build")){
+				req.flash("success", "Unicorn successfully created!");
+				res.redirect(`/home/${user.userid}/unicorn/${newUnicorn.uniid}`);
+				done('done');
 			}
-		})
-	
-	unicornCreate.then((result)=> assignOwner(result))
-	.then((result)=>{
-		if(req.url.includes("/founder")){
-			req.flash("success", "Unicorn successfully created! You may proceed to region selection.");
-			res.redirect("/region");
-		} else if (req.url.includes("/build")){
-			req.flash("success", "Unicorn successfully created!");
-			res.redirect(`/home/${result.user.userid}/unicorn/${result.newUnicorn.uniid}`);
 		}
-	})
-	.catch((err)=>{
-		if (err) {
-			req.flash('error', "Something's not right here...");
-			console.error('Uhoh, there was an error at the end of the create route (/build POST)', err);
-			res.redirect('/index');
-		}
-	})
+	], function(err) {
+		if (err) return next(err);
+		req.flash('error', "Something's not right here...");
+		console.error('Uhoh, there was an error at the end of the create route (/build POST)', err);
+    	res.redirect('/index');
+	});
 })
 .put([isLoggedIn, finishedRegistration, upload.any()], function(req, res){
 	console.log("Incoming PUT user data in /build route: ");
