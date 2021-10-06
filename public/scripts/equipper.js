@@ -36,6 +36,7 @@ function changeUnicorn(event) {
 				});
 			}
 			Unicorn = unicorn;
+			//clear item layers of any existing equips from previous unicorns
 			resetEquips();
 			redrawLayers();
 			loadEquips();
@@ -48,7 +49,6 @@ function loadEquips() {
 	if(equips.length === 0) {
 		return;
 	} else {
-		//clear item layers of any existing equips from previous unicorns
 		equips.forEach(function(equip){
 			Konva.Image.fromURL(equip.image, function (itemNode) {
 				itemNode.setAttrs(equip.data);

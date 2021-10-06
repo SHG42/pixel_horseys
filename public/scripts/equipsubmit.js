@@ -57,7 +57,7 @@ async function sendData() {
 		redirect: "follow",
 		body: formData
 	});
-	let result = await response;
+	let result = response;
 	if(result.ok) {
 		modal.hide();	
 	}

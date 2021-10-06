@@ -35,7 +35,6 @@ async function submitData() {
 			body: formData
 		})
 		.then((response)=>{
-			console.log(response);
 			if(document.URL.includes("/build")){
 				window.location.href = response.url;
 			} else if(document.URL.includes("/founder")){

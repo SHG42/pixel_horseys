@@ -78,12 +78,9 @@ function buildUnicorn(req, res, unicornData, loggedInUser, buffer) {
 		},
 		function(newUnicorn, callback) {
 			User.findById(loggedInUser).populate({path: "unicorns"}).exec((err, user)=>{
-				console.log(user.unicorns);
 				if(user.unicorns.length === 0) {
-					console.log("founder")
 					newUnicorn.founder = true;
 				} else {
-					console.log("not a founder")
 					newUnicorn.founder = false;
 					user.tokens--;
 				}
@@ -177,7 +174,6 @@ function runComposite(foundUnicorn) {
 		var bufferStream = new stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer.buffer));
 		bufferStream.pipe(cloudinary.uploader.upload_stream(options, function(error, result) {
-			console.log("cloudinary output in helpers: ", error);
 			foundImage.public_id = result.public_id;
 			foundImage.etag = result.etag;
 			foundImage.version = result.version;
@@ -273,8 +269,7 @@ function setData(userChoices) {
 		},
 		colors: userChoices.colors
 	}
-	// console.log("data in Helpers: ");
-	// console.log(data);
+	
 	return data;
 }
 

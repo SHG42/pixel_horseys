@@ -285,7 +285,6 @@ router.route("/build")
 		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer));
 		var upload = bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function (error, result) {
-			console.log("cloudinary output in /build .put", error);
 			foundImage.version = result.version;
 			foundImage.save();
 			return foundImage;
@@ -297,7 +296,6 @@ router.route("/build")
 	}
 	
 	async function findImage(foundUnicorn) {
-		console.log("finding and updating image document");
 		const foundImage = await common.Image.findByIdAndUpdate(foundUnicorn.imgs.baseImg._id, {"$set": {"img.data": buffer}}, {new: true});
 		return {
 			foundUnicorn: foundUnicorn,
@@ -312,7 +310,6 @@ router.route("/build")
 	.then((res1) => runUpload(res1.foundImage, buffer, res1.foundUnicorn))
 	.then((res2) => {
 		if(res2.foundUnicorn.equips.length !== 0){
-			console.log("about to run composite from /build .put");
 			common.Helpers.runComposite(res2.foundUnicorn)
 		} else {
 			return res2;
@@ -393,7 +390,6 @@ router.route("/equip")
 		var bufferStream = new common.stream.PassThrough();
 		bufferStream.end(Buffer.from(buffer.buffer));
 		bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, function(error, result) {
-			// console.log("output from cloudinary upload: ", error);
 			foundImage.public_id = result.public_id;
 			foundImage.etag = result.etag;
 			foundImage.version = result.version;
