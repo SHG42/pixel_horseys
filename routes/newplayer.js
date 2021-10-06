@@ -58,9 +58,14 @@ router.route("/founder")
 	});
 })
 .post([isLoggedIn, upload.any()], function(req, res) {
-	res.redirect("/region");
+	console.log("Incoming POST user data in /founder route: ");
+	let userChoices = JSON.parse(req.body.userChoices);
+	let unicornData = common.Helpers.setData(userChoices);
+	let loggedInUser = req.user._id;
+	let buffer = req.files[0].buffer;
+	
+	common.Helpers.buildUnicorn(req, res, unicornData, loggedInUser, buffer);
 });
-
 
 router.route("/region")
 .get(isLoggedIn, function(req, res) {
@@ -80,14 +85,14 @@ router.route("/region")
 		if (err) {
 			req.flash('error', "Something's not right here... Region not found...");
 			console.error('Uhoh, there was an error (/region Region.findOne PUT)', err)
-			res.redirect('/index');
+			res.redirect('/region');
 		}
 		var foundARegion = foundRegion;
 		common.User.findByIdAndUpdate(req.user._id, {region: foundARegion}, function(err, foundUser){
 			if (err) {
 				req.flash('error', "Something's not right here... Can't find that user...");
 				console.error('Uhoh, there was an error (/region User.findByIdAndUpdate PUT)', err)
-				res.redirect('/index');
+				res.redirect('/region');
 			}
 		    
 			res.redirect("/index");

@@ -7,9 +7,6 @@ var crypto = require("crypto");
 var mstorage = common.multer.memoryStorage();
 var upload = common.multer({ storage: mstorage });
 
-var router2 = require("../routes/homepages.js");
-// console.log(router2);
-
 router.get("/", function(req, res){
    res.render("landing"); 
 });
@@ -265,97 +262,8 @@ router.route("/build")
 	let unicornData = common.Helpers.setData(userChoices);
 	let loggedInUser = req.user._id;
 	let buffer = req.files[0].buffer;
-
-	async.waterfall([
-		function(callback) {
-			common.Unicorn.create(unicornData, (err, newUnicorn)=>{
-				if (err) {
-					console.error('Uhoh, there was an error (/build Unicorn.create POST)', err)
-					req.flash('error', "Something's not right... something went wrong creating this Unicorn...");
-					return res.redirect('/index');
-				}
-				newUnicorn.owner = loggedInUser;
-				newUnicorn.save((err)=> {
-					callback(null, newUnicorn);
-				});
-			});
-		},
-		function(newUnicorn, callback) {
-			common.Image.create(buffer, (err, newImage)=>{
-				if (err) {
-					console.error('Uhoh, there was an error (/build Image.create POST)', err)
-					req.flash('error', "Something's not right... something went wrong creating this Unicorn...");
-					return res.redirect('/index');
-				}
-				newImage.filename = newUnicorn._id.valueOf();
-				newImage.save(()=> {
-					callback(null, newImage, newUnicorn);
-				});
-			});
-		},
-		function(newImage, newUnicorn, callback) {
-			var path = newImage.filename;
-			var folder = `Unicorns/${newUnicorn._id}/baseImg`;
-			let options = {
-				upload_preset: 'unicornBaseImgSave',
-				resource_type: 'image',
-				format: 'png',
-				public_id: newImage.filename,
-				folder: folder
-			}
-			var bufferStream = new common.stream.PassThrough();
-			bufferStream.end(Buffer.from(buffer));
-			bufferStream.pipe(common.cloudinary.uploader.upload_stream(options, (error, result)=> {
-				if (error) {
-					console.error('Uhoh, there was an error (/build upload POST)', err)
-					req.flash('error', "Something's not right... something went wrong creating this Unicorn...");
-					return res.redirect('/index');
-				}
-				newImage.public_id = result.public_id;
-				newImage.etag = result.etag;
-				newImage.version = result.version;
-				newImage.img.data = buffer;
-				newUnicorn.imgs.baseImg = newImage;
-				newUnicorn.imgs.img = newImage;
-				newImage.save();
-				newUnicorn.save(()=>{
-					callback(null, newUnicorn);
-				});
-			}))
-		},
-		function(newUnicorn, callback) {
-			common.User.findById(loggedInUser).populate("unicorns").exec((err, user)=>{
-				newUnicorn.owner = user._id;
-				if(user.unicorns.length === 0) {
-					newUnicorn.founder = true;
-					newUnicorn.save((err)=>{
-						callback(null, newUnicorn, user);
-					});
-				} else {
-					newUnicorn.founder = false;
-					newUnicorn.save();
-					user.tokens--;
-					user.save(()=>{
-						callback(null, newUnicorn, user);
-					});
-				}
-			})
-		},
-		function(newUnicorn, user, callback) {
-			if(req.url.includes("/founder")){
-				req.flash("success", "Unicorn successfully created! You may proceed to region selection.");
-				res.redirect("/region");
-				callback(null, 'done');
-			} else if (req.url.includes("/build")){
-				req.flash("success", "Unicorn successfully created!");
-				res.redirect(`/home/${user.userid}/unicorn/${newUnicorn.uniid}`);
-				callback(null, 'done');
-			}
-		}
-	], function (err, result) {
-		req.flash('error', "Something's not right here...");
-		console.log('End of the create route (/build POST)', err, result);
-	});
+	
+	common.Helpers.buildUnicorn(req, res, unicornData, loggedInUser, buffer);
 })
 .put([isLoggedIn, finishedRegistration, upload.any()], function(req, res){
 	console.log("Incoming PUT user data in /build route: ");

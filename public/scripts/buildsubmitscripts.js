@@ -28,7 +28,8 @@ async function submitData() {
 		let formData = new FormData();
 		formData.append("image", blob, "image.png");
 		formData.append("userChoices", dataString);
-		fetch('/build', {
+
+		fetch(window.location.pathname, {
 			method: 'POST',
 			redirect: "follow",
 			body: formData
