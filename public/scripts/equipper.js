@@ -19,6 +19,8 @@ layerDown.addEventListener("click", shiftLayerDown);
 layerUp.addEventListener("click", shiftLayerUp);
 moveDown.addEventListener("click", moveItemDown);
 moveUp.addEventListener("click", moveItemUp);
+flipX.addEventListener("click", flipLeftRight);
+flipY.addEventListener("click", flipUpDown);
 unscale.addEventListener("click", unscaleItem);
 remove.addEventListener("click", removeItem);
 
@@ -101,6 +103,22 @@ tr.on('transform', function () {
 });
 
 //act upon active node
+function flipUpDown() {
+	tr.node().offsetX(tr.node().width() / 2);
+	tr.node().to({
+		scaleY: -tr.node().scaleY()
+	});
+	tr.moveToTop();
+	redrawLayers();
+}
+function flipLeftRight() {
+	tr.node().offsetX(tr.node().width() / 2);
+	tr.node().to({
+		scaleX: -tr.node().scaleX()
+	});
+	tr.moveToTop();
+	redrawLayers();
+}
 function shiftLayerDown() {
 	tr.node().moveTo(itemLayerBack);
 	tr.moveToTop();

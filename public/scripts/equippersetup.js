@@ -4,6 +4,8 @@ var layerDown = document.getElementById("layerDown");
 var layerUp = document.getElementById("layerUp");
 var moveDown = document.getElementById("moveDown");
 var moveUp = document.getElementById("moveUp");
+var flipX = document.getElementById("flipleftright");
+var flipY = document.getElementById("flipupdown");
 var unscale = document.getElementById("unscale");
 var remove = document.getElementById("remove");
 var activeNode;

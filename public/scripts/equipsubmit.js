@@ -3,7 +3,7 @@ var modal = new bootstrap.Modal(document.querySelector('#progressPopup'))
 
 submitButton.addEventListener("click", sendData);
 async function sendData() {
-	tr.destroy();
+	tr.remove();
 	// convert stage to dataURL to condense canvases to two images, front layer and back layer, then to two blobs for server transfer
 	var layers = stage.getLayers();
 	
@@ -60,5 +60,6 @@ async function sendData() {
 	let result = response;
 	if(result.ok) {
 		modal.hide();	
+		itemLayerFront.add(tr);
 	}
 }
