@@ -40,14 +40,13 @@
 </div>
 <% include ./partials/helpModal %>
 <% include ./partials/progressPopup %>
+
 <script>
 	var user = <%- JSON.stringify(loggedInUser.userid) %>;
+	var dbBreeds = <%- JSON.stringify(Breeds) %>;
+	var dbGenes = <%- JSON.stringify(Genes) %>;
 	var yourUnicorns = <%- JSON.stringify(loggedInUser.unicorns) %>;
 	var yourTokens = <%- JSON.stringify(loggedInUser.tokens) %>;
-	
-	var dbBreeds = <%- JSON.stringify(Breeds) %>;
-	
-	var dbGenes = <%- JSON.stringify(Genes) %>;
 </script>
 <script src="../../scripts/buildvariables.js"></script>
 <script src="../../scripts/buildsetup.js"></script>

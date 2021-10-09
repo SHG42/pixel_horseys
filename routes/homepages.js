@@ -10,7 +10,7 @@ router.route("/home/:userid")
 	//get info and unicorns of PAGE-OWNER
 	common.User.findOne({userid: req.params.userid}).populate({path: "region"}).populate({path: "unicorns", populate: { path: 'imgs.img', model: 'Image' }}).exec(function(err, foundPageOwner){
 		if (err) {
-			req.flash('error', "Something's not right here...");
+			req.flash('error', "Something's not right here... Can't find that user...");
 			console.error('Uhoh, there was an error (/home/:userid findOne GET)', err);
 			res.redirect('/index');
 		}
@@ -18,7 +18,6 @@ router.route("/home/:userid")
 	});
 })
 .put(isLoggedIn, function(req, res){
-	req.body.newName = req.sanitize(req.body.newName);
 	var newName = req.body.newName;
 	common.Unicorn.findByIdAndUpdate(req.body.unicornid, {$set: {name: newName}}, {new: true}, function(err, foundUnicorn){
 		if (err) {
@@ -48,7 +47,6 @@ router.route("/home/:userid/unicorn/:uniid")
 	});
 })
 .put(isLoggedIn, function(req,res){
-	// var newLore = req.sanitize(req.body.unicorn.lore);
 	var newLore = req.body.lore;
 	common.Unicorn.findOneAndUpdate({uniid: req.params.uniid}, {$set: {lore: newLore}}, {new: true}, function(err, foundUnicorn){
 		if (err) {
@@ -74,6 +72,12 @@ function isLoggedIn(req, res, next){
 //middleware for checking if loggedIn user finished registration
 function finishedRegistration(req, res, next) {
 	common.User.findById(req.user._id).populate({path: "region"}).populate({path: "unicorns"}).exec(function(err, foundUser){
+		if (err) {
+			req.flash('error', "Something's not right here... Can't find that user...");
+			console.error('Uhoh, there was an error in finishedRegistration middleware ', err)
+			res.redirect('/index');
+		}
+
 		if(foundUser.unicorns.length === 0) {
 			req.flash("error", "You haven't finished registration yet! Please create your founder.");
 			res.redirect("/founder");

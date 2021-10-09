@@ -252,6 +252,7 @@ router.route("/build")
 				console.error('Uhoh, there was an error (/build Gene.find GET)', err)
 				res.redirect('/index');
 			}
+			
 			res.render("build", {loggedInUser: req.loggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
 		});
 	});
@@ -460,6 +461,12 @@ function isLoggedIn(req, res, next){
 //middleware for checking if loggedIn user finished registration
 function finishedRegistration(req, res, next) {
 	common.User.findById(req.user._id).populate({path: "region"}).populate({path: "unicorns"}).exec(function(err, foundUser){
+		if (err) {
+			req.flash('error', "Something's not right here... Can't find that user...");
+			console.error('Uhoh, there was an error in finishedRegistration middleware ', err)
+			res.redirect('/index');
+		}
+		
 		if(foundUser.unicorns.length === 0) {
 			req.flash("error", "You haven't finished registration yet! Please create your founder.");
 			res.redirect("/founder");

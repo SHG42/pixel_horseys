@@ -53,9 +53,6 @@
 </div>
 <% } %>
 <script>
-	var loggedIn = <%- JSON.stringify(loggedInUser) %>;
-	var pageOwner = <%- JSON.stringify(currentPageOwner) %>;
-	
 	var nameModal = document.getElementById('nameModal');
 	nameModal.addEventListener('show.bs.modal', function (event) {
 		// Button that triggered the modal
@@ -64,7 +61,7 @@
 		var dataId = button.dataset.bsUnicornid;
 		
 		var modal = this;
-		modal.querySelector('#namefield').setAttribute("placeholder", dataName);//placeholder
+		modal.querySelector('#namefield').setAttribute("value", dataName);//placeholder
 		modal.querySelector('#thisId').setAttribute("value", dataId);
 	});
 </script>

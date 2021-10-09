@@ -2,7 +2,6 @@ module.exports = {
     bodyParser              : require("body-parser"),
     methodOverride          : require("method-override"),
     mongoose                : require("mongoose"),
-    expressSanitizer        : require("express-sanitizer"),
 	session					: require("express-session"),
 	MongoStore				: require('connect-mongo'),
     passport                : require("passport"),

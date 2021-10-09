@@ -13,7 +13,6 @@ common.mongoose.connect(process.env.DB_CONN, {useNewUrlParser: true, useUnifiedT
 
 app.use(common.bodyParser.json());
 app.use(common.bodyParser.urlencoded({extended: true}));
-app.use(common.expressSanitizer());
 app.use(express.static("public"));
 app.use(common.methodOverride("_method"));
 app.set("view engine", "ejs");

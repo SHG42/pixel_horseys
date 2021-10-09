@@ -11,7 +11,7 @@
 				<hr>
 				<% if(loggedInUser && currentPageOwner._id.equals(loggedInUser._id)){ %>
 				<form action="/home/<%= loggedInUser.userid %>/unicorn/<%= unicorn.uniid %>?_method=PUT" method="POST" name="loreform" id="loreform" aria-label="lore-form">
-					<div class="w-100" id="lore"><%- unicorn.lore %></div>
+					<div class="w-100" id="lore" name="lore"><%- unicorn.lore %></div>
 					<button type="submit" class="btn btn-primary d-none" id="sendlore">Submit</button>
 					<button type="button" class="btn btn-danger d-none" id="cancel">Cancel</button>
 				</form>
@@ -28,8 +28,6 @@
 <% include ./partials/helpModal %>
 
 <script type="text/javascript">
-	var uni = <%- JSON.stringify(unicorn) %>;
-	
 	var sendlore = document.getElementById("sendlore");
 	var cancel = document.getElementById("cancel");
 	var lore = document.querySelector("#lore");
