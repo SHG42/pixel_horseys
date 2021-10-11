@@ -14,7 +14,16 @@ router.route("/home/:userid")
 			console.error('Uhoh, there was an error (/home/:userid findOne GET)', err);
 			res.redirect('/index');
 		}
-		res.render("home", {currentPageOwner: foundPageOwner, loggedInUser: req.loggedInUser});
+
+		if(foundPageOwner.unicorns.length === 0) {
+			req.flash("error", "This user isn't ready for visitors just yet! Please try again later.");
+			res.redirect("/index");
+		} else if(!foundPageOwner.region) {
+			req.flash("error", "This user isn't ready for visitors just yet! Please try again later.");
+			res.redirect("/index");
+		} else {
+			res.render("home", {currentPageOwner: foundPageOwner, loggedInUser: req.loggedInUser});
+		}
 	});
 })
 .put(isLoggedIn, function(req, res){
