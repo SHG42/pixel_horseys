@@ -228,7 +228,7 @@ router.get("/directory", [isLoggedIn, finishedRegistration], function(req, res){
 //SHOW game
 router.route("/explore")
 .get([isLoggedIn, finishedRegistration], function(req, res){
-	res.render("explore", {loggedInUser: req.loggedInUser});
+	res.render("explore", {loggedInUser: req.loggedInUser, origin: "explore"});
 })
 .put([isLoggedIn, finishedRegistration], function(req, res){
 	req.loggedInUser.tokens++;
@@ -253,7 +253,7 @@ router.route("/build")
 				res.redirect('/index');
 			}
 			
-			res.render("build", {loggedInUser: req.loggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes}); 
+			res.render("build", {loggedInUser: req.loggedInUser, Breeds: foundAllBreeds, Genes: foundAllGenes, origin: "build"}); 
 		});
 	});
 })
@@ -354,6 +354,7 @@ router.route("/equip")
 		sort.then((result)=>{
 			res.render("equip", {
 				loggedInUser: foundLoggedInUser,
+				origin: "equip",
 				inventoryBackdrops: result.inventoryBackdrops,
 				inventoryCompanions: result.inventoryCompanions,
 				inventoryDecorative: result.inventoryDecorative,

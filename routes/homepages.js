@@ -42,7 +42,7 @@ router.route("/home/:userid/unicorn/:uniid")
 				console.error("error in bio route at Unicorn.findOne", err)
 				return res.redirect('/index');
 			}
-			res.render("bio", {currentPageOwner: foundPageOwner, loggedInUser: req.loggedInUser, unicorn: foundUnicorn});
+			res.render("bio", {currentPageOwner: foundPageOwner, loggedInUser: req.loggedInUser, unicorn: foundUnicorn, origin: "bio"});
 		});
 	});
 })

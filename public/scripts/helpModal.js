@@ -3,15 +3,19 @@ var json = JSON.parse(document.getElementById("instructionsManifest").text);
 var helpModal = document.getElementById('helpModal');
 var modalTitle = document.querySelector(".modal-title");
 var modalBody = document.querySelector(".modal-body");
+var h6 = document.querySelector("h6");
 var instructiontabs = document.querySelector("#instructiontabs");
 var instructiontabsContent = document.querySelector("#instructiontabs-content");
-var tab1 = document.querySelector("#tab1");
-var tab1Tab = document.querySelector("#tab1-tab");
-var tab2 = document.querySelector("#tab2");
-var tab2Tab = document.querySelector("#tab2-tab");
 
 helpModal.addEventListener('hide.bs.modal', (event)=>{
-	modalBody.replaceChildren();
+	if(document.URL.includes("/explore")){
+		instructiontabs.classList.replace("d-flex", "d-none");
+		instructiontabsContent.classList.replace("d-flex", "d-none");
+		h6.textContent = "";
+		modalTitle.textContent = "";
+	} else {
+		modalBody.replaceChildren();
+	}
 })
 
 helpModal.addEventListener('show.bs.modal', (event)=> {
@@ -42,15 +46,9 @@ helpModal.addEventListener('show.bs.modal', (event)=> {
 function setContent(titletext, bodytext, origin) {
 	modalTitle.textContent = titletext;
 	if(origin === "explore") {
-		let h6 = document.createElement("h6");
 		h6.textContent = bodytext;
-		modalBody.prepend(h6);
-		initTabs();
-
-		if(instructiontabs.classList.contains("d-none") && instructiontabsContent.classList.contains("d-none")) {
-			instructiontabs.classList.replace("d-none", "d-flex");
-			instructiontabsContent.classList.replace("d-none", "d-flex");
-		}
+		instructiontabs.classList.replace("d-none", "d-flex");
+		instructiontabsContent.classList.replace("d-none", "d-flex");
 	} else {
 		var ul = document.createElement("ul");
 		modalBody.append(ul);
@@ -60,27 +58,5 @@ function setContent(titletext, bodytext, origin) {
 			ul.append(li);
 		})
 	}
-}
-
-function initTabs() {
-	tab1Tab.innerText = json.explore.tabheader_keyboard;
-	tab2Tab.innerText = json.explore.tabheader_pointer;
-
-	var ul1 = document.createElement("ul");
-	var ul2 = document.createElement("ul");
-	tab1.append(ul1);
-	tab2.append(ul2);
-
-	json.explore.tabtext_keyboard.forEach((entry)=>{
-		let li = document.createElement("li");
-		li.textContent = entry;
-		ul1.append(li);
-	})
-
-	json.explore.tabtext_pointer.forEach((entry)=>{
-		let li = document.createElement("li");
-		li.textContent = entry;
-		ul2.append(li);
-	})
 }
 

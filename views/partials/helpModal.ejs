@@ -6,7 +6,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <% if(document.URL.includes("/explore")) { %>
+        <% if(origin === "explore") { %>
         <% include instructiontabs %>
         <%  } %>
       </div>
@@ -46,26 +46,6 @@
           "titletext":"Help: Exploring",
           "bodytext": [
               "How to Play: Navigate around the map and collect items. Use your device's keyboard or pointer (mouse, trackpad, or touchscreen)."
-          ],
-          "tabheader_keyboard": "KEYBOARD CONTROLS",
-          "tabheader_pointer": "POINTER CONTROLS",
-          "tabtext_keyboard": [
-              "To RUN LEFT, use the Left Arrow Key <-",
-              "To RUN RIGHT, use the Right Arrow  Key ->", 
-              "To JUMP STRAIGHT UP, use the Up Arrow  Key ^", 							
-              "To LEAP FORWARD, hold the LEFT ARROW <- or RIGHT ARROW -> and hit the UP ARROW ^. This will allow you to jump over small obstacles or leap across gaps",
-              "Can't jump high enough? You've found a LEDGE. Jump and grab ledges by pressing the Up Arrow ^ and the 'G' Key. You can also LEAP TOWARDS LEDGES by simultaneously pressing Up Arrow ^ AND the 'G' Key along with the LEFT ARROW <- or RIGHT ARROW ->", 
-              "Once you're grabbing a ledge, climb up onto it by pressing the 'C' key.",
-              "TIP: Having trouble with a ledge? Some are more challenging than others, but none are impossible! Try moving slightly closer or further from the base of the ledge before jumping to grab it, and make sure you're facing towards the ledge you want to grab.","Still having ledge trouble? Click the Easy Mode button to toggle targets that will show you exactly where the ledges are."
-          ],
-          "tabtext_pointer": [
-              "To RUN LEFT or RUN RIGHT, place your cursor or fingertip in front of the sprite or behind it, and hold down your fingertip or the left-hand mouse button",
-              "TIP: you're leading the sprite around the map with your fingertip or cursor. It won't work if you're clicking or touching too far away!",
-              "To JUMP STRAIGHT UP, tap once on the sprite.", 
-              "To LEAP FORWARD, right-click with the right-hand mouse button, or tap with two fingers. This will allow you to jump over small obstacles or leap across gaps",
-              "Can't jump high enough? You've found a LEDGE. You can reach ledges by jumping: for ledges directly above you, single-tap the sprite to jump straight up; to reach a ledge above and in front of you, right-click or two-finger tap to leap forward.", 
-              "Once you're grabbing a ledge, climb up onto it by tapping once on the sprite.",
-              "TIP: Having trouble with a ledge? Some are more challenging than others, but none are impossible! Try moving slightly closer or further from the base of the ledge before jumping to grab it, and make sure you're facing towards the ledge you want to grab.","Still having ledge trouble? Click the Easy Mode button to toggle targets that will show you exactly where the ledges are."
           ]
       }
   }
