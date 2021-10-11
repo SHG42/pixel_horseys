@@ -2,8 +2,8 @@
 <div class="unicornpage container-fluid">
 	<% include ./partials/navbar.ejs %>
 	<div class="picbox">
-		<div class="unicornhere">
-			<img class="img-fluid" src="<%=cloudinary.url(`${unicorn.imgs.img.public_id}.png`, {secure: 'true', cloud_name: cloudname, version: unicorn.imgs.img.version})%>">
+		<div>
+			<img class="img-fluid unicornhere p-2" src="<%=cloudinary.url(`${unicorn.imgs.img.public_id}.png`, {secure: 'true', cloud_name: cloudname, version: unicorn.imgs.img.version})%>">
 		</div>
 		<div class="biocontainer">
 			<fieldset class="editorbox">

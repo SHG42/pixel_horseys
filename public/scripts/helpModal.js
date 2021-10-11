@@ -1,6 +1,6 @@
 var json = JSON.parse(document.getElementById("instructionsManifest").text);
 
-var exampleModal = document.getElementById('helpModal');
+var helpModal = document.getElementById('helpModal');
 var modalTitle = document.querySelector(".modal-title");
 var modalBody = document.querySelector(".modal-body");
 var instructiontabs = document.querySelector("#instructiontabs");
@@ -10,17 +10,33 @@ var tab1Tab = document.querySelector("#tab1-tab");
 var tab2 = document.querySelector("#tab2");
 var tab2Tab = document.querySelector("#tab2-tab");
 
-exampleModal.addEventListener('show.bs.modal', (event)=> {
+helpModal.addEventListener('hide.bs.modal', (event)=>{
+	modalBody.replaceChildren();
+})
+
+helpModal.addEventListener('show.bs.modal', (event)=> {
 	// Button that triggered the modal
 	var button = event.relatedTarget;
 	// Extract info from data-bs-* attributes
 	var origin = button.getAttribute('data-bs-origin');
 	// Update the modal's content.
-	updateContent(origin);
-})
-
-exampleModal.addEventListener('hide.bs.modal', (event)=>{
-	modalBody.replaceChildren();
+	if(origin === "bio"){
+		var titletext = json.bioEditor.titletext;
+		var bodytext = json.bioEditor.bodytext;
+		setContent(titletext, bodytext, origin);
+	} else if(origin === "build"){
+		var titletext = json.geneticBuilder.titletext;
+		var bodytext = json.geneticBuilder.bodytext;
+		setContent(titletext, bodytext, origin);
+	} else if(origin === "equip"){
+		var titletext = json.equipper.titletext;
+		var bodytext = json.equipper.bodytext;
+		setContent(titletext, bodytext, origin);
+	} else if(origin === "explore"){
+		var titletext = json.explore.titletext;
+		var bodytext = json.explore.bodytext;
+		setContent(titletext, bodytext, origin);
+	}
 })
 
 function setContent(titletext, bodytext, origin) {
@@ -29,10 +45,12 @@ function setContent(titletext, bodytext, origin) {
 		let h6 = document.createElement("h6");
 		h6.textContent = bodytext;
 		modalBody.prepend(h6);
-
-		instructiontabs.classList.replace("d-none", "d-flex");
-		instructiontabsContent.classList.replace("d-none", "d-flex");
 		initTabs();
+
+		if(instructiontabs.classList.contains("d-none") && instructiontabsContent.classList.contains("d-none")) {
+			instructiontabs.classList.replace("d-none", "d-flex");
+			instructiontabsContent.classList.replace("d-none", "d-flex");
+		}
 	} else {
 		var ul = document.createElement("ul");
 		modalBody.append(ul);
@@ -64,25 +82,5 @@ function initTabs() {
 		li.textContent = entry;
 		ul2.append(li);
 	})
-}
-
-function updateContent(origin, id) {
-	if(origin === "bio"){
-		var titletext = json.bioEditor.titletext;
-		var bodytext = json.bioEditor.bodytext;
-		setContent(titletext, bodytext, origin);
-	} else if(origin === "build"){
-		var titletext = json.geneticBuilder.titletext;
-		var bodytext = json.geneticBuilder.bodytext;
-		setContent(titletext, bodytext, origin);
-	} else if(origin === "equip"){
-		var titletext = json.equipper.titletext;
-		var bodytext = json.equipper.bodytext;
-		setContent(titletext, bodytext, origin);
-	} else if(origin === "explore"){
-		var titletext = json.explore.titletext;
-		var bodytext = json.explore.bodytext;
-		setContent(titletext, bodytext, origin);
-	}
 }
 
