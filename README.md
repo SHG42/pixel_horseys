@@ -10,6 +10,8 @@ var
 - Run npm start
 - Navigate to localhost:8080
 
+***
+
 ## About The Project
 
 After completing Colt Steele's Web Developer Bootcamp on Udemy, I wanted to build something eye-catching, something that would stand out. So, I took the basic concepts I'd learned from the YelpCamp project in that course and went in my own direction with it. 
