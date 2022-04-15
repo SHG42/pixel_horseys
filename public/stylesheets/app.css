@@ -319,7 +319,7 @@ hr {
 }
 
 
-#gamedoor img, .fairytale-textbox, .instructions-button, #equipcanvas {
+#gamedoor img, .fairytale-textbox, .instructions-button, .equipcanvas {
 	/* width: 85%; */
 	border: 10px ridge rgba(192,192,192,0.8);
 }
