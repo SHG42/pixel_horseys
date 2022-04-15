@@ -39,7 +39,7 @@
 					</button>
 				</div>
 				<div class="row mx-auto">
-					<div id="container" class="col-12"></div>
+					<div id="container equipcanvas" class="col-12"></div>
 				</div>
 				<div class="equipperForm">
 					<form action="/equip?_method=PUT" method="POST" enctype="multipart/form-data" name="submitForm">
@@ -61,8 +61,6 @@
 	});
 	observer.observe();
 	
-	var yourUnicorns = <%- JSON.stringify(loggedInUser.unicorns) %>;
-
 	//collapsible tabs behavior:
 	var toggle = document.querySelector("#toggle");
 	toggle.addEventListener("click", (event)=>{
