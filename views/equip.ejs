@@ -53,6 +53,8 @@
 <% include ./partials/helpModal %>
 <% include ./partials/progressPopup %>
 <script>
+	var yourUnicorns = <%- JSON.stringify(loggedInUser.unicorns) %>;
+	
 	const el = document.querySelector('img');
 	const observer = window.lozad('.lozad', {
    		 loaded: function(el) {
